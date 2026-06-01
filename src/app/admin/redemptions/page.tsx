@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { AdminNotification } from '@/components/admin-notification';
 
 interface RedemptionRequest {
   id: string;
@@ -222,6 +223,7 @@ export default function AdminRedemptionsPage() {
           </div>
         </DialogContent>
       </Dialog>
+      <AdminNotification />
     </div>
   );
 }

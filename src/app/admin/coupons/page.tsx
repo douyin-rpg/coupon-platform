@@ -50,6 +50,8 @@ interface Coupon {
   categories: { name: string } | null;
 }
 
+import { AdminNotification } from '@/components/admin-notification';
+
 export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -300,6 +302,7 @@ export default function AdminCouponsPage() {
           </div>
         </DialogContent>
       </Dialog>
+      <AdminNotification />
     </div>
   );
 }

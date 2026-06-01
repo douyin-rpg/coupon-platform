@@ -139,6 +139,16 @@ export async function POST(request: Request) {
         related_id: userCoupon.id,
       });
 
+    // 创建后台通知
+    await client
+      .from('admin_notifications')
+      .insert({
+        type: 'grab',
+        title: '新抢券通知',
+        content: `用户 ${payload.username} 抢购了 ${coupon.name}，金额 ${couponPrice.toFixed(2)} 元`,
+        is_read: false,
+      });
+
     return NextResponse.json({
       success: true,
       userCouponId: userCoupon.id,

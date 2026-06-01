@@ -74,6 +74,16 @@ export async function POST(request: Request) {
 
     if (insertError) throw new Error(`创建回兑申请失败: ${insertError.message}`);
 
+    // 创建后台通知
+    await client
+      .from('admin_notifications')
+      .insert({
+        type: 'redemption',
+        title: '新回兑申请',
+        content: `用户 ${payload.username} 申请回兑，券ID: ${userCouponId}`,
+        is_read: false,
+      });
+
     return NextResponse.json({ success: true, message: '回兑申请已提交' });
   } catch (err) {
     const message = err instanceof Error ? err.message : '申请回兑失败';

@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const supabase = getSupabaseClient();
   const { data: user, error } = await supabase
     .from("users")
-    .select("id, username, real_name, balance, verify_status, bank_bound, bank_account_name, bank_card_number, bank_name, payment_account, payment_password_set")
+    .select("id, username, real_name, balance, verify_status, bank_bound, bank_account_name, bank_card_number, bank_name, payment_account, payment_password_hash")
     .eq("id", userId)
     .single();
 
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       : null,
     bankName: user.bank_name,
     paymentAccount: user.payment_account,
-    paymentPasswordSet: user.payment_password_set || false,
+    paymentPasswordSet: !!user.payment_password_hash,
   });
 }
 

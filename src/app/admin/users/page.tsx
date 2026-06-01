@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AdminNotification } from '@/components/admin-notification';
 
 interface User {
   id: string;
@@ -225,6 +226,7 @@ export default function AdminUsersPage() {
           </div>
         </DialogContent>
       </Dialog>
+      <AdminNotification />
     </div>
   );
 }
