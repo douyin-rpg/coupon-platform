@@ -21,12 +21,12 @@ export async function POST(request: Request) {
     // 检查用户是否已认证
     const { data: user, error: userError } = await client
       .from('users')
-      .select('is_verified, payment_password_hash, balance')
+      .select('verify_status, payment_password_hash, balance')
       .eq('id', payload.userId)
       .maybeSingle();
 
     if (userError) throw new Error(`查询用户失败: ${userError.message}`);
-    if (!user?.is_verified) {
+    if (user?.verify_status !== "verified") {
       return NextResponse.json({ error: '请先完成实名认证' }, { status: 400 });
     }
 

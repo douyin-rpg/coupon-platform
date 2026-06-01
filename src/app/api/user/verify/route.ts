@@ -1,100 +1,117 @@
-import { NextResponse } from 'next/server';
-import { getSupabaseClient } from '@/storage/database/supabase-client';
-import { getCurrentUser } from '@/lib/auth';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { verifyAuth } from "@/lib/auth";
 
-// 实名认证 + 绑定收款账号 + 设置支付密码
-export async function POST(request: Request) {
-  try {
-    const payload = await getCurrentUser();
-    if (!payload) {
-      return NextResponse.json({ error: '未登录' }, { status: 401 });
-    }
+// 中国身份证号码校验
+function isValidChineseID(id: string): boolean {
+  if (!/^\d{17}[\dXx]$/.test(id)) return false;
 
-    const { realName, idCard, paymentAccount, paymentPassword } = await request.json();
+  const weights = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+  const checkCodes = ["1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"];
 
-    // 实名认证（只需要 realName + idCard）
-    if (realName && idCard) {
-      const client = getSupabaseClient();
-
-      const { data: user, error: userError } = await client
-        .from('users')
-        .select('is_verified')
-        .eq('id', payload.userId)
-        .maybeSingle();
-
-      if (userError) throw new Error(`查询用户失败: ${userError.message}`);
-      if (user?.is_verified) {
-        return NextResponse.json({ error: '已完成实名认证' }, { status: 400 });
-      }
-
-      const updateData: Record<string, unknown> = {
-        id_card: idCard,
-        id_card_name: realName,
-        real_name: realName,
-        updated_at: new Date().toISOString(),
-      };
-
-      // 如果同时设置了支付密码和收款账号，一起完成
-      if (paymentPassword && paymentAccount) {
-        if (paymentPassword.length < 6) {
-          return NextResponse.json({ error: '支付密码至少6位' }, { status: 400 });
-        }
-        const paymentPasswordHash = await bcrypt.hash(paymentPassword, 10);
-        updateData.is_verified = true;
-        updateData.payment_account = paymentAccount;
-        updateData.payment_password_hash = paymentPasswordHash;
-      }
-
-      const { error: updateError } = await client
-        .from('users')
-        .update(updateData)
-        .eq('id', payload.userId);
-
-      if (updateError) throw new Error(`认证失败: ${updateError.message}`);
-
-      return NextResponse.json({ success: true, message: '实名认证成功' });
-    }
-
-    // 仅绑定收款账号 + 设置支付密码（老流程）
-    if (!paymentAccount || !paymentPassword) {
-      return NextResponse.json({ error: '请填写收款账号和支付密码' }, { status: 400 });
-    }
-
-    if (paymentPassword.length < 6) {
-      return NextResponse.json({ error: '支付密码至少6位' }, { status: 400 });
-    }
-
-    const client = getSupabaseClient();
-
-    const { data: user, error: userError } = await client
-      .from('users')
-      .select('is_verified')
-      .eq('id', payload.userId)
-      .maybeSingle();
-
-    if (userError) throw new Error(`查询用户失败: ${userError.message}`);
-    if (user?.is_verified) {
-      return NextResponse.json({ error: '已完成实名认证' }, { status: 400 });
-    }
-
-    const paymentPasswordHash = await bcrypt.hash(paymentPassword, 10);
-
-    const { error: updateError } = await client
-      .from('users')
-      .update({
-        is_verified: true,
-        payment_account: paymentAccount,
-        payment_password_hash: paymentPasswordHash,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', payload.userId);
-
-    if (updateError) throw new Error(`认证失败: ${updateError.message}`);
-
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : '操作失败';
-    return NextResponse.json({ error: message }, { status: 500 });
+  let sum = 0;
+  for (let i = 0; i < 17; i++) {
+    sum += parseInt(id[i], 10) * weights[i];
   }
+  const checkCode = checkCodes[sum % 11];
+  return id[17].toUpperCase() === checkCode;
+}
+
+// 提交实名认证
+export async function POST(request: NextRequest) {
+  const userId = await verifyAuth(request);
+  if (!userId) {
+    return NextResponse.json({ error: "未登录" }, { status: 401 });
+  }
+
+  const supabase = getSupabaseClient();
+
+  // 检查当前状态
+  const { data: user } = await supabase
+    .from("users")
+    .select("verify_status, id_card_name")
+    .eq("id", userId)
+    .single();
+
+  if (!user) {
+    return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+  }
+
+  if (user.verify_status === "verified") {
+    return NextResponse.json({ error: "已完成实名认证，不可更改" }, { status: 400 });
+  }
+
+  if (user.verify_status === "pending") {
+    return NextResponse.json({ error: "认证审核中，请耐心等待" }, { status: 400 });
+  }
+
+  const body = await request.json();
+  const { id_card_name, id_card, id_card_front, id_card_back } = body;
+
+  if (!id_card_name || !id_card || !id_card_front || !id_card_back) {
+    return NextResponse.json({ error: "请填写完整信息并上传身份证正反面照片" }, { status: 400 });
+  }
+
+  // 校验身份证号
+  if (!isValidChineseID(id_card)) {
+    return NextResponse.json({ error: "身份证号码格式不正确" }, { status: 400 });
+  }
+
+  // 检查身份证是否已被使用
+  const { data: existingUser } = await supabase
+    .from("users")
+    .select("id")
+    .eq("id_card", id_card)
+    .neq("id", userId)
+    .single();
+
+  if (existingUser) {
+    return NextResponse.json({ error: "该身份证号已被其他用户使用" }, { status: 400 });
+  }
+
+  const { error } = await supabase
+    .from("users")
+    .update({
+      id_card_name,
+      id_card,
+      id_card_front,
+      id_card_back,
+      verify_status: "pending",
+      verify_rejected_reason: null,
+    })
+    .eq("id", userId);
+
+  if (error) {
+    return NextResponse.json({ error: "提交失败，请重试" }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true, message: "实名认证已提交，等待审核" });
+}
+
+// 获取实名认证状态
+export async function GET(request: NextRequest) {
+  const userId = await verifyAuth(request);
+  if (!userId) {
+    return NextResponse.json({ error: "未登录" }, { status: 401 });
+  }
+
+  const supabase = getSupabaseClient();
+  const { data: user } = await supabase
+    .from("users")
+    .select("verify_status, id_card_name, id_card, id_card_front, id_card_back, verify_rejected_reason")
+    .eq("id", userId)
+    .single();
+
+  if (!user) {
+    return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+  }
+
+  return NextResponse.json({
+    verifyStatus: user.verify_status || "unverified",
+    idCardName: user.id_card_name,
+    idCard: user.id_card ? user.id_card.slice(0, 4) + "**********" + user.id_card.slice(-4) : null,
+    idCardFront: user.id_card_front,
+    idCardBack: user.id_card_back,
+    rejectedReason: user.verify_rejected_reason,
+  });
 }

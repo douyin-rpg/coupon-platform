@@ -9,7 +9,7 @@ export default function VerifyPage() {
   const [idCard, setIdCard] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (user?.isVerified) {
+  if (user?.verifyStatus === "verified") {
     return (
       <div className="p-4 md:p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4">实名认证</h2>

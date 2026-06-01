@@ -55,7 +55,9 @@ export async function POST(request: Request) {
         real_name: realName,
         password_hash: passwordHash,
         balance: '0',
-        is_verified: false,
+        verify_status: 'unverified',
+        bank_bound: false,
+        payment_password_set: false,
       })
       .select('id, username')
       .single();
@@ -63,14 +65,11 @@ export async function POST(request: Request) {
     if (insertError) throw new Error(`创建用户失败: ${insertError.message}`);
 
     // 标记注册码已使用
-    const { error: updateCodeError } = await client
+    await client
       .from('registration_codes')
       .update({ is_used: true, used_by: newUser.id })
       .eq('id', codeData.id);
 
-    if (updateCodeError) throw new Error(`更新注册码失败: ${updateCodeError.message}`);
-
-    // 生成 JWT
     const token = await signToken({
       userId: newUser.id,
       username: newUser.username,
@@ -85,7 +84,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: '/',
     });
 

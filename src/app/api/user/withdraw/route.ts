@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 		// 获取用户信息
 		const { data: user, error: userError } = await supabase
 			.from("users")
-			.select("id, balance, payment_password_hash, payment_account, is_verified")
+			.select("id, balance, payment_password_hash, bank_card_number, bank_name, bank_account_name, bank_bound, verify_status")
 			.eq("id", userId)
 			.single();
 
@@ -34,11 +34,11 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: "用户不存在" }, { status: 404 });
 		}
 
-		if (!user.is_verified) {
+		if (user.verify_status !== "verified") {
 			return NextResponse.json({ error: "请先完成实名认证" }, { status: 400 });
 		}
 
-		if (!user.payment_account) {
+		if (!user.bank_bound) {
 			return NextResponse.json({ error: "请先绑定收款账号" }, { status: 400 });
 		}
 
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
 			.insert({
 				user_id: userId,
 				amount: numAmount.toFixed(2),
-				payment_account: user.payment_account,
+				bank_card_number: user.bank_card_number, bank_name: user.bank_name, bank_account_name: user.bank_account_name,
 				status: "pending",
 			})
 			.select()

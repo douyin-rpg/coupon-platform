@@ -82,7 +82,7 @@ export default function HomePage() {
   const handleGrab = async () => {
     if (!grabModal.coupon) return;
     if (!user) { setGrabError('请先登录'); return; }
-    if (!user.isVerified) { setGrabError('请先完成实名认证'); return; }
+    if (user.verifyStatus !== "verified") { setGrabError('请先完成实名认证'); return; }
     if (!payPassword) { setGrabError('请输入支付密码'); return; }
     setGrabLoading(true); setGrabError('');
     try {
@@ -248,7 +248,7 @@ export default function HomePage() {
           {filteredCoupons.map((coupon) => {
             const session = sessions.find((s) => s.id === coupon.session_id);
             const ss: SessionStatus = session ? getSessionStatus(session) : { status: 'ended', label: '未排期', remaining: 0 };
-            const canGrab = user?.isVerified && ss.status === 'active' && coupon.remaining_quantity > 0;
+            const canGrab = user?.verifyStatus === "verified" && ss.status === 'active' && coupon.remaining_quantity > 0;
             return (
               <Link key={coupon.id} href={`/coupon/${coupon.id}`}
                 className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow group">

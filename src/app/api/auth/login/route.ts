@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
     const { data: user, error } = await client
       .from('users')
-      .select('id, username, password_hash, real_name, is_verified, payment_account, balance')
+      .select('id, username, password_hash, real_name')
       .eq('username', username)
       .maybeSingle();
 
@@ -36,14 +36,6 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({
       success: true,
-      user: {
-        id: user.id,
-        username: user.username,
-        realName: user.real_name,
-        isVerified: user.is_verified,
-        paymentAccount: user.payment_account,
-        balance: user.balance,
-      },
     });
 
     response.cookies.set('auth_token', token, {

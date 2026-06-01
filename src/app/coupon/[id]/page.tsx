@@ -21,7 +21,8 @@ interface Coupon {
 interface User {
   id: string;
   username: string;
-  isVerified: boolean;
+  verifyStatus: string;
+  bankBound: boolean;
   balance: number;
 }
 
@@ -188,7 +189,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
           <button
             onClick={() => {
               if (!user) { router.push("/login"); return; }
-              if (!user.isVerified) { setMsg("请先完成实名认证"); return; }
+              if (user.verifyStatus !== "verified") { setMsg("请先完成实名认证"); return; }
               setShowPaymentModal(true);
             }}
             disabled={coupon.remaining_quantity <= 0}

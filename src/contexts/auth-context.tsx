@@ -6,11 +6,14 @@ interface User {
   id: string;
   username: string;
   realName: string;
-  isVerified: boolean;
-  paymentAccount: string | null;
   balance: number;
-  idCard?: string;
-  idCardName?: string;
+  verifyStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
+  bankBound: boolean;
+  bankAccountName: string | null;
+  bankCardNumber: string | null;
+  bankName: string | null;
+  paymentAccount: string | null;
+  paymentPasswordSet: boolean;
 }
 
 interface AuthContextType {
@@ -32,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch('/api/auth/me');
       if (res.ok) {
         const data = await res.json();
-        setUser(data.user);
+        setUser(data);
       } else {
         setUser(null);
       }
@@ -56,7 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setUser(data.user);
+        // Login success, refresh user data from /api/auth/me
+        await refreshUser();
         return { success: true };
       }
       return { success: false, error: data.error || '登录失败' };
@@ -81,7 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 		const supabase = getSupabaseClient();
 		const { data: users, error } = await supabase
 			.from("users")
-			.select("id, username, real_name, is_verified, payment_account, balance, created_at")
+			.select("id, username, real_name, balance, verify_status, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, created_at")
 			.order("created_at", { ascending: false });
 
 		if (error) {

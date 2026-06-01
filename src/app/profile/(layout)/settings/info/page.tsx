@@ -19,8 +19,8 @@ export default function SettingsInfoPage() {
         </div>
         <div className="flex justify-between items-center py-3 border-b border-gray-100">
           <span className="text-sm text-gray-500">实名认证</span>
-          <span className={`text-sm ${user?.isVerified ? 'text-green-500' : 'text-red-500'}`}>
-            {user?.isVerified ? '已认证' : '未认证'}
+          <span className={`text-sm ${user?.verifyStatus === "verified" ? 'text-green-500' : 'text-red-500'}`}>
+            {user?.verifyStatus === "verified" ? '已认证' : '未认证'}
           </span>
         </div>
         <div className="flex justify-between items-center py-3 border-b border-gray-100">

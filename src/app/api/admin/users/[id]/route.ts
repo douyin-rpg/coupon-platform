@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/storage/database/supabase-client";
 import { verifyAdminAuth } from "@/lib/auth";
+import bcrypt from "bcryptjs";
 
 // 获取单个用户详情
 export async function GET(
@@ -17,7 +18,7 @@ export async function GET(
 		const supabase = getSupabaseClient();
 		const { data: user, error } = await supabase
 			.from("users")
-			.select("id, username, real_name, is_verified, payment_account, balance, payment_password_hash, created_at")
+			.select("id, username, real_name, balance, verify_status, verify_rejected_reason, id_card_name, id_card, id_card_front, id_card_back, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, created_at")
 			.eq("id", id)
 			.single();
 
@@ -25,17 +26,13 @@ export async function GET(
 			return NextResponse.json({ error: "用户不存在" }, { status: 404 });
 		}
 
-		// 不返回密码hash
-		const { payment_password_hash, ...safeUser } = user;
-
-		return NextResponse.json({ user: safeUser });
-	} catch (error: unknown) {
-		const message = error instanceof Error ? error.message : "获取用户详情失败";
-		return NextResponse.json({ error: message }, { status: 500 });
+		return NextResponse.json({ user });
+	} catch {
+		return NextResponse.json({ error: "服务器错误" }, { status: 500 });
 	}
 }
 
-// 修改用户信息（重置密码、充值、扣款）
+// 管理员操作用户
 export async function PATCH(
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }
@@ -48,14 +45,14 @@ export async function PATCH(
 
 		const { id } = await params;
 		const body = await request.json();
-		const { action, newPassword, newPaymentPassword, amount, note } = body;
+		const { action, note } = body;
 
 		const supabase = getSupabaseClient();
 
-		// 验证用户存在
+		// 获取用户当前信息
 		const { data: user, error: userError } = await supabase
 			.from("users")
-			.select("id, balance")
+			.select("id, balance, verify_status, bank_name")
 			.eq("id", id)
 			.single();
 
@@ -63,35 +60,40 @@ export async function PATCH(
 			return NextResponse.json({ error: "用户不存在" }, { status: 404 });
 		}
 
-		const bcrypt = require("bcryptjs");
-
-		if (action === "reset_password" && newPassword) {
-			const hash = await bcrypt.hash(newPassword, 10);
+		if (action === "reset_login_password") {
+			const { new_password } = body;
+			if (!new_password || new_password.length < 6) {
+				return NextResponse.json({ error: "密码至少6位" }, { status: 400 });
+			}
+			const hashed = await bcrypt.hash(new_password, 10);
 			const { error } = await supabase
 				.from("users")
-				.update({ password_hash: hash })
+				.update({ password_hash: hashed })
 				.eq("id", id);
-
 			if (error) {
-				return NextResponse.json({ error: "重置密码失败" }, { status: 500 });
+				return NextResponse.json({ error: "重置失败" }, { status: 500 });
 			}
 			return NextResponse.json({ success: true, message: "登录密码已重置" });
 		}
 
-		if (action === "reset_payment_password" && newPaymentPassword) {
-			const hash = await bcrypt.hash(newPaymentPassword, 10);
+		if (action === "reset_payment_password") {
+			const { new_password } = body;
+			if (!new_password || new_password.length < 6) {
+				return NextResponse.json({ error: "密码至少6位" }, { status: 400 });
+			}
+			const hashed = await bcrypt.hash(new_password, 10);
 			const { error } = await supabase
 				.from("users")
-				.update({ payment_password_hash: hash })
+				.update({ payment_password_hash: hashed, payment_password_set: true })
 				.eq("id", id);
-
 			if (error) {
-				return NextResponse.json({ error: "重置支付密码失败" }, { status: 500 });
+				return NextResponse.json({ error: "重置失败" }, { status: 500 });
 			}
 			return NextResponse.json({ success: true, message: "支付密码已重置" });
 		}
 
-		if (action === "add_balance" && amount) {
+		if (action === "add_balance") {
+			const { amount } = body;
 			const addAmount = parseFloat(amount);
 			if (isNaN(addAmount) || addAmount <= 0) {
 				return NextResponse.json({ error: "金额必须大于0" }, { status: 400 });
@@ -101,7 +103,6 @@ export async function PATCH(
 				.from("users")
 				.update({ balance: newBalance })
 				.eq("id", id);
-
 			if (error) {
 				return NextResponse.json({ error: "充值失败" }, { status: 500 });
 			}
@@ -116,7 +117,8 @@ export async function PATCH(
 			return NextResponse.json({ success: true, message: `已充值 ${addAmount} 元`, newBalance });
 		}
 
-		if (action === "deduct_balance" && amount) {
+		if (action === "deduct_balance") {
+			const { amount } = body;
 			const deductAmount = parseFloat(amount);
 			if (isNaN(deductAmount) || deductAmount <= 0) {
 				return NextResponse.json({ error: "金额必须大于0" }, { status: 400 });
@@ -130,7 +132,6 @@ export async function PATCH(
 				.from("users")
 				.update({ balance: newBalance })
 				.eq("id", id);
-
 			if (error) {
 				return NextResponse.json({ error: "扣款失败" }, { status: 500 });
 			}
@@ -145,9 +146,84 @@ export async function PATCH(
 			return NextResponse.json({ success: true, message: `已扣款 ${deductAmount} 元`, newBalance });
 		}
 
-		return NextResponse.json({ error: "无效的操作" }, { status: 400 });
-	} catch (error: unknown) {
-		const message = error instanceof Error ? error.message : "操作失败";
-		return NextResponse.json({ error: message }, { status: 500 });
+		// 管理员修改用户实名信息
+		if (action === "update_verify") {
+			const { id_card_name, id_card } = body;
+			const updateData: Record<string, unknown> = {};
+			if (id_card_name !== undefined) updateData.id_card_name = id_card_name;
+			if (id_card !== undefined) updateData.id_card = id_card;
+			const { error } = await supabase
+				.from("users")
+				.update(updateData)
+				.eq("id", id);
+			if (error) {
+				return NextResponse.json({ error: "修改失败" }, { status: 500 });
+			}
+			return NextResponse.json({ success: true, message: "实名信息已修改" });
+		}
+
+		// 管理员删除用户实名信息
+		if (action === "delete_verify") {
+			const { error } = await supabase
+				.from("users")
+				.update({
+					verify_status: "unverified",
+					id_card_name: null,
+					id_card: null,
+					id_card_front: null,
+					id_card_back: null,
+					verify_rejected_reason: null,
+				})
+				.eq("id", id);
+			if (error) {
+				return NextResponse.json({ error: "删除失败" }, { status: 500 });
+			}
+			return NextResponse.json({ success: true, message: "实名信息已删除" });
+		}
+
+		// 管理员修改用户收款账户
+		if (action === "update_bank") {
+			const { bank_account_name, bank_card_number, bank_name } = body;
+			const updateData: Record<string, unknown> = {};
+			if (bank_account_name !== undefined) updateData.bank_account_name = bank_account_name;
+			if (bank_card_number !== undefined) {
+				updateData.bank_card_number = bank_card_number;
+				updateData.payment_account = `${bank_name || user.bank_name || ""} 尾号${bank_card_number.slice(-4)}`;
+			}
+			if (bank_name !== undefined) updateData.bank_name = bank_name;
+			if (bank_account_name || bank_card_number || bank_name) {
+				updateData.bank_bound = true;
+			}
+			const { error } = await supabase
+				.from("users")
+				.update(updateData)
+				.eq("id", id);
+			if (error) {
+				return NextResponse.json({ error: "修改失败" }, { status: 500 });
+			}
+			return NextResponse.json({ success: true, message: "收款账户已修改" });
+		}
+
+		// 管理员删除用户收款账户
+		if (action === "delete_bank") {
+			const { error } = await supabase
+				.from("users")
+				.update({
+					bank_bound: false,
+					bank_account_name: null,
+					bank_card_number: null,
+					bank_name: null,
+					payment_account: null,
+				})
+				.eq("id", id);
+			if (error) {
+				return NextResponse.json({ error: "删除失败" }, { status: 500 });
+			}
+			return NextResponse.json({ success: true, message: "收款账户已删除" });
+		}
+
+		return NextResponse.json({ error: "未知操作" }, { status: 400 });
+	} catch {
+		return NextResponse.json({ error: "服务器错误" }, { status: 500 });
 	}
 }

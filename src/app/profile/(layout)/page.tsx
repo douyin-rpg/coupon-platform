@@ -18,7 +18,7 @@ export default function ProfilePage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-gray-800">您好：{user.username}</span>
-            {user.isVerified ? (
+            {user.verifyStatus === "verified" ? (
               <span className="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full">已认证</span>
             ) : (
               <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full">未认证</span>
@@ -49,7 +49,7 @@ export default function ProfilePage() {
         <div className="bg-gray-50 rounded-lg p-3 text-center">
           <p className="text-sm text-gray-500">账户余额</p>
           <p className="text-xl font-bold text-[#FFC107] mt-1">
-            {user.isVerified ? `¥${user.balance?.toFixed(2) || '0.00'}` : '未认证'}
+            {user.verifyStatus === "verified" ? `¥${user.balance?.toFixed(2) || '0.00'}` : '未认证'}
           </p>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function ProfilePage() {
           <div>
             <p className="text-sm opacity-80">账户余额</p>
             <p className="text-3xl font-bold mt-1">
-              {user.isVerified ? `¥${user.balance?.toFixed(2) || '0.00'}` : '完成认证后查看'}
+              {user.verifyStatus === "verified" ? `¥${user.balance?.toFixed(2) || '0.00'}` : '完成认证后查看'}
             </p>
           </div>
           <div className="flex gap-2">
@@ -95,7 +95,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Uncertified notice */}
-      {!user.isVerified && (
+      {user.verifyStatus !== "verified" && (
         <div className="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
           <p className="text-orange-600 font-medium text-sm">您尚未完成实名认证</p>
           <p className="text-orange-500 text-xs mt-1">完成实名认证后才能查看余额和抢购优惠券</p>

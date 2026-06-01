@@ -13,7 +13,7 @@ export default function WithdrawPage() {
     const numAmount = parseFloat(amount);
     if (!numAmount || numAmount <= 0) { alert('请输入有效金额'); return; }
     if (!payPassword) { alert('请输入支付密码'); return; }
-    if (!user?.isVerified) { alert('请先完成实名认证'); return; }
+    if (user?.verifyStatus !== "verified") { alert('请先完成实名认证'); return; }
     if (!user?.paymentAccount) { alert('请先绑定收款账号'); return; }
     setLoading(true);
     try {
@@ -42,7 +42,7 @@ export default function WithdrawPage() {
         </div>
       </div>
 
-      {!user?.isVerified ? (
+      {user?.verifyStatus !== "verified" ? (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
           <p className="text-yellow-700 text-sm">请先完成实名认证后再申请提现</p>
           <a href="/profile/settings/verify" className="text-[#FE2C55] text-sm mt-2 inline-block">去认证 →</a>
