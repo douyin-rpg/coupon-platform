@@ -26,7 +26,7 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        router.push('/login');
+        window.location.href = '/login';
       } else {
         setError(data.error || '注册失败');
       }

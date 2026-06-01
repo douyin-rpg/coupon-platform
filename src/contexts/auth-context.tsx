@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 
 interface User {
   id: string;
@@ -12,7 +12,6 @@ interface User {
   bankAccountName: string | null;
   bankCardNumber: string | null;
   bankName: string | null;
-  paymentAccount: string | null;
   paymentPasswordSet: boolean;
 }
 
@@ -21,7 +20,7 @@ interface AuthContextType {
   loading: boolean;
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -30,25 +29,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async (): Promise<User | null> => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch('/api/auth/me', {
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
       if (res.ok) {
         const data = await res.json();
         setUser(data);
+        return data;
       } else {
         setUser(null);
+        return null;
       }
     } catch {
       setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshUser();
-  }, []);
+  }, [refreshUser]);
 
   const login = async (username: string, password: string) => {
     try {
@@ -56,11 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
+        credentials: 'same-origin',
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        // Login success, refresh user data from /api/auth/me
-        await refreshUser();
+        // Wait for browser cookie store to update, then retry
+        await new Promise(resolve => setTimeout(resolve, 150));
+        const refreshedUser = await refreshUser();
+        if (!refreshedUser) {
+          // Retry once more after a longer delay
+          await new Promise(resolve => setTimeout(resolve, 500));
+          await refreshUser();
+        }
         return { success: true };
       }
       return { success: false, error: data.error || '登录失败' };
@@ -71,7 +83,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+      });
     } finally {
       setUser(null);
     }

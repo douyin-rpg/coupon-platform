@@ -20,7 +20,7 @@ export default function LoginPage() {
     try {
       const result = await login(username, password);
       if (result.success) {
-        router.push('/');
+        window.location.href = '/';
       } else {
         setError(result.error || '登录失败');
       }

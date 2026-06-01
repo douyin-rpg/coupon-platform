@@ -14,7 +14,7 @@ export default function WithdrawPage() {
     if (!numAmount || numAmount <= 0) { alert('请输入有效金额'); return; }
     if (!payPassword) { alert('请输入支付密码'); return; }
     if (user?.verifyStatus !== "verified") { alert('请先完成实名认证'); return; }
-    if (!user?.paymentAccount) { alert('请先绑定收款账号'); return; }
+    if (!user?.bankBound) { alert('请先绑定收款账号'); return; }
     setLoading(true);
     try {
       const res = await fetch('/api/user/withdraw', {
@@ -47,7 +47,7 @@ export default function WithdrawPage() {
           <p className="text-yellow-700 text-sm">请先完成实名认证后再申请提现</p>
           <a href="/profile/settings/verify" className="text-[#FE2C55] text-sm mt-2 inline-block">去认证 →</a>
         </div>
-      ) : !user?.paymentAccount ? (
+      ) : !user?.bankBound ? (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
           <p className="text-yellow-700 text-sm">请先绑定收款账号后再申请提现</p>
           <a href="/profile/settings/bank" className="text-[#FE2C55] text-sm mt-2 inline-block">去绑定 →</a>
@@ -65,7 +65,7 @@ export default function WithdrawPage() {
               className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
           </div>
           <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs text-gray-500">提现到：<span className="text-gray-700">{user.paymentAccount}</span></p>
+            <p className="text-xs text-gray-500">提现到：<span className="text-gray-700">{user.bankName} ({user.bankCardNumber?.slice(-4)})</span></p>
           </div>
           <button onClick={handleWithdraw} disabled={loading}
             className="w-full py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-lg font-medium disabled:opacity-50">

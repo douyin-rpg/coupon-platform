@@ -25,8 +25,8 @@ export default function SettingsInfoPage() {
         </div>
         <div className="flex justify-between items-center py-3 border-b border-gray-100">
           <span className="text-sm text-gray-500">绑定收款</span>
-          <span className={`text-sm ${user?.paymentAccount ? 'text-green-500' : 'text-gray-400'}`}>
-            {user?.paymentAccount || '未绑定'}
+          <span className={`text-sm ${user?.bankBound ? 'text-green-500' : 'text-gray-400'}`}>
+            {user?.bankBound ? '已绑定' : '未绑定'}
           </span>
         </div>
       </div>
