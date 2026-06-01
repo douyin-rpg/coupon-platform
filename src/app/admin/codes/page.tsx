@@ -95,6 +95,8 @@ export default function AdminCodesPage() {
           <Link href="/admin/coupons" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">优惠券管理</Link>
           <Link href="/admin/codes" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">注册码管理</Link>
           <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">回兑审核</Link>
+          <Link href="/admin/users" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">用户管理</Link>
+          <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">提现审核</Link>
         </nav>
         <div className="absolute bottom-4 left-4 right-4">
           <Link href="/" className="text-xs text-gray-400 hover:text-gray-200">返回前台</Link>

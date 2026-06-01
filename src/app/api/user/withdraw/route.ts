@@ -1,0 +1,95 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { verifyAuth } from "@/lib/auth";
+
+export async function POST(request: NextRequest) {
+	try {
+		const userId = await verifyAuth(request);
+		if (!userId) {
+			return NextResponse.json({ error: "未登录" }, { status: 401 });
+		}
+
+		const body = await request.json();
+		const { amount, paymentPassword } = body;
+
+		if (!amount || !paymentPassword) {
+			return NextResponse.json({ error: "请填写提现金额和支付密码" }, { status: 400 });
+		}
+
+		const numAmount = parseFloat(amount);
+		if (isNaN(numAmount) || numAmount <= 0) {
+			return NextResponse.json({ error: "提现金额必须大于0" }, { status: 400 });
+		}
+
+		const supabase = getSupabaseClient();
+
+		// 获取用户信息
+		const { data: user, error: userError } = await supabase
+			.from("users")
+			.select("id, balance, payment_password_hash, payment_account, is_verified")
+			.eq("id", userId)
+			.single();
+
+		if (userError || !user) {
+			return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+		}
+
+		if (!user.is_verified) {
+			return NextResponse.json({ error: "请先完成实名认证" }, { status: 400 });
+		}
+
+		if (!user.payment_account) {
+			return NextResponse.json({ error: "请先绑定收款账号" }, { status: 400 });
+		}
+
+		if (!user.payment_password_hash) {
+			return NextResponse.json({ error: "请先设置支付密码" }, { status: 400 });
+		}
+
+		// 验证支付密码
+		const bcrypt = require("bcryptjs");
+		const validPassword = await bcrypt.compare(paymentPassword, user.payment_password_hash);
+		if (!validPassword) {
+			return NextResponse.json({ error: "支付密码错误" }, { status: 400 });
+		}
+
+		const currentBalance = parseFloat(user.balance);
+		if (numAmount > currentBalance) {
+			return NextResponse.json({ error: "余额不足" }, { status: 400 });
+		}
+
+		// 扣减余额
+		const newBalance = (currentBalance - numAmount).toFixed(2);
+		const { error: updateError } = await supabase
+			.from("users")
+			.update({ balance: newBalance })
+			.eq("id", userId);
+
+		if (updateError) {
+			return NextResponse.json({ error: "余额扣减失败" }, { status: 500 });
+		}
+
+		// 创建提现记录
+		const { data: withdrawal, error: wError } = await supabase
+			.from("withdrawals")
+			.insert({
+				user_id: userId,
+				amount: numAmount.toFixed(2),
+				payment_account: user.payment_account,
+				status: "pending",
+			})
+			.select()
+			.single();
+
+		if (wError) {
+			// 回滚余额
+			await supabase.from("users").update({ balance: user.balance }).eq("id", userId);
+			return NextResponse.json({ error: "提现申请失败" }, { status: 500 });
+		}
+
+		return NextResponse.json({ success: true, withdrawal });
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : "提现失败";
+		return NextResponse.json({ error: message }, { status: 500 });
+	}
+}

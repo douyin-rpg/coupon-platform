@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 
 export default function AdminLoginPage() {
@@ -38,35 +36,42 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-xl border-0">
-        <CardHeader className="text-center pb-2">
-          <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-3">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-gradient-to-br from-[#FE2C55] to-[#FF6B35]">
             <span className="text-3xl text-white font-bold">管</span>
           </div>
-          <CardTitle className="text-2xl font-bold">管理后台</CardTitle>
-          <p className="text-sm text-gray-500 mt-1">请输入管理密码登录</p>
-        </CardHeader>
-        <CardContent>
+          <h1 className="text-2xl font-bold text-white">管理后台</h1>
+          <p className="text-sm text-gray-400 mt-1">请输入管理密码登录</p>
+        </div>
+        <div className="bg-gray-800 rounded-2xl p-6">
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="adminPassword">管理密码</Label>
+              <Label className="text-sm text-gray-300">管理密码</Label>
               <Input
-                id="adminPassword"
                 type="password"
                 placeholder="请输入管理密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="rounded-xl h-11 bg-gray-700 border-gray-600 text-white placeholder:text-gray-500"
               />
-              <p className="text-xs text-gray-400">默认密码：admin123</p>
             </div>
-            {error && <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</p>}
-            <Button type="submit" className="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold" disabled={loading}>
+            {error && <p className="text-xs text-red-400 bg-red-900/30 p-2.5 rounded-xl">{error}</p>}
+            <button
+              type="submit"
+              className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all active:scale-[0.97] disabled:opacity-50"
+              style={{
+                background: (loading || !password) ? '#4B5563' : 'linear-gradient(135deg, #FE2C55, #FF6B35)',
+                color: (loading || !password) ? '#9CA3AF' : '#fff',
+              }}
+              disabled={loading || !password}
+            >
               {loading ? '登录中...' : '登录'}
-            </Button>
+            </button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'coupon-platform-secret-key-change-in-production'
@@ -40,4 +41,18 @@ export async function getAdminUser(): Promise<JWTPayload | null> {
   const token = cookieStore.get('admin_token')?.value;
   if (!token) return null;
   return verifyToken(token);
+}
+
+export async function verifyAuth(request: NextRequest): Promise<string | null> {
+  const token = request.cookies.get('auth_token')?.value;
+  if (!token) return null;
+  const payload = await verifyToken(token);
+  return payload?.userId || null;
+}
+
+export async function verifyAdminAuth(request: NextRequest): Promise<boolean> {
+  const token = request.cookies.get('admin_token')?.value;
+  if (!token) return false;
+  const payload = await verifyToken(token);
+  return payload?.isAdmin === true;
 }

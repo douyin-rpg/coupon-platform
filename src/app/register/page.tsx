@@ -3,10 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -47,92 +45,100 @@ export default function RegisterPage() {
     }
   };
 
+  const isValid = username.length >= 3 && realName && password.length >= 6 && password === confirmPassword && registrationCode;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-amber-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-xl border-0">
-        <CardHeader className="text-center pb-2">
-          <div className="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FE2C55, #FF6B35)' }}>
             <span className="text-3xl text-white font-bold">惠</span>
           </div>
-          <CardTitle className="text-2xl font-bold">注册</CardTitle>
-          <p className="text-sm text-gray-500 mt-1">创建您的抢券账户</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">用户名</Label>
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">创建账户</h1>
+          <p className="text-sm text-gray-400 mt-1">注册您的抢券账户</p>
+        </div>
+
+        {/* Form */}
+        <div className="bg-white rounded-2xl shadow-sm p-6">
+          <form onSubmit={handleRegister} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-sm text-gray-600">用户名</Label>
               <Input
-                id="username"
                 placeholder="3-50个字符"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 minLength={3}
                 maxLength={50}
+                className="rounded-xl h-11"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="realName">真实姓名</Label>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-gray-600">真实姓名</Label>
               <Input
-                id="realName"
                 placeholder="请输入真实姓名"
                 value={realName}
                 onChange={(e) => setRealName(e.target.value)}
                 required
+                className="rounded-xl h-11"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">登录密码</Label>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-gray-600">登录密码</Label>
               <Input
-                id="password"
                 type="password"
                 placeholder="至少6位"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                className="rounded-xl h-11"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">确认密码</Label>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-gray-600">确认密码</Label>
               <Input
-                id="confirmPassword"
                 type="password"
-                placeholder="再次输入密码"
+                placeholder="请再次输入密码"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                minLength={6}
+                className="rounded-xl h-11"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="registrationCode">注册码</Label>
+            <div className="space-y-1.5">
+              <Label className="text-sm text-gray-600">注册码</Label>
               <Input
-                id="registrationCode"
                 placeholder="请输入注册码"
                 value={registrationCode}
                 onChange={(e) => setRegistrationCode(e.target.value)}
                 required
+                className="rounded-xl h-11"
               />
-              <p className="text-xs text-gray-400">注册码由管理员提供</p>
+              <p className="text-[10px] text-gray-400">注册码由管理员发放</p>
             </div>
-            {error && <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</p>}
-            <Button
+            {error && <p className="text-xs text-red-500 bg-red-50 p-2.5 rounded-xl">{error}</p>}
+            <button
               type="submit"
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold"
-              disabled={loading}
+              className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all active:scale-[0.97] disabled:opacity-50"
+              style={{
+                background: (loading || !isValid) ? '#ccc' : 'linear-gradient(135deg, #FE2C55, #FF6B35)',
+                color: (loading || !isValid) ? '#999' : '#fff',
+              }}
+              disabled={loading || !isValid}
             >
               {loading ? '注册中...' : '注册'}
-            </Button>
+            </button>
           </form>
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="text-center text-sm text-gray-400 mt-4">
             已有账户？{' '}
-            <Link href="/login" className="text-red-600 hover:underline font-medium">
+            <Link href="/login" className="text-[#FE2C55] font-medium">
               立即登录
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

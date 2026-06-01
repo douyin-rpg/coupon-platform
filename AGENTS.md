@@ -2,7 +2,7 @@
 
 ## 项目概览
 
-优惠券抢购平台（惠抢券），支持限时抢券、回兑赚5%奖励、管理后台配置。
+优惠券抢购平台（惠抢券），支持限时抢券、回兑赚5%奖励、提现、管理后台配置。
 
 ### 版本技术栈
 
@@ -23,23 +23,25 @@
 │   │   ├── page.tsx                 # 首页 - 优惠券抢购
 │   │   ├── login/page.tsx           # 用户登录
 │   │   ├── register/page.tsx        # 用户注册
-│   │   ├── profile/page.tsx         # 个人中心
+│   │   ├── profile/page.tsx         # 个人中心（含提现）
 │   │   ├── admin/                   # 管理后台
 │   │   │   ├── page.tsx             # 管理员登录
 │   │   │   ├── sessions/            # 场次管理
 │   │   │   ├── coupons/             # 优惠券管理
 │   │   │   ├── codes/               # 注册码管理
-│   │   │   └── redemptions/         # 回兑审核
+│   │   │   ├── users/               # 用户管理
+│   │   │   ├── redemptions/         # 回兑审核
+│   │   │   └── withdrawals/         # 提现审核
 │   │   └── api/                     # API 路由
 │   │       ├── auth/                # 认证 API
-│   │       ├── admin/               # 管理 API
+│   │       ├── admin/               # 管理 API（含 users, withdrawals）
 │   │       ├── coupons/             # 优惠券 API
 │   │       ├── sessions/            # 场次 API
 │   │       ├── redemption/          # 回兑 API
-│   │       └── user/                # 用户 API
+│   │       └── user/                # 用户 API（含 withdraw, withdrawals）
 │   ├── components/ui/               # Shadcn UI 组件库
 │   ├── lib/
-│   │   ├── auth.ts                  # JWT 认证工具
+│   │   ├── auth.ts                  # JWT 认证工具（verifyAuth, verifyAdminAuth）
 │   │   └── utils.ts                 # 通用工具函数
 │   └── storage/database/            # 数据库
 │       ├── supabase-client.ts       # Supabase 客户端
@@ -55,6 +57,12 @@
 3. **抢券流程**: 选择场次内的券 → 输入支付密码 → 余额扣减 → 券状态变为"待使用"
 4. **回兑流程**: 用户申请回兑(输入支付密码) → 券状态变为"待回兑" → 管理员审核
 5. **审核结果**: 通过 → 返还支付金额+5%; 拒绝 → 仅返还支付金额
+6. **提现流程**: 用户申请提现(输入支付密码) → 余额预扣 → 管理员审核 → 通过则完成/拒绝则返还
+7. **用户管理**: 管理员可查看用户信息、重置密码/支付密码、充值/扣款
+
+## 数据库表（7张）
+
+- users, registration_codes, grab_sessions, coupons, user_coupons, redemption_requests, withdrawals
 
 ## 包管理规范
 

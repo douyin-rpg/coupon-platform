@@ -118,3 +118,22 @@ export const redemptionRequests = pgTable(
 		index("redemption_requests_status_idx").on(table.status),
 	]
 );
+
+// 提现记录表
+export const withdrawals = pgTable(
+	"withdrawals",
+	{
+		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+		user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+		amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+		payment_account: varchar("payment_account", { length: 100 }).notNull(),
+		status: varchar("status", { length: 20 }).notNull().default("pending"), // pending / approved / rejected
+		admin_note: text("admin_note"),
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+		processed_at: timestamp("processed_at", { withTimezone: true }),
+	},
+	(table) => [
+		index("withdrawals_user_id_idx").on(table.user_id),
+		index("withdrawals_status_idx").on(table.status),
+	]
+);
