@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,16 +18,11 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
+      const result = await login(username, password);
+      if (result.success) {
         router.push('/');
       } else {
-        setError(data.error || '登录失败');
+        setError(result.error || '登录失败');
       }
     } catch {
       setError('网络错误');
@@ -37,60 +32,52 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
+    <div className="min-h-screen bg-gradient-to-b from-[#FE2C55] to-[#FF6B35] flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FE2C55, #FF6B35)' }}>
-            <span className="text-3xl text-white font-bold">惠</span>
+          <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center bg-gradient-to-br from-[#FE2C55] to-[#FF6B35] shadow-lg">
+            <span className="text-4xl text-white font-bold">惠</span>
           </div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">欢迎回来</h1>
-          <p className="text-sm text-gray-400 mt-1">登录您的抢券账户</p>
+          <h1 className="text-2xl font-bold text-gray-800">欢迎登录</h1>
+          <p className="text-sm text-gray-400 mt-1">抖音电商 · 优惠券抢购平台</p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-600">用户名</Label>
-              <Input
-                placeholder="请输入用户名"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                className="rounded-xl h-11"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm text-gray-600">密码</Label>
-              <Input
-                type="password"
-                placeholder="请输入密码"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="rounded-xl h-11"
-              />
-            </div>
-            {error && <p className="text-xs text-red-500 bg-red-50 p-2.5 rounded-xl">{error}</p>}
-            <button
-              type="submit"
-              className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all active:scale-[0.97] disabled:opacity-50"
-              style={{
-                background: (loading || !username || !password) ? '#ccc' : 'linear-gradient(135deg, #FE2C55, #FF6B35)',
-                color: (loading || !username || !password) ? '#999' : '#fff',
-              }}
-              disabled={loading || !username || !password}
-            >
-              {loading ? '登录中...' : '登录'}
-            </button>
-          </form>
-          <p className="text-center text-sm text-gray-400 mt-4">
-            没有账户？{' '}
-            <Link href="/register" className="text-[#FE2C55] font-medium">
-              立即注册
-            </Link>
-          </p>
+        <form onSubmit={handleLogin} className="space-y-4">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg">{error}</div>
+          )}
+          <div>
+            <input
+              type="text"
+              placeholder="请输入用户名"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FE2C55] focus:border-transparent text-sm"
+              required
+            />
+          </div>
+          <div>
+            <input
+              type="password"
+              placeholder="请输入密码"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FE2C55] focus:border-transparent text-sm"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-lg hover:shadow-lg transition-all duration-200 disabled:opacity-50 active:scale-[0.98]"
+          >
+            {loading ? '登录中...' : '登 录'}
+          </button>
+        </form>
+
+        <div className="mt-6 text-center text-sm text-gray-400">
+          还没有账号？
+          <Link href="/register" className="text-[#FE2C55] font-medium ml-1 hover:underline">立即注册</Link>
         </div>
       </div>
     </div>

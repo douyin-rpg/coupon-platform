@@ -26,7 +26,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const fetchUsers = useCallback(async () => {
+  const refreshUsers = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/users');
       if (res.status === 401) { window.location.href = '/admin'; return; }
@@ -39,7 +39,7 @@ export default function AdminUsersPage() {
     }
   }, []);
 
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  useEffect(() => { refreshUsers(); }, [refreshUsers]);
 
   const handleAction = async () => {
     if (!selectedUser || !newValue) return;
@@ -57,7 +57,7 @@ export default function AdminUsersPage() {
         setActionOpen(false);
         setNewValue('');
         setNote('');
-        fetchUsers();
+        refreshUsers();
       } else {
         setMessage({ type: 'error', text: data.error || '操作失败' });
       }
