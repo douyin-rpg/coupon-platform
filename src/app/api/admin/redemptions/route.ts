@@ -119,6 +119,22 @@ export async function PUT(request: Request) {
 
     if (balanceError) throw new Error(`更新用户余额失败: ${balanceError.message}`);
 
+    // 记录交易明细
+    const logType = action === 'approve' ? 'redemption_approved' : 'redemption_rejected';
+    const logDesc = action === 'approve'
+      ? `回兑通过: 返还本金${paymentAmount.toFixed(2)}+5%奖励${(paymentAmount * 0.05).toFixed(2)}`
+      : `回兑拒绝: 返还本金${paymentAmount.toFixed(2)}`;
+    await client
+      .from('transaction_logs')
+      .insert({
+        user_id: userCoupon.user_id,
+        type: logType,
+        amount: refundAmount,
+        balance_after: parseFloat(newBalance),
+        description: logDesc,
+        related_id: id,
+      });
+
     return NextResponse.json({
       success: true,
       refundAmount: refundAmount.toFixed(2),

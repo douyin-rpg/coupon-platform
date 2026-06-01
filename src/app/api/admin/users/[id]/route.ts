@@ -105,6 +105,14 @@ export async function PATCH(
 			if (error) {
 				return NextResponse.json({ error: "充值失败" }, { status: 500 });
 			}
+			// 记录交易明细
+			await supabase.from("transaction_logs").insert({
+				user_id: id,
+				type: "admin_deposit",
+				amount: addAmount,
+				balance_after: parseFloat(newBalance),
+				description: note || `管理员充值: ${addAmount.toFixed(2)}元`,
+			});
 			return NextResponse.json({ success: true, message: `已充值 ${addAmount} 元`, newBalance });
 		}
 
@@ -126,6 +134,14 @@ export async function PATCH(
 			if (error) {
 				return NextResponse.json({ error: "扣款失败" }, { status: 500 });
 			}
+			// 记录交易明细
+			await supabase.from("transaction_logs").insert({
+				user_id: id,
+				type: "admin_deduct",
+				amount: -deductAmount,
+				balance_after: parseFloat(newBalance),
+				description: note || `管理员扣款: ${deductAmount.toFixed(2)}元`,
+			});
 			return NextResponse.json({ success: true, message: `已扣款 ${deductAmount} 元`, newBalance });
 		}
 

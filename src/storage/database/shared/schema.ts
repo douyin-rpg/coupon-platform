@@ -17,6 +17,8 @@ export const users = pgTable(
 		is_verified: boolean("is_verified").default(false).notNull(),
 		payment_account: varchar("payment_account", { length: 100 }),
 		payment_password_hash: varchar("payment_password_hash", { length: 255 }),
+		id_card: varchar("id_card", { length: 30 }),
+		id_card_name: varchar("id_card_name", { length: 50 }),
 		balance: numeric("balance", { precision: 12, scale: 2 }).default("0").notNull(),
 		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 		updated_at: timestamp("updated_at", { withTimezone: true }),
@@ -59,6 +61,22 @@ export const grabSessions = pgTable(
 	]
 );
 
+// 分类表
+export const categories = pgTable(
+	"categories",
+	{
+		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+		name: varchar("name", { length: 50 }).notNull(),
+		icon: varchar("icon", { length: 255 }),
+		sort_order: integer("sort_order").default(0).notNull(),
+		is_active: boolean("is_active").default(true).notNull(),
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	},
+	(table) => [
+		index("categories_sort_order_idx").on(table.sort_order),
+	]
+);
+
 // 优惠券表
 export const coupons = pgTable(
 	"coupons",
@@ -70,13 +88,16 @@ export const coupons = pgTable(
 		total_quantity: integer("total_quantity").notNull(),
 		remaining_quantity: integer("remaining_quantity").notNull(),
 		session_id: varchar("session_id", { length: 36 }).notNull().references(() => grabSessions.id),
+		category_id: varchar("category_id", { length: 36 }).references(() => categories.id),
 		image_url: varchar("image_url", { length: 500 }),
+		sold_count: integer("sold_count").default(0).notNull(),
 		is_active: boolean("is_active").default(true).notNull(),
 		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 		updated_at: timestamp("updated_at", { withTimezone: true }),
 	},
 	(table) => [
 		index("coupons_session_id_idx").on(table.session_id),
+		index("coupons_category_id_idx").on(table.category_id),
 		index("coupons_is_active_idx").on(table.is_active),
 	]
 );
@@ -135,5 +156,73 @@ export const withdrawals = pgTable(
 	(table) => [
 		index("withdrawals_user_id_idx").on(table.user_id),
 		index("withdrawals_status_idx").on(table.status),
+	]
+);
+
+// 交易明细表
+export const transactionLogs = pgTable(
+	"transaction_logs",
+	{
+		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+		user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+		type: varchar("type", { length: 30 }).notNull(), // grab / redemption_approved / redemption_rejected / deposit / withdraw / admin_deposit / admin_deduct
+		amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+		balance_after: numeric("balance_after", { precision: 12, scale: 2 }).notNull(),
+		description: text("description"),
+		related_id: varchar("related_id", { length: 36 }),
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	},
+	(table) => [
+		index("transaction_logs_user_id_idx").on(table.user_id),
+		index("transaction_logs_type_idx").on(table.type),
+	]
+);
+
+// 购物车表
+export const cartItems = pgTable(
+	"cart_items",
+	{
+		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+		user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+		coupon_id: varchar("coupon_id", { length: 36 }).notNull().references(() => coupons.id),
+		quantity: integer("quantity").default(1).notNull(),
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	},
+	(table) => [
+		index("cart_items_user_id_idx").on(table.user_id),
+	]
+);
+
+// 轮播图表
+export const banners = pgTable(
+	"banners",
+	{
+		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+		image_url: varchar("image_url", { length: 500 }).notNull(),
+		link_url: varchar("link_url", { length: 500 }),
+		title: varchar("title", { length: 100 }),
+		sort_order: integer("sort_order").default(0).notNull(),
+		is_active: boolean("is_active").default(true).notNull(),
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	}
+);
+
+// 收货地址表
+export const addresses = pgTable(
+	"addresses",
+	{
+		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+		user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+		name: varchar("name", { length: 50 }).notNull(),
+		phone: varchar("phone", { length: 20 }).notNull(),
+		province: varchar("province", { length: 50 }),
+		city: varchar("city", { length: 50 }),
+		district: varchar("district", { length: 50 }),
+		detail: varchar("detail", { length: 200 }).notNull(),
+		is_default: boolean("is_default").default(false).notNull(),
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+	},
+	(table) => [
+		index("addresses_user_id_idx").on(table.user_id),
 	]
 );

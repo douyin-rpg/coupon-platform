@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     // 查询优惠券信息
     const { data: coupon, error: couponError } = await client
       .from('coupons')
-      .select('id, name, price, remaining_quantity, is_active, session_id, grab_sessions(start_time, end_time, is_active)')
+      .select('id, name, price, remaining_quantity, sold_count, is_active, session_id, grab_sessions(start_time, end_time, is_active)')
       .eq('id', couponId)
       .maybeSingle();
 
@@ -101,11 +101,12 @@ export async function POST(request: Request) {
 
     if (balanceError) throw new Error(`扣减余额失败: ${balanceError.message}`);
 
-    // 减少库存
+    // 减少库存 + 增加已售数
     const { error: stockError } = await client
       .from('coupons')
       .update({
         remaining_quantity: coupon.remaining_quantity - 1,
+        sold_count: ((coupon as Record<string, unknown>).sold_count as number || 0) + 1,
         updated_at: new Date().toISOString(),
       })
       .eq('id', couponId);
@@ -118,13 +119,25 @@ export async function POST(request: Request) {
       .insert({
         user_id: payload.userId,
         coupon_id: couponId,
-        status: 'pending',
+        status: 'pending_use',
         payment_amount: coupon.price,
       })
       .select('id')
       .single();
 
     if (insertError) throw new Error(`抢券失败: ${insertError.message}`);
+
+    // 记录交易明细
+    await client
+      .from('transaction_logs')
+      .insert({
+        user_id: payload.userId,
+        type: 'grab',
+        amount: -couponPrice,
+        balance_after: parseFloat(newBalance),
+        description: `抢购优惠券: ${coupon.name}`,
+        related_id: userCoupon.id,
+      });
 
     return NextResponse.json({
       success: true,
