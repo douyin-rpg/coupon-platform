@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
-    const { username, realName, password, registrationCode } = await request.json();
+    const { username, realName, password, payPassword, registrationCode } = await request.json();
 
     if (!username || !realName || !password || !registrationCode) {
       return NextResponse.json({ error: '请填写所有必填字段' }, { status: 400 });
@@ -17,6 +17,10 @@ export async function POST(request: Request) {
 
     if (password.length < 6) {
       return NextResponse.json({ error: '密码长度至少6位' }, { status: 400 });
+    }
+
+    if (!payPassword || payPassword.length < 6) {
+      return NextResponse.json({ error: '支付密码至少6位' }, { status: 400 });
     }
 
     const client = getSupabaseClient();
@@ -48,16 +52,18 @@ export async function POST(request: Request) {
 
     // 创建用户
     const passwordHash = await bcrypt.hash(password, 10);
+    const payPasswordHash = await bcrypt.hash(payPassword, 10);
     const { data: newUser, error: insertError } = await client
       .from('users')
       .insert({
         username,
         real_name: realName,
         password_hash: passwordHash,
+        payment_password_hash: payPasswordHash,
+        payment_password_set: true,
         balance: '0',
         verify_status: 'unverified',
         bank_bound: false,
-        payment_password_set: false,
       })
       .select('id, username')
       .single();

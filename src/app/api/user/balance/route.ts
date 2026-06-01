@@ -12,7 +12,7 @@ export async function GET() {
     const client = getSupabaseClient();
     const { data: user, error } = await client
       .from('users')
-      .select('balance, is_verified')
+      .select('balance, verify_status')
       .eq('id', payload.userId)
       .maybeSingle();
 
@@ -23,7 +23,7 @@ export async function GET() {
 
     return NextResponse.json({
       balance: user.balance,
-      isVerified: user.is_verified,
+      isVerified: user.verify_status === 'verified',
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : '查询余额失败';

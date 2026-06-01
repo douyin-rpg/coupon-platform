@@ -24,10 +24,10 @@ export default function BankPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          accountName, 
-          cardNumber, 
-          bankName, 
-          paymentPassword: payPassword 
+          bank_account_name: accountName, 
+          bank_card_number: cardNumber, 
+          bank_name: bankName, 
+          payment_password: payPassword 
         }),
       });
       const data = await res.json();

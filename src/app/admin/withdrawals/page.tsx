@@ -11,7 +11,9 @@ interface Withdrawal {
   id: string;
   user_id: string;
   amount: string;
-  payment_account: string;
+  bank_name: string | null;
+  bank_card_number: string | null;
+  bank_account_name: string | null;
   status: string;
   admin_note: string | null;
   created_at: string;
@@ -88,6 +90,7 @@ export default function AdminWithdrawalsPage() {
           <Link href="/admin/sessions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">场次管理</Link>
           <Link href="/admin/coupons" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">优惠券管理</Link>
           <Link href="/admin/codes" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">注册码管理</Link>
+          <Link href="/admin/verify" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">实名审核</Link>
           <Link href="/admin/users" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">用户管理</Link>
           <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">回兑审核</Link>
           <Link href="/admin/withdrawals" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">
@@ -136,7 +139,7 @@ export default function AdminWithdrawalsPage() {
                   <tr key={w.id} className="border-b border-gray-50 hover:bg-gray-50 transition">
                     <td className="px-4 py-3 text-sm">{userInfo?.real_name || '-'}<span className="text-gray-400 ml-1">({userInfo?.username || '-'})</span></td>
                     <td className="px-4 py-3 text-sm font-medium tabular-nums text-amber-600">¥{parseFloat(w.amount).toFixed(2)}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{w.payment_account}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500">{w.bank_name} 尾号{w.bank_card_number?.slice(-4) || '-'}</td>
                     <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full ${st.color}`}>{st.label}</span></td>
                     <td className="px-4 py-3 text-xs text-gray-400">{new Date(w.created_at).toLocaleString()}</td>
                     <td className="px-4 py-3 text-xs text-gray-400">{w.admin_note || '-'}</td>
@@ -179,7 +182,7 @@ export default function AdminWithdrawalsPage() {
                 <span>
                   用户 {(selectedWithdrawal.users as unknown as { real_name: string })?.real_name} 申请提现
                   <span className="font-bold text-amber-600"> ¥{parseFloat(selectedWithdrawal.amount).toFixed(2)}</span>
-                  至 {selectedWithdrawal.payment_account}
+                  至 {selectedWithdrawal.bank_name} 尾号{selectedWithdrawal.bank_card_number?.slice(-4) || "-"}
                 </span>
               )}
             </DialogDescription>

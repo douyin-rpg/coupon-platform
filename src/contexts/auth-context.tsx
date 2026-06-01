@@ -13,6 +13,11 @@ interface User {
   bankCardNumber: string | null;
   bankName: string | null;
   paymentPasswordSet: boolean;
+  idCardName: string | null;
+  idCard: string | null;
+  idCardFront: string | null;
+  idCardBack: string | null;
+  verifyRejectedReason: string | null;
 }
 
 interface AuthContextType {
@@ -32,17 +37,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = useCallback(async (): Promise<User | null> => {
     try {
       const res = await fetch('/api/auth/me', {
-        credentials: 'same-origin',
+        credentials: 'include',
         cache: 'no-store',
       });
       if (res.ok) {
         const data = await res.json();
-        setUser(data);
-        return data;
-      } else {
-        setUser(null);
-        return null;
+        if (data.id) {
+          setUser(data);
+          return data;
+        }
       }
+      setUser(null);
+      return null;
     } catch {
       setUser(null);
       return null;
@@ -61,18 +67,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
-        credentials: 'same-origin',
+        credentials: 'include',
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        // Wait for browser cookie store to update, then retry
-        await new Promise(resolve => setTimeout(resolve, 150));
+        // Wait a brief moment for cookie to be set, then refresh user
+        await new Promise(resolve => setTimeout(resolve, 100));
         const refreshedUser = await refreshUser();
-        if (!refreshedUser) {
-          // Retry once more after a longer delay
-          await new Promise(resolve => setTimeout(resolve, 500));
-          await refreshUser();
+        if (refreshedUser) {
+          return { success: true };
         }
+        // If refresh failed, still return success - the page reload will fix it
         return { success: true };
       }
       return { success: false, error: data.error || '登录失败' };
@@ -85,10 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'same-origin',
+        credentials: 'include',
       });
     } finally {
       setUser(null);
+      window.location.href = '/';
     }
   };
 

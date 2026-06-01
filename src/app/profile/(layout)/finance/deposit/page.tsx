@@ -6,7 +6,9 @@ import { useAuth } from '@/contexts/auth-context';
 interface WithdrawalRecord {
   id: string;
   amount: number;
-  payment_account: string;
+  bank_name: string | null;
+  bank_card_number: string | null;
+  bank_account_name: string | null;
   status: string;
   admin_note: string | null;
   created_at: string;
@@ -43,7 +45,7 @@ export default function WithdrawRecordsPage() {
                 </span>
                 <span className="text-[#FE2C55] font-bold">-¥{Number(r.amount).toFixed(2)}</span>
               </div>
-              <p className="text-xs text-gray-400 mt-2">收款账号：{r.payment_account}</p>
+              <p className="text-xs text-gray-400 mt-2">收款账号：{r.bank_name} 尾号{r.bank_card_number?.slice(-4) || '未知'}</p>
               <p className="text-xs text-gray-400">申请时间：{new Date(r.created_at).toLocaleString()}</p>
               {r.admin_note && <p className="text-xs text-orange-500 mt-1">备注：{r.admin_note}</p>}
             </div>

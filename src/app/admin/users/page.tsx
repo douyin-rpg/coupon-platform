@@ -11,8 +11,11 @@ interface User {
   id: string;
   username: string;
   real_name: string;
-  is_verified: boolean;
-  payment_account: string | null;
+  verify_status: string;
+  bank_bound: boolean;
+  bank_account_name: string | null;
+  bank_card_number: string | null;
+  bank_name: string | null;
   balance: string;
   created_at: string;
 }
@@ -85,6 +88,7 @@ export default function AdminUsersPage() {
           <Link href="/admin/sessions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">场次管理</Link>
           <Link href="/admin/coupons" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">优惠券管理</Link>
           <Link href="/admin/codes" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">注册码管理</Link>
+          <Link href="/admin/verify" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">实名审核</Link>
           <Link href="/admin/users" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">用户管理</Link>
           <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">回兑审核</Link>
           <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">提现审核</Link>
@@ -127,13 +131,19 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3 text-sm font-medium">{u.username}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{u.real_name}</td>
                   <td className="px-4 py-3">
-                    {u.is_verified ? (
+                    {u.verify_status === 'verified' ? (
                       <span className="text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full">已认证</span>
+                    ) : u.verify_status === 'pending' ? (
+                      <span className="text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full">审核中</span>
+                    ) : u.verify_status === 'rejected' ? (
+                      <span className="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">已拒绝</span>
                     ) : (
                       <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">未认证</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">{u.payment_account || '-'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-500">
+                    {u.bank_bound ? `${u.bank_name || ''} 尾号${u.bank_card_number?.slice(-4) || ''}` : '-'}
+                  </td>
                   <td className="px-4 py-3 text-sm font-medium tabular-nums">¥{parseFloat(u.balance).toFixed(2)}</td>
                   <td className="px-4 py-3 text-xs text-gray-400">{new Date(u.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-3 text-right">

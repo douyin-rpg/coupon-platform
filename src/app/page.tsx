@@ -11,12 +11,11 @@ interface Coupon {
   total_quantity: number; remaining_quantity: number; sold_count: number;
   image_url: string | null; is_active: boolean; session_id: string; category_id: string | null;
   description: string | null;
-  grab_sessions?: { start_time: string; end_time: string; is_active: boolean }[];
 }
 interface Banner { id: string; image_url: string; link_url: string | null; title: string | null; }
 
 export default function HomePage() {
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -29,12 +28,22 @@ export default function HomePage() {
   const [grabLoading, setGrabLoading] = useState(false);
   const [grabError, setGrabError] = useState('');
   const [now, setNow] = useState(Date.now());
+  const [bannerIndex, setBannerIndex] = useState(0);
 
   // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Banner auto-slide
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const timer = setInterval(() => {
+      setBannerIndex(prev => (prev + 1) % banners.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
 
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -106,15 +115,15 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5]">
-      {/* Top bar */}
-      <div className="bg-[#333] text-gray-300 text-xs">
+      {/* Top bar - dark strip */}
+      <div className="bg-[#222] text-gray-300 text-xs hidden md:block">
         <div className="max-w-[1200px] mx-auto px-4 h-8 flex items-center justify-between">
-          <span>欢迎来到抖音电商！</span>
-          <div className="flex items-center gap-3">
+          <span>欢迎来到抖音电商优惠券抢购平台！</span>
+          <div className="flex items-center gap-4">
             {authLoading ? null : user ? (
               <>
                 <span>您好：<Link href="/profile" className="text-[#FE2C55] font-medium">{user.username}</Link></span>
-                <button onClick={logout} className="text-gray-400 hover:text-white">[退出]</button>
+                <button onClick={async () => { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); window.location.href = '/'; }} className="text-gray-400 hover:text-white">退出</button>
                 <Link href="/profile/order" className="hover:text-white">我的订单</Link>
               </>
             ) : (
@@ -127,19 +136,22 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Header */}
+      {/* Header with logo + search + user info */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-[1200px] mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FE2C55] to-[#FF6B35] flex items-center justify-center">
-                <span className="text-white font-bold text-lg">惠</span>
-              </div>
-              <span className="text-xl font-bold text-gray-800 hidden sm:block">惠抢券</span>
-            </Link>
-          </div>
+        <div className="max-w-[1200px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FE2C55] to-[#FF6B35] flex items-center justify-center">
+              <span className="text-white font-bold text-lg">惠</span>
+            </div>
+            <div className="hidden sm:block">
+              <span className="text-xl font-bold text-gray-800">惠抢券</span>
+              <p className="text-[10px] text-gray-400 -mt-0.5">抖音电商优惠券</p>
+            </div>
+          </Link>
+
           {/* Search */}
-          <div className="flex-1 max-w-lg mx-4">
+          <div className="flex-1 max-w-xl">
             <div className="flex">
               <input
                 type="text" placeholder="搜索优惠券..." value={searchKeyword}
@@ -149,54 +161,79 @@ export default function HomePage() {
               <button className="px-6 py-2 bg-[#FE2C55] text-white rounded-r-lg text-sm font-medium hover:bg-[#e0254a]">搜索</button>
             </div>
           </div>
-          {/* Cart */}
-          <Link href="/cart" className="flex items-center gap-1 text-gray-600 hover:text-[#FE2C55] text-sm">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" /></svg>
-            <span>购物车</span>
-          </Link>
+
+          {/* User info (mobile also) */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {authLoading ? null : user ? (
+              <Link href="/profile" className="flex items-center gap-2 text-sm text-gray-700 hover:text-[#FE2C55]">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FE2C55] to-[#FF6B35] flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">{user.username.charAt(0).toUpperCase()}</span>
+                </div>
+                <span className="hidden md:inline">{user.username}</span>
+              </Link>
+            ) : (
+              <Link href="/login" className="px-4 py-1.5 bg-[#FE2C55] text-white text-sm rounded-lg hover:bg-[#e0254a]">登录</Link>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Navigation Bar */}
+      {/* Category Navigation Bar */}
       <div className="bg-[#FE2C55]">
         <div className="max-w-[1200px] mx-auto px-4">
-          <div className="flex items-center h-10 text-sm text-white overflow-x-auto">
-            <Link href="/" className="px-4 py-2 bg-[#e0254a] rounded-t-lg font-medium whitespace-nowrap">首页</Link>
+          <div className="flex items-center h-10 text-sm text-white overflow-x-auto gap-1">
+            <button onClick={() => setActiveCategory('all')}
+              className={`px-4 py-2 whitespace-nowrap rounded-t-lg transition-colors ${activeCategory === 'all' ? 'bg-[#e0254a] font-medium' : 'hover:bg-[#e0254a]'}`}>
+              全部
+            </button>
             {categories.map((cat) => (
               <button key={cat.id} onClick={() => setActiveCategory(activeCategory === cat.id ? 'all' : cat.id)}
-                className={`px-4 py-2 whitespace-nowrap hover:bg-[#e0254a] rounded-t-lg transition-colors ${activeCategory === cat.id ? 'bg-[#e0254a] font-medium' : ''}`}>
+                className={`px-4 py-2 whitespace-nowrap rounded-t-lg transition-colors ${activeCategory === cat.id ? 'bg-[#e0254a] font-medium' : 'hover:bg-[#e0254a]'}`}>
                 {cat.icon} {cat.name}
               </button>
             ))}
-            <Link href="/profile/back" className="px-4 py-2 whitespace-nowrap hover:bg-[#e0254a] rounded-t-lg">快捷回兑</Link>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-[1200px] mx-auto px-4 py-4">
-        {/* Banners */}
+        {/* Banner Carousel */}
         {banners.length > 0 && (
-          <div className="mb-4 rounded-xl overflow-hidden h-[300px] bg-gray-200">
-            <div className="relative w-full h-full">
-              {banners.filter(b => b.image_url).slice(0, 1).map((b) => (
-                <img key={b.id} src={b.image_url} alt={b.title || ''} className="w-full h-full object-cover" />
-              ))}
-            </div>
+          <div className="mb-4 rounded-xl overflow-hidden h-[140px] md:h-[300px] bg-gray-200 relative">
+            <img
+              src={banners[bannerIndex]?.image_url}
+              alt={banners[bannerIndex]?.title || ''}
+              className="w-full h-full object-cover transition-opacity duration-500"
+            />
+            {banners.length > 1 && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {banners.map((_, i) => (
+                  <button key={i} onClick={() => setBannerIndex(i)}
+                    className={`w-2 h-2 rounded-full transition-all ${i === bannerIndex ? 'bg-white w-4' : 'bg-white/50'}`} />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {/* Default Banner if no banners */}
         {banners.length === 0 && (
-          <div className="mb-4 rounded-xl overflow-hidden h-[200px] md:h-[300px] bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] flex items-center justify-center">
+          <div className="mb-4 rounded-xl overflow-hidden h-[140px] md:h-[260px] bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] flex items-center justify-center relative">
             <div className="text-center text-white">
               <h2 className="text-3xl md:text-5xl font-bold mb-2">限时抢购</h2>
-              <p className="text-lg md:text-xl opacity-90">抢券即可回兑赚5%奖励</p>
+              <p className="text-base md:text-xl opacity-90">抢券即可回兑赚5%奖励</p>
+            </div>
+            <div className="absolute right-4 top-4 md:right-8 md:top-8">
+              <div className="text-white text-right">
+                <p className="text-xs opacity-70">当前余额</p>
+                <p className="text-xl md:text-2xl font-bold">{user?.verifyStatus === 'verified' ? `¥${Number(user.balance || 0).toFixed(2)}` : '登录查看'}</p>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Session Tabs */}
+        {/* Session Tabs with Countdown */}
         {sessions.length > 0 && (
           <div className="mb-4 bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="flex items-center border-b border-gray-100 overflow-x-auto">
@@ -208,11 +245,18 @@ export default function HomePage() {
                 const ss = getSessionStatus(s);
                 return (
                   <button key={s.id} onClick={() => setActiveSession(s.id)}
-                    className={`px-5 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${activeSession === s.id ? 'border-[#FE2C55] text-[#FE2C55]' : 'border-transparent text-gray-600 hover:text-[#FE2C55]'}`}>
+                    className={`px-5 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-2 ${activeSession === s.id ? 'border-[#FE2C55] text-[#FE2C55]' : 'border-transparent text-gray-600 hover:text-[#FE2C55]'}`}>
                     <span>{s.name}</span>
-                    <span className="ml-2 text-xs">{s.start_time}-{s.end_time}</span>
-                    {ss.status === 'active' && <span className="ml-1 text-xs text-green-500">抢购中</span>}
-                    {ss.status === 'upcoming' && <span className="ml-1 text-xs text-orange-500">即将开始</span>}
+                    <span className="text-xs text-gray-400">{s.start_time}-{s.end_time}</span>
+                    {ss.status === 'active' && (
+                      <span className="text-xs bg-[#FE2C55] text-white px-1.5 py-0.5 rounded animate-pulse">抢购中</span>
+                    )}
+                    {ss.status === 'upcoming' && (
+                      <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">即将开始</span>
+                    )}
+                    {ss.status === 'ended' && (
+                      <span className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">已结束</span>
+                    )}
                   </button>
                 );
               })}
@@ -224,34 +268,51 @@ export default function HomePage() {
               const ss = getSessionStatus(s);
               if (ss.status === 'active') {
                 return (
-                  <div className="px-5 py-2 bg-red-50 flex items-center gap-2 text-sm">
-                    <span className="text-gray-600">距离结束：</span>
-                    <span className="text-[#FE2C55] font-mono font-bold text-lg">{formatCountdown(ss.remaining)}</span>
+                  <div className="px-5 py-3 bg-gradient-to-r from-red-50 to-orange-50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">距离本场结束：</span>
+                      <div className="flex gap-1">
+                        {formatCountdown(ss.remaining).split(':').map((part, i) => (
+                          <span key={i} className="inline-flex items-center">
+                            <span className="bg-[#FE2C55] text-white font-mono font-bold text-lg px-2 py-1 rounded">{part}</span>
+                            {i < 2 && <span className="text-[#FE2C55] font-bold mx-0.5">:</span>}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-400">手慢无！</span>
                   </div>
                 );
               }
               if (ss.status === 'upcoming') {
                 return (
-                  <div className="px-5 py-2 bg-orange-50 flex items-center gap-2 text-sm">
-                    <span className="text-gray-600">距离开始：</span>
-                    <span className="text-orange-500 font-mono font-bold text-lg">{formatCountdown(ss.remaining)}</span>
+                  <div className="px-5 py-3 bg-orange-50 flex items-center gap-2">
+                    <span className="text-sm text-gray-600">距离开始：</span>
+                    <div className="flex gap-1">
+                      {formatCountdown(ss.remaining).split(':').map((part, i) => (
+                        <span key={i} className="inline-flex items-center">
+                          <span className="bg-orange-500 text-white font-mono font-bold text-lg px-2 py-1 rounded">{part}</span>
+                          {i < 2 && <span className="text-orange-500 font-bold mx-0.5">:</span>}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 );
               }
-              return <div className="px-5 py-2 bg-gray-50 text-sm text-gray-400">本场次已结束</div>;
+              return <div className="px-5 py-3 bg-gray-50 text-sm text-gray-400">本场次已结束</div>;
             })()}
           </div>
         )}
 
         {/* Coupon Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
           {filteredCoupons.map((coupon) => {
             const session = sessions.find((s) => s.id === coupon.session_id);
             const ss: SessionStatus = session ? getSessionStatus(session) : { status: 'ended', label: '未排期', remaining: 0 };
             const canGrab = user?.verifyStatus === "verified" && ss.status === 'active' && coupon.remaining_quantity > 0;
             return (
               <Link key={coupon.id} href={`/coupon/${coupon.id}`}
-                className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
+                className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all group">
                 <div className="relative aspect-square bg-gray-100">
                   {coupon.image_url ? (
                     <img src={coupon.image_url} alt={coupon.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -260,43 +321,54 @@ export default function HomePage() {
                       <span className="text-4xl">🎫</span>
                     </div>
                   )}
-                  {/* Status overlay */}
-                  {ss.status === 'active' && (
-                    <div className="absolute top-2 left-2 bg-[#FE2C55] text-white text-xs px-2 py-0.5 rounded-full font-medium">抢购中</div>
+                  {/* Status badge */}
+                  {ss.status === 'active' && coupon.remaining_quantity > 0 && (
+                    <div className="absolute top-1.5 left-1.5 bg-[#FE2C55] text-white text-[10px] px-1.5 py-0.5 rounded font-medium animate-pulse">抢购中</div>
                   )}
                   {ss.status === 'upcoming' && (
-                    <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">即将开始</div>
+                    <div className="absolute top-1.5 left-1.5 bg-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">即将开始</div>
                   )}
                   {ss.status === 'ended' && (
-                    <div className="absolute top-2 left-2 bg-gray-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">已结束</div>
+                    <div className="absolute top-1.5 left-1.5 bg-gray-500 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">已结束</div>
                   )}
-                  {/* Countdown on active */}
-                  {ss.status === 'active' && session && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 py-1">
-                      <span className="text-white text-xs font-mono">{formatCountdown(ss.remaining)}</span>
-                    </div>
-                  )}
-                  {/* Sold out */}
+                  {/* Sold out overlay */}
                   {coupon.remaining_quantity <= 0 && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">已售罄</span>
+                      <span className="text-white font-bold text-base">已售罄</span>
                     </div>
                   )}
                 </div>
                 <div className="p-2 md:p-3">
-                  <p className="text-sm text-gray-800 font-medium truncate">{coupon.name}</p>
-                  {coupon.original_price > 0 && coupon.original_price > coupon.price && (
-                    <p className="text-xs text-gray-400 line-through mt-0.5">原价：¥{coupon.original_price}</p>
+                  <p className="text-xs md:text-sm text-gray-800 font-medium truncate">{coupon.name}</p>
+                  {coupon.description && (
+                    <p className="text-[10px] md:text-xs text-gray-400 truncate mt-0.5">{coupon.description}</p>
                   )}
-                  <div className="flex items-end justify-between mt-1">
-                    <span className="text-[#FE2C55] font-bold text-lg">¥{coupon.price}</span>
-                    <span className="text-xs text-gray-400">已售{coupon.sold_count || 0}</span>
+                  <div className="flex items-end justify-between mt-1.5">
+                    <div>
+                      <span className="text-[#FE2C55] font-bold text-base md:text-lg">¥{coupon.price}</span>
+                      {coupon.original_price > 0 && coupon.original_price > coupon.price && (
+                        <span className="text-[10px] text-gray-400 line-through ml-1">¥{coupon.original_price}</span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-gray-400">已售{coupon.sold_count || 0}件</span>
                   </div>
                   {canGrab && (
                     <button onClick={(e) => { e.preventDefault(); setGrabModal({ open: true, coupon }); }}
-                      className="mt-2 w-full py-1.5 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white text-sm font-medium rounded-lg hover:shadow-md active:scale-[0.97] transition-all">
+                      className="mt-2 w-full py-1.5 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white text-xs md:text-sm font-medium rounded-lg hover:shadow-md active:scale-[0.97] transition-all">
                       立即抢购
                     </button>
+                  )}
+                  {!user && ss.status === 'active' && coupon.remaining_quantity > 0 && (
+                    <Link href="/login" onClick={(e) => e.stopPropagation()}
+                      className="mt-2 block text-center py-1.5 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white text-xs md:text-sm font-medium rounded-lg">
+                      登录抢购
+                    </Link>
+                  )}
+                  {user && user.verifyStatus !== "verified" && ss.status === 'active' && coupon.remaining_quantity > 0 && (
+                    <Link href="/profile/settings/verify" onClick={(e) => e.stopPropagation()}
+                      className="mt-2 block text-center py-1.5 border border-[#FE2C55] text-[#FE2C55] text-xs rounded-lg">
+                      认证后抢购
+                    </Link>
                   )}
                 </div>
               </Link>
@@ -312,19 +384,8 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Side cart (desktop) */}
-      <div className="hidden md:block fixed right-4 top-1/2 -translate-y-1/2 z-40">
-        <Link href="/cart" className="block bg-white shadow-lg rounded-lg p-3 text-center hover:shadow-xl transition-shadow">
-          <svg className="w-6 h-6 mx-auto text-[#FE2C55]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" /></svg>
-          <span className="text-xs text-gray-600 mt-1 block">购物车</span>
-        </Link>
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="block bg-white shadow-lg rounded-lg p-3 text-center mt-2 hover:shadow-xl">
-          <svg className="w-6 h-6 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
-        </button>
-      </div>
-
       {/* Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-200 z-40">
         <div className="flex items-center justify-around h-12">
           <Link href="/" className="flex flex-col items-center text-[#FE2C55]">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></svg>
@@ -346,19 +407,27 @@ export default function HomePage() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => { setGrabModal({ open: false, coupon: null }); setPayPassword(''); setGrabError(''); }}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-gray-800 mb-4">确认抢购</h3>
-            <div className="bg-gray-50 rounded-lg p-3 mb-4">
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 mb-4">
               <p className="font-medium text-gray-800">{grabModal.coupon.name}</p>
-              <p className="text-[#FE2C55] font-bold text-xl mt-1">¥{grabModal.coupon.price}</p>
-              {user && <p className="text-sm text-gray-500 mt-1">当前余额：¥{user.balance?.toFixed(2) || '0.00'}</p>}
+              <p className="text-[#FE2C55] font-bold text-2xl mt-1">¥{grabModal.coupon.price}</p>
+              {grabModal.coupon.description && (
+                <p className="text-xs text-gray-500 mt-1">{grabModal.coupon.description}</p>
+              )}
+              {user && (
+                <p className="text-sm text-gray-500 mt-2">当前余额：<span className="font-bold text-[#FE2C55]">¥{Number(user.balance || 0).toFixed(2)}</span></p>
+              )}
             </div>
-            {grabError && <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-2 rounded-lg mb-3">{grabError}</div>}
-            <input type="password" placeholder="请输入支付密码" value={payPassword} onChange={(e) => setPayPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FE2C55] text-sm mb-4" />
+            {grabError && <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-2.5 rounded-xl mb-3">{grabError}</div>}
+            <div className="mb-4">
+              <label className="block text-sm text-gray-600 mb-1">支付密码</label>
+              <input type="password" placeholder="请输入支付密码" value={payPassword} onChange={(e) => setPayPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FE2C55] text-sm" />
+            </div>
             <div className="flex gap-3">
               <button onClick={() => { setGrabModal({ open: false, coupon: null }); setPayPassword(''); setGrabError(''); }}
-                className="flex-1 py-2.5 border border-gray-300 rounded-lg text-gray-600 text-sm">取消</button>
+                className="flex-1 py-2.5 border border-gray-300 rounded-xl text-gray-600 text-sm">取消</button>
               <button onClick={handleGrab} disabled={grabLoading}
-                className="flex-1 py-2.5 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-lg text-sm font-medium disabled:opacity-50">
+                className="flex-1 py-2.5 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-xl text-sm font-bold disabled:opacity-50 active:scale-[0.97] transition-all">
                 {grabLoading ? '抢购中...' : '确认抢购'}
               </button>
             </div>

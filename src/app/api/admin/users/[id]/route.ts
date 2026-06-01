@@ -188,7 +188,7 @@ export async function PATCH(
 			if (bank_account_name !== undefined) updateData.bank_account_name = bank_account_name;
 			if (bank_card_number !== undefined) {
 				updateData.bank_card_number = bank_card_number;
-				updateData.payment_account = `${bank_name || user.bank_name || ""} 尾号${bank_card_number.slice(-4)}`;
+				
 			}
 			if (bank_name !== undefined) updateData.bank_name = bank_name;
 			if (bank_account_name || bank_card_number || bank_name) {
@@ -213,7 +213,6 @@ export async function PATCH(
 					bank_account_name: null,
 					bank_card_number: null,
 					bank_name: null,
-					payment_account: null,
 				})
 				.eq("id", id);
 			if (error) {

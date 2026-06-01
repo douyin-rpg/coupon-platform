@@ -12,11 +12,15 @@ export async function GET(request: NextRequest) {
   const supabase = getSupabaseClient();
   const { data: user, error } = await supabase
     .from("users")
-    .select("id, username, real_name, balance, verify_status, bank_bound, bank_account_name, bank_card_number, bank_name, payment_account, payment_password_hash")
+    .select("id, username, real_name, balance, verify_status, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_hash, id_card, id_card_name, id_card_front, id_card_back, verify_rejected_reason")
     .eq("id", userId)
     .single();
 
-  if (error || !user) {
+  if (error) {
+    console.error("[/api/auth/me] Supabase query error:", error.message);
+    return NextResponse.json({ error: "查询失败: " + error.message }, { status: 500 });
+  }
+  if (!user) {
     return NextResponse.json({ error: "用户不存在" }, { status: 404 });
   }
 
@@ -32,8 +36,12 @@ export async function GET(request: NextRequest) {
       ? user.bank_card_number.slice(0, 4) + " **** **** " + user.bank_card_number.slice(-4)
       : null,
     bankName: user.bank_name,
-    paymentAccount: user.payment_account,
     paymentPasswordSet: !!user.payment_password_hash,
+    idCardName: user.id_card_name,
+    idCard: user.id_card ? user.id_card.slice(0, 3) + "***********" + user.id_card.slice(-4) : null,
+    idCardFront: user.id_card_front,
+    idCardBack: user.id_card_back,
+    verifyRejectedReason: user.verify_rejected_reason,
   });
 }
 
