@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     idCardFront: user.id_card_front,
     idCardBack: user.id_card_back,
     verifyRejectedReason: user.verify_rejected_reason,
-    creditScore: user.credit_score || 100,
+    creditScore: user.credit_score ?? 500,
   });
 }
 

@@ -91,6 +91,7 @@ export default function AdminUsersPage() {
           <Link href="/admin/coupons" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">优惠券管理</Link>
           <Link href="/admin/codes" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">注册码管理</Link>
           <Link href="/admin/verify" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">实名审核</Link>
+          <Link href="/admin/articles" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">文章管理</Link>
           <Link href="/admin/users" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">用户管理</Link>
           <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">回兑审核</Link>
           <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">提现审核</Link>
@@ -149,7 +150,7 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="px-4 py-3 text-sm font-medium tabular-nums">¥{parseFloat(u.balance).toFixed(2)}</td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${(u.credit_score ?? 100) >= 80 ? 'bg-green-50 text-green-600' : (u.credit_score ?? 100) >= 60 ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'}`}>{u.credit_score ?? 100}</span>
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${(u.credit_score ?? 500) >= 80 ? 'bg-green-50 text-green-600' : (u.credit_score ?? 500) >= 60 ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'}`}>{u.credit_score ?? 500}</span>
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-400">{new Date(u.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-3 text-right">
@@ -179,7 +180,7 @@ export default function AdminUsersPage() {
                         扣款
                       </button>
                       <button
-                        onClick={() => { setSelectedUser(u); setActionType('update_credit_score'); setNewValue(String(u.credit_score ?? 100)); setActionOpen(true); }}
+                        onClick={() => { setSelectedUser(u); setActionType('update_credit_score'); setNewValue(String(u.credit_score ?? 500)); setActionOpen(true); }}
                         className="text-xs text-purple-600 hover:text-purple-800 px-2 py-1 hover:bg-purple-50 rounded transition"
                       >
                         信用分
