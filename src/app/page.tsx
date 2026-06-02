@@ -190,7 +190,7 @@ export default function HomePage() {
                   限时抢购
                 </h1>
                 <p className="text-white/50 text-sm md:text-base">
-                  抢购官方优惠券，回收即赚5%奖励
+                  
                 </p>
               </div>
               {/* Current session countdown */}
@@ -377,7 +377,6 @@ export default function HomePage() {
                   </h3>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-[#1890FF] font-medium">
-                      回收+5%奖励
                     </span>
                     <span className="text-[10px] text-gray-400">
                       剩{coupon.remaining_quantity}件

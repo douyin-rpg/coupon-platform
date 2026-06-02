@@ -2,19 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/storage/database/supabase-client";
 import { verifyAuth } from "@/lib/auth";
 
-// 中国身份证号码校验
+// 中国身份证号码校验（格式校验）
 function isValidChineseID(id: string): boolean {
+  // 18位：前17位数字，最后一位数字或X/x
   if (!/^\d{17}[\dXx]$/.test(id)) return false;
-
-  const weights = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
-  const checkCodes = ["1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"];
-
-  let sum = 0;
-  for (let i = 0; i < 17; i++) {
-    sum += parseInt(id[i], 10) * weights[i];
-  }
-  const checkCode = checkCodes[sum % 11];
-  return id[17].toUpperCase() === checkCode;
+  return true;
 }
 
 // 提交实名认证
