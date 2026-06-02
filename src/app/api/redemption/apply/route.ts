@@ -48,15 +48,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '券不存在' }, { status: 404 });
     }
 
-    if (userCoupon.status !== 'pending') {
-      return NextResponse.json({ error: '该券当前状态无法申请回兑' }, { status: 400 });
+    // 只有待使用的券才能申请回收
+    if (userCoupon.status !== 'pending_use') {
+      return NextResponse.json({ error: '该券当前状态无法申请回收' }, { status: 400 });
     }
 
-    // 更新券状态为待回兑
+    // 更新券状态为待回收
     const { error: updateError } = await client
       .from('user_coupons')
       .update({
-        status: 'redemption_pending',
+        status: 'pending_redemption',
         updated_at: new Date().toISOString(),
       })
       .eq('id', userCouponId);
@@ -79,14 +80,14 @@ export async function POST(request: Request) {
       .from('admin_notifications')
       .insert({
         type: 'redemption',
-        title: '新回兑申请',
-        content: `用户 ${payload.username} 申请回兑，券ID: ${userCouponId}`,
+        title: '新回收申请',
+        content: `用户 ${payload.username} 申请回收，券ID: ${userCouponId}`,
         is_read: false,
       });
 
-    return NextResponse.json({ success: true, message: '回兑申请已提交' });
+    return NextResponse.json({ success: true, message: '回收申请已提交，等待审核' });
   } catch (err) {
-    const message = err instanceof Error ? err.message : '申请回兑失败';
+    const message = err instanceof Error ? err.message : '申请回收失败';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

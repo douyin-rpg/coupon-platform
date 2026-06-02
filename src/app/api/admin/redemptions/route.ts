@@ -74,11 +74,12 @@ export async function PUT(request: Request) {
 
     if (updateReqError) throw new Error(`更新回兑申请失败: ${updateReqError.message}`);
 
-    // 更新用户券状态为已回兑
+    // 更新用户券状态
+    const couponNewStatus = action === 'approve' ? 'redeemed' : 'redemption_rejected';
     const { error: updateCouponError } = await client
       .from('user_coupons')
       .update({
-        status: 'redeemed',
+        status: couponNewStatus,
         updated_at: new Date().toISOString(),
       })
       .eq('id', redemptionRequest.user_coupon_id);

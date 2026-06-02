@@ -9,8 +9,6 @@ interface Coupon {
   name: string;
   description: string;
   price: number;
-  original_price: number;
-  discount: string;
   remaining_quantity: number;
   sold_count: number;
   image_url: string | null;
@@ -28,7 +26,6 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
   const [paymentPassword, setPaymentPassword] = useState("");
   const [grabbing, setGrabbing] = useState(false);
   const [msg, setMsg] = useState("");
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const loadCoupon = async () => {
@@ -41,7 +38,6 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
     loadCoupon();
   }, [id]);
 
-  // Session time check
   const getSessionStatus = () => {
     if (!coupon?.sessions) return { status: 'ended', canGrab: false };
     const now = new Date();
@@ -85,9 +81,10 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
     ? Math.round((coupon.sold_count / (coupon.remaining_quantity + coupon.sold_count)) * 100) : 0;
   const sessionStatus = getSessionStatus();
   const canGrab = user?.verifyStatus === "verified" && sessionStatus.canGrab && coupon.remaining_quantity > 0;
+  const formatPrice = (price: number) => price.toLocaleString('zh-CN');
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] pb-24">
+    <div className="min-h-screen bg-[#F5F7FA] pb-24">
       {/* Top nav */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -107,10 +104,10 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             {coupon.image_url ? (
               <img src={coupon.image_url} alt={coupon.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-50">
                 <div className="text-center">
                   <div className="text-6xl mb-2">🎫</div>
-                  <div className="text-gray-400">{coupon.discount || "优惠券"}</div>
+                  <div className="text-gray-400">优惠券</div>
                 </div>
               </div>
             )}
@@ -118,17 +115,12 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Price strip */}
-        <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF] p-4 text-white">
+        <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF] p-5 text-white">
           <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold">¥{coupon.price}</span>
-            {coupon.original_price > coupon.price && (
-              <span className="text-sm line-through opacity-70">¥{coupon.original_price}</span>
-            )}
-            {coupon.discount && (
-              <span className="ml-auto bg-white/20 px-2 py-0.5 rounded text-xs font-bold">{coupon.discount}</span>
-            )}
+            <span className="text-sm">面值</span>
+            <span className="text-3xl font-bold">¥{formatPrice(coupon.price)}</span>
           </div>
-          {coupon.description && <p className="text-sm mt-1 opacity-80">{coupon.description}</p>}
+          <p className="text-sm mt-1.5 opacity-80">需支付 ¥{formatPrice(coupon.price)}，回收后返还金额+5%奖励</p>
         </div>
 
         {/* Product name */}
@@ -184,8 +176,8 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 p-4">
         <div className="max-w-5xl mx-auto flex items-center gap-3">
           <div className="flex-1">
-            <span className="text-xs text-gray-400">合计</span>
-            <div className="text-xl font-bold text-[#1890FF]">¥{coupon.price.toFixed(2)}</div>
+            <span className="text-xs text-gray-400">需支付</span>
+            <div className="text-xl font-bold text-[#1890FF]">¥{formatPrice(coupon.price)}</div>
           </div>
           {!user ? (
             <button onClick={() => router.push("/login")}
@@ -211,21 +203,24 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
 
       {/* Payment modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-center mb-4">确认抢购</h3>
-            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 mb-4">
-              <p className="text-sm text-gray-600">{coupon.name}</p>
-              <p className="text-2xl font-bold text-[#1890FF] mt-1">¥{coupon.price.toFixed(2)}</p>
-              {user && <p className="text-xs text-gray-500 mt-1">当前余额：¥{Number(user.balance || 0).toFixed(2)}</p>}
-            </div>
-            <div className="mb-4">
-              <label className="text-sm text-gray-600 mb-1 block">支付密码</label>
-              <input type="password" value={paymentPassword} onChange={(e) => setPaymentPassword(e.target.value)} placeholder="请输入支付密码" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1890FF]" onKeyDown={(e) => e.key === "Enter" && handleGrab()} />
-            </div>
-            <div className="flex gap-3">
-              <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="flex-1 py-3 border border-gray-200 rounded-xl text-gray-600">取消</button>
-              <button onClick={handleGrab} disabled={grabbing || !paymentPassword} className="flex-1 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-xl font-bold disabled:opacity-50">{grabbing ? "支付中..." : "确认支付"}</button>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }}>
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-center mb-4">确认抢购</h3>
+              <div className="bg-blue-50 rounded-xl p-4 mb-4">
+                <p className="text-sm text-gray-600">{coupon.name}</p>
+                <p className="text-2xl font-bold text-[#1890FF] mt-1">¥{formatPrice(coupon.price)}</p>
+                {user && <p className="text-xs text-gray-500 mt-1">当前余额：¥{Number(user.balance || 0).toLocaleString('zh-CN')}</p>}
+              </div>
+              <div className="mb-4">
+                <label className="text-sm text-gray-600 mb-1 block">支付密码</label>
+                <input type="password" value={paymentPassword} onChange={(e) => setPaymentPassword(e.target.value)} placeholder="请输入6位支付密码" maxLength={6} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1890FF] text-center text-lg tracking-[0.5em]" onKeyDown={(e) => e.key === "Enter" && handleGrab()} />
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="flex-1 py-3 border border-gray-200 rounded-xl text-gray-600">取消</button>
+                <button onClick={handleGrab} disabled={grabbing || paymentPassword.length !== 6} className="flex-1 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-xl font-bold disabled:opacity-50">{grabbing ? "支付中..." : "确认支付"}</button>
+              </div>
             </div>
           </div>
         </div>
