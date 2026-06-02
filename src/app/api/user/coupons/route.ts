@@ -18,17 +18,23 @@ export async function GET() {
 
     if (error) throw new Error(`查询我的券失败: ${error.message}`);
 
-    // Map field names for frontend compatibility
-    const mapped = (coupons || []).map((c: Record<string, unknown>) => ({
-      id: c.id,
-      coupon_id: c.coupon_id,
-      status: c.status,
-      payment_amount: c.payment_amount,
-      grabbed_at: c.created_at,
-      verification_code: c.verification_code,
-      paid_at: c.paid_at,
-      coupons: c.coupons,
-    }));
+    // Flatten nested coupons object for frontend compatibility
+    const mapped = (coupons || []).map((c: Record<string, unknown>) => {
+      const couponInfo = (c.coupons || {}) as Record<string, unknown>;
+      return {
+        id: c.id,
+        coupon_id: c.coupon_id,
+        status: c.status,
+        payment_amount: c.payment_amount,
+        created_at: c.created_at,
+        verification_code: c.verification_code,
+        paid_at: c.paid_at,
+        coupon_name: couponInfo.name || '未知券',
+        coupon_price: couponInfo.price || 0,
+        coupon_image: couponInfo.image_url || null,
+        coupon_description: couponInfo.description || '',
+      };
+    });
 
     return NextResponse.json({ coupons: mapped });
   } catch (err) {

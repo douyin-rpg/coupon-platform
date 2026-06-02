@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import BottomNav from "@/components/bottom-nav";
 
 interface Session {
   id: string;
@@ -35,6 +36,8 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
   const [grabbing, setGrabbing] = useState(false);
   const [msg, setMsg] = useState("");
   const [grabSuccess, setGrabSuccess] = useState(false);
+  const [cartAdding, setCartAdding] = useState(false);
+  const [cartAdded, setCartAdded] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -113,6 +116,28 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
     setGrabbing(false);
     setShowPaymentModal(false);
     setPaymentPassword("");
+  };
+
+  const handleAddToCart = async () => {
+    if (!user) { router.push("/login"); return; }
+    setCartAdding(true);
+    try {
+      const res = await fetch("/api/user/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ couponId: id, quantity: 1 }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCartAdded(true);
+        setTimeout(() => setCartAdded(false), 2000);
+      } else {
+        setMsg(data.error || "加入购物车失败");
+      }
+    } catch {
+      setMsg("网络错误");
+    }
+    setCartAdding(false);
   };
 
   if (!coupon) return <div className="min-h-screen flex items-center justify-center text-gray-400">加载中...</div>;
@@ -317,12 +342,25 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
               )}
             </div>
           ) : (
-            <button
-              onClick={() => setShowPaymentModal(true)}
-              className="px-8 py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-xl active:scale-[0.97] transition-all shadow-lg shadow-red-200/50"
-            >
-              立即抢购
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleAddToCart}
+                disabled={cartAdding || cartAdded}
+                className={`px-4 py-3 border-2 rounded-xl font-bold transition-all active:scale-[0.97] ${
+                  cartAdded
+                    ? 'border-green-500 text-green-600 bg-green-50'
+                    : 'border-[#1890FF] text-[#1890FF] hover:bg-[#1890FF]/5'
+                }`}
+              >
+                {cartAdding ? '加入中...' : cartAdded ? '已加入' : '加入购物车'}
+              </button>
+              <button
+                onClick={() => setShowPaymentModal(true)}
+                className="px-8 py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-xl active:scale-[0.97] transition-all shadow-lg shadow-red-200/50"
+              >
+                立即抢购
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -393,6 +431,9 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
       )}
+
+      {/* Bottom Navigation */}
+      <BottomNav active="mall" />
     </div>
   );
 }

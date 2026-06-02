@@ -88,7 +88,6 @@ export default function AdminOrdersPage() {
           <Link href="/admin/verify" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">实名审核</Link>
           <Link href="/admin/articles" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">文章管理</Link>
           <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">回兑审核</Link>
-          <Link href="/admin/orders" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">订单管理</Link>
           <Link href="/admin/orders" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">
             订单管理 <Badge className="ml-1 bg-[#1890FF] text-white text-[10px]">{orders.length}</Badge>
           </Link>
