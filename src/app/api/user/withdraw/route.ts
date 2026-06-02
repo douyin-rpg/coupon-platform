@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 		// 获取用户信息
 		const { data: user, error: userError } = await supabase
 			.from("users")
-			.select("id, balance, payment_password_hash, bank_card_number, bank_name, bank_account_name, bank_bound, verify_status")
+			.select("id, balance, payment_password_hash, bank_card_number, bank_name, bank_account_name, bank_bound, verify_status, funds_frozen")
 			.eq("id", userId)
 			.single();
 
@@ -36,6 +36,10 @@ export async function POST(request: NextRequest) {
 
 		if (user.verify_status !== "verified") {
 			return NextResponse.json({ error: "请先完成实名认证" }, { status: 400 });
+		}
+
+		if (user.funds_frozen) {
+			return NextResponse.json({ error: "您的资金已被冻结，无法提现" }, { status: 400 });
 		}
 
 		if (!user.bank_bound) {

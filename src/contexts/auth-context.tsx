@@ -19,6 +19,8 @@ interface User {
   idCardBack: string | null;
   verifyRejectedReason: string | null;
   creditScore: number;
+  loginFrozen: boolean;
+  fundsFrozen: boolean;
 }
 
 interface AuthContextType {

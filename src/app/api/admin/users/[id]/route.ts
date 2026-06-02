@@ -238,6 +238,32 @@ export async function PATCH(
 				return NextResponse.json({ success: true, message: `信用分已更新为 ${score}` });
 			}
 
+			// 冻结/解冻登录
+			if (action === "toggle_login_freeze") {
+				const { login_frozen } = body;
+				const { error } = await supabase
+					.from("users")
+					.update({ login_frozen: !!login_frozen })
+					.eq("id", id);
+				if (error) {
+					return NextResponse.json({ error: "操作失败" }, { status: 500 });
+				}
+				return NextResponse.json({ success: true, message: login_frozen ? "已冻结登录" : "已解冻登录" });
+			}
+
+			// 冻结/解冻资金
+			if (action === "toggle_funds_freeze") {
+				const { funds_frozen } = body;
+				const { error } = await supabase
+					.from("users")
+					.update({ funds_frozen: !!funds_frozen })
+					.eq("id", id);
+				if (error) {
+					return NextResponse.json({ error: "操作失败" }, { status: 500 });
+				}
+				return NextResponse.json({ success: true, message: funds_frozen ? "已冻结资金" : "已解冻资金" });
+			}
+
 			return NextResponse.json({ error: "未知操作" }, { status: 400 });
 	} catch {
 		return NextResponse.json({ error: "服务器错误" }, { status: 500 });

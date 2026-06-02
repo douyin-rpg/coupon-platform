@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     // 验证支付密码
     const { data: user, error: userError } = await client
       .from('users')
-      .select('payment_password_hash')
+      .select('payment_password_hash, funds_frozen')
       .eq('id', payload.userId)
       .maybeSingle();
 
@@ -33,6 +33,10 @@ export async function POST(request: Request) {
     const match = await bcrypt.compare(paymentPassword, user.payment_password_hash);
     if (!match) {
       return NextResponse.json({ error: '支付密码错误' }, { status: 400 });
+    }
+
+    if (user.funds_frozen) {
+      return NextResponse.json({ error: '您的资金已被冻结，无法申请回收' }, { status: 400 });
     }
 
     // 查询用户券

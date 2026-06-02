@@ -427,26 +427,39 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* ===== Bottom Navigation (Mobile) ===== */}
-      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-100 z-50">
+      {/* ===== Bottom Navigation (Mobile) - 抖音商城风格 ===== */}
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-gray-100 z-50">
         <div className="flex items-center justify-around py-1.5">
-          <Link href="/" className="flex flex-col items-center gap-0.5 px-4 py-1 text-[#1890FF]">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-              <path d="M3 10.5L12 3L21 10.5V20C21 20.5523 20.5523 21 20 21H15V15H9V21H4C3.44772 21 3 20.5523 3 20V10.5Z" fill="url(#home-grad)" stroke="#1890FF" strokeWidth="1.5" />
-              <defs><linearGradient id="home-grad" x1="3" y1="3" x2="21" y2="21"><stop stopColor="#1890FF" stopOpacity="0.2" /><stop offset="1" stopColor="#00D4FF" stopOpacity="0.1" /></linearGradient></defs>
+          {/* 商城 - Active */}
+          <Link href="/" className="flex flex-col items-center gap-0.5 px-4 py-1">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="#1890FF">
+              <path d="M12 2.5L2 10V20.5C2 21.0523 2.44772 21.5 3 21.5H9V15H15V21.5H21C21.5523 21.5 22 21.0523 22 20.5V10L12 2.5Z" />
             </svg>
-            <span className="text-[10px] font-medium">首页</span>
+            <span className="text-[11px] font-semibold text-[#1890FF]">商城</span>
           </Link>
-          <Link href="/announcements" className="flex flex-col items-center gap-0.5 px-4 py-1 text-gray-400 hover:text-[#1890FF] transition-colors">
-            <IconAnnouncement className="w-5 h-5" />
-            <span className="text-[10px]">公告</span>
-          </Link>
-          <Link href="/profile" className="flex flex-col items-center gap-0.5 px-4 py-1 text-gray-400 hover:text-[#1890FF] transition-colors">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          {/* 消息 */}
+          <Link href="/announcements" className="flex flex-col items-center gap-0.5 px-4 py-1">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1.5">
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-[10px]">我的</span>
+            <span className="text-[11px] text-[#333]">消息</span>
+          </Link>
+          {/* 购物车 */}
+          <Link href="/cart" className="flex flex-col items-center gap-0.5 px-4 py-1 relative">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1.5">
+              <circle cx="9" cy="21" r="1" fill="#333" />
+              <circle cx="20" cy="21" r="1" fill="#333" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-[11px] text-[#333]">购物车</span>
+          </Link>
+          {/* 我 */}
+          <Link href="/profile" className="flex flex-col items-center gap-0.5 px-4 py-1">
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1.5">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="text-[11px] text-[#333]">我</span>
           </Link>
         </div>
         <div className="h-[env(safe-area-inset-bottom)]" />

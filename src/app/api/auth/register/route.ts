@@ -53,6 +53,11 @@ export async function POST(request: Request) {
     // 创建用户
     const passwordHash = await bcrypt.hash(password, 10);
     const payPasswordHash = await bcrypt.hash(payPassword, 10);
+    // 获取注册IP
+    const registerIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() 
+      || request.headers.get('x-real-ip') 
+      || 'unknown';
+
     const { data: newUser, error: insertError } = await client
       .from('users')
       .insert({
@@ -64,6 +69,8 @@ export async function POST(request: Request) {
         balance: '0',
         verify_status: 'unverified',
         bank_bound: false,
+        credit_score: 500,
+        register_ip: registerIp,
       })
       .select('id, username')
       .single();

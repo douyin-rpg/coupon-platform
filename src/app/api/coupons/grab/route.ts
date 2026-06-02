@@ -21,11 +21,14 @@ export async function POST(request: Request) {
     // 检查用户是否已认证
     const { data: user, error: userError } = await client
       .from('users')
-      .select('verify_status, payment_password_hash, balance')
+      .select('verify_status, payment_password_hash, balance, funds_frozen')
       .eq('id', payload.userId)
       .maybeSingle();
 
     if (userError) throw new Error(`查询用户失败: ${userError.message}`);
+    if (user?.funds_frozen) {
+      return NextResponse.json({ error: '资金已被冻结，无法抢券' }, { status: 403 });
+    }
     if (user?.verify_status !== "verified") {
       return NextResponse.json({ error: '请先完成实名认证' }, { status: 400 });
     }
