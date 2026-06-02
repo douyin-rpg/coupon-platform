@@ -7,9 +7,14 @@ import { useState, useEffect } from 'react';
 interface Article { id: string; title: string; }
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  // Refresh user data (especially balance) when page is shown
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
 
   const handleLogout = async () => {
     setLoggingOut(true);

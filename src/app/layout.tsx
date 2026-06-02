@@ -4,7 +4,7 @@ import { AuthProvider } from '@/contexts/auth-context';
 
 export const metadata: Metadata = {
   title: '惠抢券 - 优惠券抢购平台',
-  description: '限时抢购优惠券，回兑赚取5%奖励',
+  description: '限时抢购优惠券，快速回兑',
 };
 
 export default function RootLayout({

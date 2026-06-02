@@ -11,6 +11,7 @@ const sidebarItems = [
   { href: '/admin/codes', label: '注册码管理' },
   { href: '/admin/verify', label: '实名审核' },
   { href: '/admin/redemptions', label: '回兑审核' },
+  { href: '/admin/orders', label: '订单管理' },
   { href: '/admin/withdrawals', label: '提现审核' },
   { href: '/admin/users', label: '用户管理' },
   { href: '/admin/categories', label: '分类管理' },

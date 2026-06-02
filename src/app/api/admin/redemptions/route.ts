@@ -146,3 +146,122 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+// POST: Batch process all pending redemption requests
+export async function POST(request: Request) {
+  try {
+    const payload = await getAdminUser();
+    if (!payload?.isAdmin) {
+      return NextResponse.json({ error: '未授权' }, { status: 401 });
+    }
+
+    const { action } = await request.json();
+    if (action !== 'approve' && action !== 'reject') {
+      return NextResponse.json({ error: '无效的操作，必须为 approve 或 reject' }, { status: 400 });
+    }
+
+    const client = getSupabaseClient();
+
+    // Get all pending redemption requests
+    const { data: pendingRequests, error: fetchError } = await client
+      .from('redemption_requests')
+      .select('id, user_coupon_id, user_coupons(user_id, payment_amount, status)')
+      .eq('status', 'pending');
+
+    if (fetchError) throw new Error(`查询待审核回兑失败: ${fetchError.message}`);
+
+    if (!pendingRequests || pendingRequests.length === 0) {
+      return NextResponse.json({ success: true, processed: 0, message: '没有待处理的回兑申请' });
+    }
+
+    let processed = 0;
+    const errors: string[] = [];
+
+    for (const req of pendingRequests) {
+      try {
+        const userCoupon = req.user_coupons as unknown as { user_id: string; payment_amount: string; status: string };
+        
+        // Update redemption request status
+        const newStatus = action === 'approve' ? 'approved' : 'rejected';
+        const { error: updateReqError } = await client
+          .from('redemption_requests')
+          .update({
+            status: newStatus,
+            processed_at: new Date().toISOString(),
+          })
+          .eq('id', req.id);
+
+        if (updateReqError) { errors.push(`更新申请${req.id}失败`); continue; }
+
+        // Update user coupon status
+        const couponNewStatus = action === 'approve' ? 'redeemed' : 'redemption_rejected';
+        const { error: updateCouponError } = await client
+          .from('user_coupons')
+          .update({
+            status: couponNewStatus,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', req.user_coupon_id);
+
+        if (updateCouponError) { errors.push(`更新券${req.user_coupon_id}失败`); continue; }
+
+        // Calculate refund
+        const paymentAmount = parseFloat(userCoupon.payment_amount);
+        let refundAmount: number;
+        if (action === 'approve') {
+          refundAmount = paymentAmount + paymentAmount * 0.05;
+        } else {
+          refundAmount = paymentAmount;
+        }
+
+        // Update user balance
+        const { data: userData } = await client
+          .from('users')
+          .select('balance')
+          .eq('id', userCoupon.user_id)
+          .maybeSingle();
+
+        const currentBalance = parseFloat(userData?.balance || '0');
+        const newBalance = (currentBalance + refundAmount).toFixed(2);
+
+        const { error: balanceError } = await client
+          .from('users')
+          .update({ balance: newBalance, updated_at: new Date().toISOString() })
+          .eq('id', userCoupon.user_id);
+
+        if (balanceError) { errors.push(`更新用户${userCoupon.user_id}余额失败`); continue; }
+
+        // Record transaction log
+        const logType = action === 'approve' ? 'redemption_approved' : 'redemption_rejected';
+        const logDesc = action === 'approve'
+          ? `批量回兑通过: 返还本金${paymentAmount.toFixed(2)}+5%奖励${(paymentAmount * 0.05).toFixed(2)}`
+          : `批量回兑拒绝: 返还本金${paymentAmount.toFixed(2)}`;
+        await client
+          .from('transaction_logs')
+          .insert({
+            user_id: userCoupon.user_id,
+            type: logType,
+            amount: refundAmount,
+            balance_after: parseFloat(newBalance),
+            description: logDesc,
+            related_id: req.id,
+          });
+
+        processed++;
+      } catch {
+        errors.push(`处理申请${req.id}异常`);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      processed,
+      total: pendingRequests.length,
+      errors: errors.length > 0 ? errors : undefined,
+      message: `已${action === 'approve' ? '通过' : '拒绝'} ${processed}/${pendingRequests.length} 条回兑申请`,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : '批量处理失败';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}

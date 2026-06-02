@@ -80,6 +80,7 @@ export default function AdminVerifyPage() {
           <Link href="/admin/codes" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">注册码管理</Link>
           <Link href="/admin/verify" className="block px-3 py-2 bg-gray-700 rounded-lg text-sm text-white font-medium">实名审核</Link>
           <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">回兑审核</Link>
+          <Link href="/admin/orders" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">订单管理</Link>
           <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">提现审核</Link>
           <Link href="/admin/users" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">用户管理</Link>
           <Link href="/admin/categories" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">分类管理</Link>

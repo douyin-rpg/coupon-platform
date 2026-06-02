@@ -121,6 +121,9 @@ export async function POST(request: Request) {
 
     if (stockError) throw new Error(`更新库存失败: ${stockError.message}`);
 
+    // 生成核销码
+    const verificationCode = `${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    
     // 创建用户券记录
     const { data: userCoupon, error: insertError } = await client
       .from('user_coupons')
@@ -129,6 +132,8 @@ export async function POST(request: Request) {
         coupon_id: couponId,
         status: 'pending_use',
         payment_amount: coupon.price,
+        verification_code: verificationCode,
+        paid_at: new Date().toISOString(),
       })
       .select('id')
       .single();

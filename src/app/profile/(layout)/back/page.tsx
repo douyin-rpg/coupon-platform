@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 
 interface UserCoupon {
@@ -11,10 +11,11 @@ interface UserCoupon {
   coupon_image: string | null;
   status: string;
   created_at: string;
+  verification_code: string | null;
 }
 
 export default function BackPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [coupons, setCoupons] = useState<UserCoupon[]>([]);
   const [activeTab, setActiveTab] = useState('pending_use');
   const [payPassword, setPayPassword] = useState('');
@@ -22,11 +23,12 @@ export default function BackPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchCoupons = () => {
+  const fetchCoupons = useCallback(() => {
     if (!user) return;
     fetch('/api/user/coupons').then(r => r.json()).then(d => setCoupons(d.coupons || [])).catch(() => {});
-  };
-  useEffect(fetchCoupons, [user]);
+  }, [user]);
+
+  useEffect(fetchCoupons, [fetchCoupons]);
 
   const tabs = [
     { key: 'pending_use', label: '快捷申请', filter: 'pending_use' },
@@ -60,6 +62,7 @@ export default function BackPage() {
       setPayPassword('');
       setSelectedIds([]);
       fetchCoupons();
+      refreshUser();
     } catch { setError('网络错误'); }
     finally { setLoading(false); }
   };
@@ -68,24 +71,30 @@ export default function BackPage() {
     setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
-  const selectedTotal = filtered.filter(o => selectedIds.includes(o.id)).reduce((s, o) => s + o.coupon_price * 1.05, 0);
+  const selectedTotal = filtered.filter(o => selectedIds.includes(o.id)).reduce((s, o) => s + o.coupon_price, 0);
 
   return (
     <div className="p-4 md:p-6">
       <h2 className="text-lg font-bold text-gray-800 mb-4">快捷回收</h2>
 
-      {/* Tabs - Pill style */}
+      {/* Tabs */}
       <div className="flex overflow-x-auto gap-1 mb-4 pb-1">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all font-medium ${activeTab === t.key ? 'bg-[#7B61FF] text-white shadow-md shadow-purple-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+            className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all font-medium ${activeTab === t.key ? 'bg-[#1890FF] text-white shadow-md shadow-blue-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
             {t.label} ({coupons.filter(o => o.status === t.filter).length})
           </button>
         ))}
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400"><span className="text-4xl block mb-3">🔄</span>暂无记录</div>
+        <div className="text-center py-16 text-gray-400">
+          <svg className="w-16 h-16 mx-auto mb-3 text-gray-200" viewBox="0 0 24 24" fill="none">
+            <path d="M4 4h16v12H4z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+            <path d="M4 8h16" stroke="currentColor" strokeWidth="1.2" />
+          </svg>
+          <p className="text-sm">暂无记录</p>
+        </div>
       ) : (
         <>
           <div className="space-y-3 mb-4">
@@ -93,18 +102,25 @@ export default function BackPage() {
               <div key={o.id} className="bg-white rounded-xl border border-gray-100 p-3 flex items-center gap-3">
                 {activeTab === 'pending_use' && (
                   <input type="checkbox" checked={selectedIds.includes(o.id)} onChange={() => toggleSelect(o.id)}
-                    className="w-4 h-4 text-[#7B61FF] rounded border-gray-300 focus:ring-[#7B61FF]" />
+                    className="w-4 h-4 text-[#1890FF] rounded border-gray-300 focus:ring-[#1890FF] accent-[#1890FF]" />
                 )}
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                  {o.coupon_image ? <img src={o.coupon_image} className="w-full h-full object-cover" /> : <span className="text-xl">🎫</span>}
+                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {o.coupon_image ? <img src={o.coupon_image} alt={o.coupon_name} className="w-full h-full object-cover" /> : (
+                    <svg className="w-6 h-6 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-800 truncate">{o.coupon_name}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">实付：¥{o.coupon_price}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">实付：¥{o.coupon_price.toLocaleString('zh-CN')}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-xs text-gray-400">回收可得</p>
-                  <p className="text-sm font-bold text-green-600">¥{(o.coupon_price * 1.05).toFixed(2)}</p>
+                  <p className="text-xs text-gray-400">
+                    {activeTab === 'pending_use' ? '面值' : activeTab === 'redeemed' ? '已返还' : '待返还'}
+                  </p>
+                  <p className="text-sm font-bold text-[#1890FF]">¥{o.coupon_price.toLocaleString('zh-CN')}</p>
                 </div>
               </div>
             ))}
@@ -115,13 +131,13 @@ export default function BackPage() {
               {error && <div className="bg-red-50 text-red-600 text-xs p-2 rounded-lg mb-3">{error}</div>}
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-gray-600">已选 {selectedIds.length} 件</span>
-                <span className="text-sm">回收金额：<span className="text-green-600 font-bold">¥{selectedTotal.toFixed(2)}</span></span>
+                <span className="text-sm">合计：<span className="text-[#1890FF] font-bold">¥{selectedTotal.toLocaleString('zh-CN')}</span></span>
               </div>
               <div className="flex items-center gap-2">
-                <input type="password" placeholder="支付密码" value={payPassword} onChange={e => setPayPassword(e.target.value)} maxLength={6}
-                  className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#7B61FF]" />
+                <input type="password" placeholder="支付密码" value={payPassword} onChange={e => setPayPassword(e.target.value.replace(/\D/g, ''))} maxLength={6}
+                  className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-center tracking-widest focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
                 <button onClick={handleApply} disabled={loading}
-                  className="px-6 py-2.5 bg-gradient-to-r from-[#7B61FF] to-[#9B7BFF] text-white rounded-lg text-sm font-medium hover:shadow-lg hover:shadow-purple-200/50 disabled:opacity-50 transition-all">
+                  className="px-6 py-2.5 bg-[#1890FF] text-white rounded-lg text-sm font-medium hover:bg-[#0E7FD9] disabled:opacity-50 transition-all">
                   {loading ? '提交中...' : '申请回收'}
                 </button>
               </div>

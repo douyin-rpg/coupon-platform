@@ -27,13 +27,14 @@ interface Coupon {
 export default function CouponDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentPassword, setPaymentPassword] = useState("");
   const [grabbing, setGrabbing] = useState(false);
   const [msg, setMsg] = useState("");
+  const [grabSuccess, setGrabSuccess] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -100,8 +101,9 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        setGrabSuccess(true);
         setMsg("抢券成功！");
-        setTimeout(() => router.push("/profile/order"), 1500);
+        refreshUser();
       } else {
         setMsg(data.error || "抢券失败");
       }
@@ -124,7 +126,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
       {/* Top nav */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
-          <button onClick={() => router.back()} className="text-gray-600">
+          <button onClick={() => router.back()} className="text-gray-600 hover:text-gray-800 transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -136,31 +138,49 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
       <div className="max-w-5xl mx-auto">
         {/* Product image */}
         <div className="bg-white">
-          <div className="aspect-square max-h-96 bg-gray-100">
+          <div className="aspect-square max-h-96 bg-gray-100 relative overflow-hidden">
             {coupon.image_url ? (
               <img src={coupon.image_url} alt={coupon.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-50">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1890FF]/10 to-[#00D4FF]/10">
                 <div className="text-center">
-                  <svg className="w-16 h-16 mx-auto mb-2 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M9 5v4" stroke="currentColor" strokeWidth="1.5" />
+                  <svg className="w-20 h-20 mx-auto mb-3" viewBox="0 0 64 64" fill="none">
+                    <rect x="4" y="12" width="56" height="40" rx="6" fill="url(#coupon-grad)" opacity="0.15" />
+                    <rect x="4" y="12" width="56" height="40" rx="6" stroke="url(#coupon-grad)" strokeWidth="2" />
+                    <circle cx="20" cy="32" r="8" stroke="#1890FF" strokeWidth="1.5" fill="none" />
+                    <path d="M17 32l2 2 4-4" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M32 28h14M32 36h8" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+                    <defs>
+                      <linearGradient id="coupon-grad" x1="4" y1="12" x2="60" y2="52">
+                        <stop stopColor="#1890FF" />
+                        <stop offset="1" stopColor="#00D4FF" />
+                      </linearGradient>
+                    </defs>
                   </svg>
-                  <div className="text-gray-400">优惠券</div>
+                  <div className="text-gray-400 text-sm">优惠券</div>
                 </div>
+              </div>
+            )}
+            {/* Sold badge */}
+            {coupon.sold_count > 0 && (
+              <div className="absolute top-3 right-3 bg-[#FE2C55]/90 text-white text-[10px] px-2 py-1 rounded-full font-medium backdrop-blur-sm">
+                已抢 {coupon.sold_count} 件
               </div>
             )}
           </div>
         </div>
 
         {/* Price strip */}
-        <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF] p-5 text-white">
-          <div className="flex items-end gap-2">
-            <span className="text-sm">面值</span>
-            <span className="text-3xl font-bold">¥{formatPrice(coupon.price)}</span>
+        <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF] p-5 text-white relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-24 h-24 rounded-full bg-white/10 -mr-8 -mt-8" />
+          <div className="absolute right-8 bottom-0 w-16 h-16 rounded-full bg-white/5 -mb-4" />
+          <div className="relative z-10">
+            <div className="flex items-end gap-2">
+              <span className="text-sm opacity-80">面值</span>
+              <span className="text-3xl font-bold tabular-nums">¥{formatPrice(coupon.price)}</span>
+            </div>
+            <p className="text-sm mt-1.5 opacity-80">需支付 ¥{formatPrice(coupon.price)}</p>
           </div>
-          <p className="text-sm mt-1.5 opacity-80">需支付 ¥{formatPrice(coupon.price)}，回收后返还金额+5%奖励</p>
         </div>
 
         {/* Product name */}
@@ -172,21 +192,33 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         {/* Stock progress */}
         <div className="bg-white mt-2 p-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">库存进度</span>
-            <span className="text-[#1890FF] font-bold">已抢{progress}%</span>
+            <span className="text-gray-500 flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-[#FE2C55]" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" fill="currentColor" opacity="0.2" />
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+              </svg>
+              库存进度
+            </span>
+            <span className="text-[#FE2C55] font-bold">已抢{progress}%</span>
           </div>
-          <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#1890FF] to-[#00D4FF] rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
+          <div className="mt-2 h-2.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] rounded-full transition-all duration-500" style={{ width: `${Math.min(progress, 100)}%` }} />
           </div>
-          <div className="flex justify-between mt-1 text-xs text-gray-400">
+          <div className="flex justify-between mt-1.5 text-xs text-gray-400">
             <span>已售 {coupon.sold_count}</span>
             <span>剩余 {coupon.remaining_quantity}</span>
           </div>
         </div>
 
-        {/* Session info - show all sessions */}
+        {/* Session info */}
         <div className="bg-white mt-2 p-4">
-          <div className="text-sm text-gray-500 mb-3">抢购场次</div>
+          <div className="text-sm text-gray-500 mb-3 flex items-center gap-1.5">
+            <svg className="w-4 h-4 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            抢购场次
+          </div>
           <div className="space-y-2">
             {sessions.map((s) => {
               const now = new Date();
@@ -197,23 +229,27 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
               const isUpcoming = currentMinutes < sh * 60 + sm && s.is_active;
 
               return (
-                <div key={s.id} className={`flex items-center justify-between p-2.5 rounded-xl ${isActive ? 'bg-blue-50 border border-blue-200' : isUpcoming ? 'bg-amber-50 border border-amber-200' : 'bg-gray-50'}`}>
-                  <div className="flex items-center gap-2">
-                    <svg className={`w-4 h-4 ${isActive ? 'text-[#1890FF]' : 'text-gray-400'}`} viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    <span className={`text-sm font-medium ${isActive ? 'text-[#1890FF]' : 'text-gray-700'}`}>{s.name}</span>
-                    <span className="text-xs text-gray-400">{s.start_time}-{s.end_time}</span>
+                <div key={s.id} className={`flex items-center justify-between p-3 rounded-xl transition-all ${isActive ? 'bg-blue-50 border-2 border-[#1890FF]/30 shadow-sm' : isUpcoming ? 'bg-amber-50/80 border border-amber-200/50' : 'bg-gray-50/50'}`}>
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isActive ? 'bg-[#1890FF] text-white' : 'bg-gray-200 text-gray-400'}`}>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+                        <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <div>
+                      <span className={`text-sm font-medium ${isActive ? 'text-[#1890FF]' : 'text-gray-700'}`}>{s.name}</span>
+                      <span className="text-xs text-gray-400 ml-2">{s.start_time}-{s.end_time}</span>
+                    </div>
                   </div>
                   {isActive && (
-                    <span className="text-xs bg-[#1890FF] text-white px-2 py-0.5 rounded-full animate-pulse">抢购中</span>
+                    <span className="text-xs bg-[#FE2C55] text-white px-2.5 py-1 rounded-full animate-pulse font-medium">抢购中</span>
                   )}
                   {isUpcoming && (
-                    <span className="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">即将开始</span>
+                    <span className="text-xs bg-amber-100 text-amber-600 px-2.5 py-1 rounded-full font-medium">即将开始</span>
                   )}
                   {!isActive && !isUpcoming && (
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">已结束</span>
+                    <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">已结束</span>
                   )}
                 </div>
               );
@@ -221,10 +257,26 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        {/* Message */}
-        {msg && (
+        {/* Success message */}
+        {grabSuccess && (
+          <div className="m-4 p-4 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-center">
+            <svg className="w-12 h-12 mx-auto mb-2 text-green-500" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <p className="text-green-700 font-bold text-lg">抢券成功！</p>
+            <p className="text-green-600 text-sm mt-1">请前往订单查看详情</p>
+            <button onClick={() => router.push('/profile/order')}
+              className="mt-3 px-6 py-2 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700 transition-colors">
+              查看订单
+            </button>
+          </div>
+        )}
+
+        {/* Error/info message */}
+        {msg && !grabSuccess && (
           <div className="mx-4 mt-3 p-3 rounded-xl bg-white border text-sm text-center">
-            <span className={msg.includes("成功") ? "text-green-600" : "text-[#1890FF]"}>{msg}</span>
+            <span className={msg.includes("成功") ? "text-green-600" : "text-[#FE2C55]"}>{msg}</span>
           </div>
         )}
       </div>
@@ -234,25 +286,30 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         <div className="max-w-5xl mx-auto flex items-center gap-3">
           <div className="flex-1">
             <span className="text-xs text-gray-400">需支付</span>
-            <div className="text-xl font-bold text-[#1890FF]">¥{formatPrice(coupon.price)}</div>
+            <div className="text-xl font-bold text-[#1890FF] tabular-nums">¥{formatPrice(coupon.price)}</div>
           </div>
           {!user ? (
             <button onClick={() => router.push("/login")}
-              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl active:scale-[0.97] transition-all">
+              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl active:scale-[0.97] transition-all shadow-lg shadow-blue-200/50">
               登录抢购
             </button>
           ) : user.verifyStatus !== "verified" ? (
             <button onClick={() => router.push("/profile/settings/verify")}
-              className="px-8 py-3 border border-[#1890FF] text-[#1890FF] font-bold rounded-xl active:scale-[0.97] transition-all">
+              className="px-8 py-3 border-2 border-[#1890FF] text-[#1890FF] font-bold rounded-xl active:scale-[0.97] transition-all">
               去认证
             </button>
+          ) : grabSuccess ? (
+            <button onClick={() => router.push('/profile/order')}
+              className="px-8 py-3 bg-green-600 text-white font-bold rounded-xl active:scale-[0.97] transition-all">
+              查看订单
+            </button>
           ) : coupon.remaining_quantity <= 0 ? (
-            <button disabled className="px-8 py-3 bg-gray-300 text-white font-bold rounded-xl">
+            <button disabled className="px-8 py-3 bg-gray-300 text-white font-bold rounded-xl cursor-not-allowed">
               已抢光
             </button>
           ) : !activeSession ? (
             <div className="text-right">
-              <button disabled className="px-8 py-3 bg-gray-300 text-white font-bold rounded-xl">
+              <button disabled className="px-8 py-3 bg-gray-300 text-white font-bold rounded-xl cursor-not-allowed">
                 非抢购时间
               </button>
               {nextSession && (
@@ -262,7 +319,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
           ) : (
             <button
               onClick={() => setShowPaymentModal(true)}
-              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl active:scale-[0.97] transition-all shadow-lg shadow-blue-200"
+              className="px-8 py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-xl active:scale-[0.97] transition-all shadow-lg shadow-red-200/50"
             >
               立即抢购
             </button>
@@ -272,50 +329,67 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
 
       {/* Payment modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center">
-          <div className="bg-white w-full md:max-w-md md:rounded-2xl rounded-t-2xl p-6">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center" onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }}>
+          <div className="bg-white w-full md:max-w-md md:rounded-2xl rounded-t-2xl p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-[#1A1A1A]">确认抢购</h3>
-              <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="text-gray-400">
+              <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <div className="bg-blue-50 rounded-xl p-4 mb-4">
-              <div className="text-sm text-gray-500">商品</div>
-              <div className="font-medium text-[#1A1A1A]">{coupon.name}</div>
-              <div className="flex items-end gap-1 mt-2">
-                <span className="text-sm text-gray-500">支付金额</span>
-                <span className="text-2xl font-bold text-[#1890FF]">¥{formatPrice(coupon.price)}</span>
+            <div className="bg-gradient-to-r from-[#1890FF]/5 to-[#00D4FF]/5 rounded-xl p-4 mb-4 border border-[#1890FF]/10">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1890FF]/10 to-[#00D4FF]/10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M7 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium text-[#1A1A1A] text-sm">{coupon.name}</div>
+                  <div className="text-xs text-gray-400 mt-0.5">面值 ¥{formatPrice(coupon.price)}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm text-gray-400">支付金额</div>
+                  <div className="text-xl font-bold text-[#1890FF] tabular-nums">¥{formatPrice(coupon.price)}</div>
+                </div>
               </div>
               {activeSession && (
-                <div className="text-xs text-gray-400 mt-1">当前场次: {activeSession.name} ({activeSession.start_time}-{activeSession.end_time})</div>
+                <div className="text-xs text-gray-400 mt-2 pt-2 border-t border-[#1890FF]/10">
+                  当前场次：{activeSession.name} ({activeSession.start_time}-{activeSession.end_time})
+                </div>
               )}
             </div>
 
             <div className="mb-4">
-              <label className="text-sm text-gray-500 mb-1 block">支付密码</label>
+              <label className="text-sm text-gray-500 mb-2 block flex items-center gap-1">
+                <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                支付密码
+              </label>
               <input
                 type="password"
                 maxLength={6}
                 value={paymentPassword}
                 onChange={(e) => setPaymentPassword(e.target.value.replace(/\D/g, ""))}
                 placeholder="请输入6位支付密码"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF] outline-none"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] focus:border-[#1890FF] focus:ring-2 focus:ring-[#1890FF]/20 outline-none transition-all"
               />
             </div>
 
             <button
               onClick={handleGrab}
               disabled={grabbing || !paymentPassword}
-              className="w-full py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl disabled:opacity-50 active:scale-[0.97] transition-all"
+              className="w-full py-3.5 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-xl disabled:opacity-50 active:scale-[0.97] transition-all shadow-lg shadow-red-200/50 disabled:shadow-none"
             >
-              {grabbing ? "抢购中..." : "确认支付"}
+              {grabbing ? "抢购中..." : "确认支付 ¥" + formatPrice(coupon.price)}
             </button>
-
-            <p className="text-xs text-gray-400 text-center mt-3">支付后可申请回收，回收通过后返还金额+5%奖励</p>
           </div>
         </div>
       )}

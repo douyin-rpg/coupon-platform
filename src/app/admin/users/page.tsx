@@ -143,6 +143,7 @@ export default function AdminUsersPage() {
           <Link href="/admin/articles" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">文章管理</Link>
           <Link href="/admin/users" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">用户管理</Link>
           <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">回兑审核</Link>
+          <Link href="/admin/orders" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">订单管理</Link>
           <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">提现审核</Link>
           <Link href="/admin/categories" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">分类管理</Link>
           <Link href="/admin/banners" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">轮播图管理</Link>
