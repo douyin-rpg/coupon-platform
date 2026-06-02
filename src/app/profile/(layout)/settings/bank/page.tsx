@@ -76,25 +76,25 @@ export default function BankPage() {
           <div>
             <label className="block text-sm text-gray-600 mb-1">持卡人姓名</label>
             <input type="text" value={accountName} onChange={e => setAccountName(e.target.value)} placeholder="请输入持卡人姓名"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">银行卡号</label>
             <input type="text" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, ''))} placeholder="请输入银行卡号" maxLength={23}
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">开户行</label>
             <input type="text" value={bankName} onChange={e => setBankName(e.target.value)} placeholder="例如：中国工商银行XX支行"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">支付密码验证</label>
             <input type="password" value={payPassword} onChange={e => setPayPassword(e.target.value)} placeholder="请输入支付密码以确认"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
           </div>
           <button onClick={handleBind} disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-lg font-medium disabled:opacity-50">
+            className="w-full py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-lg font-medium disabled:opacity-50">
             {loading ? '提交中...' : '确认绑定'}
           </button>
         </div>

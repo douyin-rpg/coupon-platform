@@ -43,7 +43,7 @@ export default function WithdrawRecordsPage() {
                 <span className={`font-medium text-sm ${statusMap[r.status]?.color || 'text-gray-500'}`}>
                   {statusMap[r.status]?.label || r.status}
                 </span>
-                <span className="text-[#FE2C55] font-bold">-¥{Number(r.amount).toFixed(2)}</span>
+                <span className="text-[#1890FF] font-bold">-¥{Number(r.amount).toFixed(2)}</span>
               </div>
               <p className="text-xs text-gray-400 mt-2">收款账号：{r.bank_name} 尾号{r.bank_card_number?.slice(-4) || '未知'}</p>
               <p className="text-xs text-gray-400">申请时间：{new Date(r.created_at).toLocaleString()}</p>

@@ -66,7 +66,7 @@ export default function BackPage() {
       <div className="flex border-b border-gray-200 mb-4">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`px-4 py-2 text-sm whitespace-nowrap border-b-2 ${activeTab === t.key ? 'border-[#FE2C55] text-[#FE2C55] font-medium' : 'border-transparent text-gray-500'}`}>
+            className={`px-4 py-2 text-sm whitespace-nowrap border-b-2 ${activeTab === t.key ? 'border-[#1890FF] text-[#1890FF] font-medium' : 'border-transparent text-gray-500'}`}>
             {t.label}({coupons.filter(o => o.status === t.filter).length})
           </button>
         ))}
@@ -81,7 +81,7 @@ export default function BackPage() {
               <div key={o.id} className="border border-gray-100 rounded-lg p-3 flex items-center gap-3">
                 {activeTab === 'pending_use' && (
                   <input type="checkbox" checked={selectedIds.includes(o.id)} onChange={() => toggleSelect(o.id)}
-                    className="w-4 h-4 text-[#FE2C55] rounded" />
+                    className="w-4 h-4 text-[#1890FF] rounded" />
                 )}
                 <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
                   {o.coupon_image ? <img src={o.coupon_image} className="w-full h-full object-cover" /> : <span className="text-xl">🎫</span>}
@@ -90,7 +90,7 @@ export default function BackPage() {
                   <p className="text-sm font-medium text-gray-800 truncate">{o.coupon_name}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-sm">实付：<span className="text-[#FE2C55] font-bold">¥{o.coupon_price}</span></p>
+                  <p className="text-sm">实付：<span className="text-[#1890FF] font-bold">¥{o.coupon_price}</span></p>
                   <p className="text-sm">回收：<span className="text-green-500 font-bold">¥{(o.coupon_price * 1.05).toFixed(2)}</span></p>
                 </div>
               </div>
@@ -101,9 +101,9 @@ export default function BackPage() {
             <div className="bg-gray-50 rounded-lg p-4 flex items-center gap-4">
               <span className="text-sm text-gray-600">已选 {selectedIds.length} 件，回收金额：<span className="text-green-500 font-bold">¥{filtered.filter(o => selectedIds.includes(o.id)).reduce((s, o) => s + o.coupon_price * 1.05, 0).toFixed(2)}</span></span>
               <input type="password" placeholder="支付密码" value={payPassword} onChange={e => setPayPassword(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
+                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
               <button onClick={handleApply} disabled={loading}
-                className="px-6 py-2 bg-[#ff666b] text-white rounded-lg text-sm font-medium hover:bg-[#FE2C55] disabled:opacity-50">
+                className="px-6 py-2 bg-[#ff666b] text-white rounded-lg text-sm font-medium hover:bg-[#1890FF] disabled:opacity-50">
                 {loading ? '提交中...' : '申请回兑'}
               </button>
             </div>

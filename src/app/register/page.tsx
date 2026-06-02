@@ -1,11 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [realName, setRealName] = useState('');
   const [password, setPassword] = useState('');
@@ -68,60 +67,68 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-b from-[#0A1628] via-[#132742] to-[#F5F7FA] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Floating orbs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute w-64 h-64 rounded-full opacity-20 blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.4) 0%, rgba(0,212,255,0) 70%)', top: '5%', right: '15%', animation: 'float-orb-1 8s ease-in-out infinite' }} />
+        <div className="absolute w-48 h-48 rounded-full opacity-15 blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(123,97,255,0.4) 0%, rgba(123,97,255,0) 70%)', bottom: '20%', left: '10%', animation: 'float-orb-2 10s ease-in-out infinite' }} />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-6">
-          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-gradient-to-br from-[#FE2C55] to-[#FF6B35]">
-            <span className="text-3xl text-white font-bold">惠</span>
+          <div className="mx-auto mb-4 flex justify-center">
+            <Image src="/images/logo.png" alt="抖音电商" width={160} height={42} className="h-10 w-auto" priority />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">注册惠抢券</h1>
+          <h1 className="text-2xl font-bold text-white">注册账号</h1>
         </div>
 
         {/* Register Form */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">用户名</label>
               <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
                 placeholder="请输入用户名" required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">真实姓名</label>
               <input type="text" value={realName} onChange={(e) => setRealName(e.target.value)}
                 placeholder="请输入真实姓名" required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">登录密码</label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder="请输入登录密码(至少6位)" required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">确认登录密码</label>
               <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="请再次输入登录密码" required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">支付密码</label>
               <input type="password" value={payPassword} onChange={(e) => setPayPassword(e.target.value)}
                 placeholder="请输入支付密码(至少6位)" required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">确认支付密码</label>
               <input type="password" value={confirmPayPassword} onChange={(e) => setConfirmPayPassword(e.target.value)}
                 placeholder="请再次输入支付密码" required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">注册码</label>
               <input type="text" value={inviteCode} onChange={(e) => setInviteCode(e.target.value)}
                 placeholder="请输入注册码" required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
             </div>
 
             {error && (
@@ -129,14 +136,14 @@ export default function RegisterPage() {
             )}
 
             <button type="submit" disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-all active:scale-[0.97]">
+              className="w-full py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-xl text-sm font-bold disabled:opacity-50 transition-all active:scale-[0.97] hover:shadow-lg">
               {loading ? '注册中...' : '注册'}
             </button>
           </form>
 
           <div className="mt-4 text-center">
             <span className="text-sm text-gray-500">已有账号？</span>
-            <Link href="/login" className="text-sm text-[#FE2C55] font-medium ml-1">去登录</Link>
+            <Link href="/login" className="text-sm text-[#1890FF] font-medium ml-1">去登录</Link>
           </div>
         </div>
       </div>

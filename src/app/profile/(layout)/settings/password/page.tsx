@@ -37,11 +37,11 @@ export default function PasswordPage() {
       <h2 className="text-lg font-bold text-gray-800 mb-4">修改密码</h2>
       <div className="flex border-b border-gray-200 mb-4">
         <button onClick={() => setType('login')}
-          className={`px-4 py-2 text-sm border-b-2 ${type === 'login' ? 'border-[#FE2C55] text-[#FE2C55]' : 'border-transparent text-gray-500'}`}>
+          className={`px-4 py-2 text-sm border-b-2 ${type === 'login' ? 'border-[#1890FF] text-[#1890FF]' : 'border-transparent text-gray-500'}`}>
           登录密码
         </button>
         <button onClick={() => setType('payment')}
-          className={`px-4 py-2 text-sm border-b-2 ${type === 'payment' ? 'border-[#FE2C55] text-[#FE2C55]' : 'border-transparent text-gray-500'}`}>
+          className={`px-4 py-2 text-sm border-b-2 ${type === 'payment' ? 'border-[#1890FF] text-[#1890FF]' : 'border-transparent text-gray-500'}`}>
           支付密码
         </button>
       </div>
@@ -49,15 +49,15 @@ export default function PasswordPage() {
         <div>
           <label className="block text-sm text-gray-600 mb-1">{type === 'login' ? '原登录密码' : '原支付密码'}</label>
           <input type="password" value={oldPassword} onChange={e => setOldPassword(e.target.value)} placeholder={`请输入原${type === 'login' ? '登录' : '支付'}密码`}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
         </div>
         <div>
           <label className="block text-sm text-gray-600 mb-1">{type === 'login' ? '新登录密码' : '新支付密码'}</label>
           <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder={`请输入新${type === 'login' ? '登录' : '支付'}密码`}
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FE2C55]" />
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
         </div>
         <button onClick={handleSubmit} disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-lg font-medium disabled:opacity-50">
+          className="w-full py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-lg font-medium disabled:opacity-50">
           {loading ? '提交中...' : '确认修改'}
         </button>
       </div>

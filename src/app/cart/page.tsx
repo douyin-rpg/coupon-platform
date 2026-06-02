@@ -76,7 +76,7 @@ export default function CartPage() {
           <div className="bg-white rounded-2xl p-12 text-center">
             <div className="text-5xl mb-3">🛒</div>
             <p className="text-gray-400 mb-4">购物车空空如也</p>
-            <Link href="/" className="text-[#FE2C55] font-medium text-sm">去抢券 →</Link>
+            <Link href="/" className="text-[#1890FF] font-medium text-sm">去抢券 →</Link>
           </div>
         ) : (
           <div className="space-y-3">
@@ -114,9 +114,9 @@ export default function CartPage() {
           <div className="max-w-5xl mx-auto flex items-center justify-between">
             <div>
               <span className="text-xs text-gray-400">合计</span>
-              <span className="text-xl font-bold text-[#FE2C55] ml-2">¥{totalPrice.toFixed(2)}</span>
+              <span className="text-xl font-bold text-[#1890FF] ml-2">¥{totalPrice.toFixed(2)}</span>
             </div>
-            <Link href="/" className="px-8 py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+            <Link href="/" className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all">
               去抢券
             </Link>
           </div>
@@ -126,19 +126,19 @@ export default function CartPage() {
       {/* 底部导航 */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 z-30">
         <div className="max-w-5xl mx-auto flex justify-around py-2">
-          <Link href="/" className="flex flex-col items-center text-gray-400 hover:text-[#FE2C55]">
+          <Link href="/" className="flex flex-col items-center text-gray-400 hover:text-[#1890FF]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             <span className="text-[10px] mt-0.5">首页</span>
           </Link>
-          <Link href="/cart" className="flex flex-col items-center text-[#FE2C55]">
+          <Link href="/cart" className="flex flex-col items-center text-[#1890FF]">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
             </svg>
             <span className="text-[10px] mt-0.5 font-medium">购物车</span>
           </Link>
-          <Link href="/profile" className="flex flex-col items-center text-gray-400 hover:text-[#FE2C55]">
+          <Link href="/profile" className="flex flex-col items-center text-gray-400 hover:text-[#1890FF]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>

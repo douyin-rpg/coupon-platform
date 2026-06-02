@@ -132,7 +132,7 @@ export default function AdminSessionsPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="fixed left-0 top-0 bottom-0 w-56 bg-gray-900 text-white p-4">
+      <div className="fixed left-0 top-0 bottom-0 w-56 bg-gradient-to-b from-[#0A1628] to-[#132742] text-white p-4">
         <h2 className="text-lg font-bold mb-6">管理后台</h2>
         <nav className="space-y-1">
           <Link href="/admin/sessions" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">场次管理</Link>

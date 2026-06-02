@@ -82,7 +82,7 @@ export default function AdminUsersPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="fixed left-0 top-0 bottom-0 w-56 bg-gray-900 text-white p-4">
+      <div className="fixed left-0 top-0 bottom-0 w-56 bg-gradient-to-b from-[#0A1628] to-[#132742] text-white p-4">
         <h2 className="text-lg font-bold mb-6">管理后台</h2>
         <nav className="space-y-1">
           <Link href="/admin/sessions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">场次管理</Link>
@@ -225,7 +225,7 @@ export default function AdminUsersPage() {
             <button
               className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all active:scale-[0.97] disabled:opacity-50"
               style={{
-                background: (loading || !newValue) ? '#ccc' : actionType.includes('deduct') ? '#DC2626' : 'linear-gradient(135deg, #FE2C55, #FF6B35)',
+                background: (loading || !newValue) ? '#ccc' : actionType.includes('deduct') ? '#DC2626' : 'linear-gradient(135deg, #1890FF, #00D4FF)',
                 color: (loading || !newValue) ? '#999' : '#fff',
               }}
               onClick={handleAction}

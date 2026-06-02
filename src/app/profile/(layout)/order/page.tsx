@@ -43,7 +43,7 @@ export default function OrderPage() {
       <div className="flex border-b border-gray-200 mb-4 overflow-x-auto">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`px-4 py-2 text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === t.key ? 'border-[#FE2C55] text-[#FE2C55] font-medium' : 'border-transparent text-gray-500'}`}>
+            className={`px-4 py-2 text-sm whitespace-nowrap border-b-2 transition-colors ${activeTab === t.key ? 'border-[#1890FF] text-[#1890FF] font-medium' : 'border-transparent text-gray-500'}`}>
             {t.label}
           </button>
         ))}
@@ -62,7 +62,7 @@ export default function OrderPage() {
                 <p className="text-xs text-gray-400 mt-0.5">{new Date(o.created_at).toLocaleString()}</p>
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-[#FE2C55] font-bold">¥{o.coupon_price}</p>
+                <p className="text-[#1890FF] font-bold">¥{o.coupon_price}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{statusMap[o.status] || o.status}</p>
               </div>
             </div>

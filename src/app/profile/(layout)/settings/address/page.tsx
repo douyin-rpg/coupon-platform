@@ -58,7 +58,7 @@ export default function AddressPage() {
     <div className="p-4 md:p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold text-gray-800">收货地址</h2>
-        <button onClick={() => setShowForm(!showForm)} className="px-3 py-1.5 bg-[#FE2C55] text-white text-xs rounded-lg">
+        <button onClick={() => setShowForm(!showForm)} className="px-3 py-1.5 bg-[#1890FF] text-white text-xs rounded-lg">
           {showForm ? '取消' : '+ 新增地址'}
         </button>
       </div>
@@ -85,7 +85,7 @@ export default function AddressPage() {
             <input type="checkbox" checked={isDefault} onChange={e => setIsDefault(e.target.checked)} className="w-4 h-4" />
             设为默认地址
           </label>
-          <button onClick={handleAdd} className="w-full py-2 bg-[#FE2C55] text-white rounded-lg text-sm">保存地址</button>
+          <button onClick={handleAdd} className="w-full py-2 bg-[#1890FF] text-white rounded-lg text-sm">保存地址</button>
         </div>
       )}
 
@@ -99,7 +99,7 @@ export default function AddressPage() {
                 <div>
                   <span className="font-medium text-sm">{a.name}</span>
                   <span className="text-sm text-gray-500 ml-2">{a.phone}</span>
-                  {a.is_default && <span className="ml-2 text-xs bg-[#FE2C55] text-white px-1.5 py-0.5 rounded">默认</span>}
+                  {a.is_default && <span className="ml-2 text-xs bg-[#1890FF] text-white px-1.5 py-0.5 rounded">默认</span>}
                 </div>
                 <button onClick={() => handleDelete(a.id)} className="text-xs text-red-400">删除</button>
               </div>

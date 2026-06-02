@@ -42,7 +42,7 @@ export default function TransactionsPage() {
                 <p className="text-xs text-gray-300 mt-0.5">{new Date(t.created_at).toLocaleString()}</p>
               </div>
               <div className="text-right">
-                <p className={`font-bold text-sm ${t.amount >= 0 ? 'text-green-500' : 'text-[#FE2C55]'}`}>
+                <p className={`font-bold text-sm ${t.amount >= 0 ? 'text-green-500' : 'text-[#1890FF]'}`}>
                   {t.amount >= 0 ? '+' : ''}{Number(t.amount).toFixed(2)}
                 </p>
                 <p className="text-xs text-gray-400">余额 {Number(t.balance_after).toFixed(2)}</p>

@@ -44,7 +44,7 @@ export default function VerifyPage() {
     return (
       <div className="p-4 md:p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4">实名认证</h2>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center mb-4">
+        <div className="bg-blue-50 border border-red-200 rounded-xl p-6 text-center mb-4">
           <span className="text-4xl block mb-3">❌</span>
           <p className="text-red-700 font-medium">实名认证被拒绝</p>
           <p className="text-sm text-gray-500 mt-2">拒绝原因：{user.verifyRejectedReason || '未说明'}</p>
@@ -109,12 +109,12 @@ export default function VerifyPage() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">真实姓名</label>
           <input type="text" value={realName} onChange={e => setRealName(e.target.value)} placeholder="请输入真实姓名"
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">身份证号</label>
           <input type="text" value={idCard} onChange={e => setIdCard(e.target.value)} placeholder="请输入18位身份证号" maxLength={18}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" />
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1890FF]" />
         </div>
 
         {/* ID Card photos */}
@@ -155,7 +155,7 @@ export default function VerifyPage() {
         </div>
 
         <button onClick={handleSubmit} disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-xl font-medium disabled:opacity-50 active:scale-[0.97] transition-all">
+          className="w-full py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-xl font-medium disabled:opacity-50 active:scale-[0.97] transition-all">
           {loading ? '提交中...' : '提交认证'}
         </button>
       </div>

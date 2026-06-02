@@ -118,7 +118,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Price strip */}
-        <div className="bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] p-4 text-white">
+        <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF] p-4 text-white">
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold">¥{coupon.price}</span>
             {coupon.original_price > coupon.price && (
@@ -141,10 +141,10 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         <div className="bg-white mt-2 p-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">库存进度</span>
-            <span className="text-[#FE2C55] font-bold">已抢{progress}%</span>
+            <span className="text-[#1890FF] font-bold">已抢{progress}%</span>
           </div>
           <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
+            <div className="h-full bg-gradient-to-r from-[#1890FF] to-[#00D4FF] rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
           </div>
           <div className="flex justify-between mt-1 text-xs text-gray-400">
             <span>已售 {coupon.sold_count}</span>
@@ -160,7 +160,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
               <span className="text-sm font-medium text-[#1A1A1A]">{coupon.sessions.name}</span>
               <span className="text-xs text-gray-400">{coupon.sessions.start_time}-{coupon.sessions.end_time}</span>
               {sessionStatus.status === 'active' && (
-                <span className="text-xs bg-[#FE2C55] text-white px-1.5 py-0.5 rounded animate-pulse">抢购中</span>
+                <span className="text-xs bg-[#1890FF] text-white px-1.5 py-0.5 rounded animate-pulse">抢购中</span>
               )}
               {sessionStatus.status === 'upcoming' && (
                 <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">即将开始</span>
@@ -175,7 +175,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         {/* Message */}
         {msg && (
           <div className="mx-4 mt-3 p-3 rounded-xl bg-white border text-sm text-center">
-            <span className={msg.includes("成功") ? "text-green-600" : "text-[#FE2C55]"}>{msg}</span>
+            <span className={msg.includes("成功") ? "text-green-600" : "text-[#1890FF]"}>{msg}</span>
           </div>
         )}
       </div>
@@ -185,23 +185,23 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         <div className="max-w-5xl mx-auto flex items-center gap-3">
           <div className="flex-1">
             <span className="text-xs text-gray-400">合计</span>
-            <div className="text-xl font-bold text-[#FE2C55]">¥{coupon.price.toFixed(2)}</div>
+            <div className="text-xl font-bold text-[#1890FF]">¥{coupon.price.toFixed(2)}</div>
           </div>
           {!user ? (
             <button onClick={() => router.push("/login")}
-              className="px-8 py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-xl">
+              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl">
               登录抢购
             </button>
           ) : user.verifyStatus !== "verified" ? (
             <button onClick={() => router.push("/profile/settings/verify")}
-              className="px-8 py-3 border border-[#FE2C55] text-[#FE2C55] font-bold rounded-xl">
+              className="px-8 py-3 border border-[#1890FF] text-[#1890FF] font-bold rounded-xl">
               去认证
             </button>
           ) : (
             <button
               onClick={() => setShowPaymentModal(true)}
               disabled={!canGrab}
-              className="px-8 py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white font-bold rounded-xl disabled:opacity-50 active:scale-[0.97] transition-all"
+              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl disabled:opacity-50 active:scale-[0.97] transition-all"
             >
               {coupon.remaining_quantity <= 0 ? "已抢光" : sessionStatus.status !== 'active' ? "非抢购时间" : "立即抢购"}
             </button>
@@ -216,16 +216,16 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             <h3 className="text-lg font-bold text-center mb-4">确认抢购</h3>
             <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 mb-4">
               <p className="text-sm text-gray-600">{coupon.name}</p>
-              <p className="text-2xl font-bold text-[#FE2C55] mt-1">¥{coupon.price.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-[#1890FF] mt-1">¥{coupon.price.toFixed(2)}</p>
               {user && <p className="text-xs text-gray-500 mt-1">当前余额：¥{Number(user.balance || 0).toFixed(2)}</p>}
             </div>
             <div className="mb-4">
               <label className="text-sm text-gray-600 mb-1 block">支付密码</label>
-              <input type="password" value={paymentPassword} onChange={(e) => setPaymentPassword(e.target.value)} placeholder="请输入支付密码" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FE2C55]" onKeyDown={(e) => e.key === "Enter" && handleGrab()} />
+              <input type="password" value={paymentPassword} onChange={(e) => setPaymentPassword(e.target.value)} placeholder="请输入支付密码" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1890FF]" onKeyDown={(e) => e.key === "Enter" && handleGrab()} />
             </div>
             <div className="flex gap-3">
               <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="flex-1 py-3 border border-gray-200 rounded-xl text-gray-600">取消</button>
-              <button onClick={handleGrab} disabled={grabbing || !paymentPassword} className="flex-1 py-3 bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] text-white rounded-xl font-bold disabled:opacity-50">{grabbing ? "支付中..." : "确认支付"}</button>
+              <button onClick={handleGrab} disabled={grabbing || !paymentPassword} className="flex-1 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-xl font-bold disabled:opacity-50">{grabbing ? "支付中..." : "确认支付"}</button>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/auth-context';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -26,7 +27,7 @@ const menuItems = [
 ];
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const pathname = usePathname();
 
   if (loading) {
@@ -44,20 +45,22 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
-      {/* Top bar */}
-      <div className="bg-[#E45050]">
+    <div className="min-h-screen bg-[#F5F7FA]">
+      {/* Top bar - Douyin Blue */}
+      <div className="bg-gradient-to-r from-[#1890FF] to-[#7B61FF]">
         <div className="max-w-[1200px] mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/profile" className="text-white font-bold text-lg">会员中心</Link>
-            <div className="hidden md:flex items-center gap-4 text-white text-sm">
-              <Link href="/" className="hover:text-yellow-200">首页</Link>
-              <Link href="/profile/order" className="hover:text-yellow-200">我的订单</Link>
-              <Link href="/profile/back" className="hover:text-yellow-200">快捷回兑</Link>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/images/logo.png" alt="抖音电商" width={100} height={26} className="h-6 w-auto brightness-0 invert" priority />
+            </Link>
+            <div className="hidden md:flex items-center gap-4 text-white/90 text-sm">
+              <Link href="/" className="hover:text-white">首页</Link>
+              <Link href="/profile/order" className="hover:text-white">我的订单</Link>
+              <Link href="/profile/back" className="hover:text-white">快捷回兑</Link>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" className="text-white text-sm hover:text-yellow-200">返回首页</Link>
+            <Link href="/" className="text-white/80 text-sm hover:text-white transition-colors">返回首页</Link>
           </div>
         </div>
       </div>
@@ -77,7 +80,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                       <li key={item.href}>
                         <Link href={item.href}
                           className={`block px-4 py-2.5 text-sm border-b border-gray-50 transition-colors ${
-                            isActive(item.href) ? 'text-[#FE2C55] bg-red-50 font-medium' : 'text-gray-600 hover:text-[#FE2C55] hover:bg-red-50'
+                            isActive(item.href) ? 'text-[#1890FF] bg-blue-50 font-medium' : 'text-gray-600 hover:text-[#1890FF] hover:bg-blue-50'
                           }`}>
                           {item.icon} {item.label}
                         </Link>
@@ -94,11 +97,11 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             {/* Mobile tabs */}
             <div className="md:hidden mb-4 bg-white rounded-lg shadow-sm overflow-x-auto">
               <div className="flex">
-                <Link href="/profile" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname === '/profile' ? 'text-[#FE2C55] font-medium border-b-2 border-[#FE2C55]' : 'text-gray-600'}`}>个人中心</Link>
-                <Link href="/profile/order" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/order') ? 'text-[#FE2C55] font-medium border-b-2 border-[#FE2C55]' : 'text-gray-600'}`}>我的订单</Link>
-                <Link href="/profile/back" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/back') ? 'text-[#FE2C55] font-medium border-b-2 border-[#FE2C55]' : 'text-gray-600'}`}>快捷回兑</Link>
-                <Link href="/profile/finance/deposit" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/finance') ? 'text-[#FE2C55] font-medium border-b-2 border-[#FE2C55]' : 'text-gray-600'}`}>财务</Link>
-                <Link href="/profile/settings/info" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/settings') ? 'text-[#FE2C55] font-medium border-b-2 border-[#FE2C55]' : 'text-gray-600'}`}>设置</Link>
+                <Link href="/profile" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname === '/profile' ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>个人中心</Link>
+                <Link href="/profile/order" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/order') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>我的订单</Link>
+                <Link href="/profile/back" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/back') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>快捷回兑</Link>
+                <Link href="/profile/finance/deposit" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/finance') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>财务</Link>
+                <Link href="/profile/settings/info" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/settings') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>设置</Link>
               </div>
             </div>
 
@@ -110,17 +113,17 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       </div>
 
       {/* Mobile bottom nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 z-40">
         <div className="flex items-center justify-around h-12">
-          <Link href="/" className="flex flex-col items-center text-gray-500">
+          <Link href="/" className="flex flex-col items-center text-gray-500 hover:text-[#1890FF]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
             <span className="text-[10px]">首页</span>
           </Link>
-          <Link href="/profile/order" className="flex flex-col items-center text-gray-500">
+          <Link href="/profile/order" className="flex flex-col items-center text-gray-500 hover:text-[#1890FF]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
             <span className="text-[10px]">订单</span>
           </Link>
-          <Link href="/profile" className="flex flex-col items-center text-[#FE2C55]">
+          <Link href="/profile" className="flex flex-col items-center text-[#1890FF]">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
             <span className="text-[10px]">我的</span>
           </Link>

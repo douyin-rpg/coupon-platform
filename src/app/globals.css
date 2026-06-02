@@ -56,37 +56,47 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* 抖音电商蓝色系配色 */
+  --background: #F5F7FA;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #1890FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E6F7FF;
+  --secondary-foreground: #1890FF;
+  --muted: #F0F0F0;
+  --muted-foreground: #8C8C8C;
+  --accent: #FE2C55;
+  --accent-foreground: #FFFFFF;
+  --destructive: #FF4D4F;
+  --border: #E8E8E8;
+  --input: #E8E8E8;
+  --ring: #1890FF;
+  --chart-1: #1890FF;
+  --chart-2: #00D4FF;
+  --chart-3: #7B61FF;
+  --chart-4: #FF6B35;
+  --chart-5: #FE2C55;
+  --sidebar: #0A1628;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #1890FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #132742;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #1E3A5F;
+  --sidebar-ring: #1890FF;
+  /* 自定义抖音电商色彩变量 */
+  --douyin-blue: #1890FF;
+  --douyin-red: #FE2C55;
+  --douyin-cyan: #00D4FF;
+  --douyin-purple: #7B61FF;
+  --douyin-orange: #FF6B35;
+  --douyin-hero-dark: #0A1628;
+  --douyin-hero-mid: #132742;
+  --douyin-hero-light: #1E3A5F;
 }
 
 .dark {
@@ -134,4 +144,79 @@
 
 body {
   @apply font-sans;
+}
+
+/* 抖音电商风格 - 浮动光球动画 */
+@keyframes float-orb-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(30px, -20px) scale(1.1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-10px, -40px) scale(0.95);
+    opacity: 0.35;
+  }
+  75% {
+    transform: translate(20px, -10px) scale(1.05);
+    opacity: 0.45;
+  }
+}
+
+@keyframes float-orb-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.25;
+  }
+  33% {
+    transform: translate(-25px, 15px) scale(1.15);
+    opacity: 0.4;
+  }
+  66% {
+    transform: translate(15px, -30px) scale(0.9);
+    opacity: 0.3;
+  }
+}
+
+@keyframes float-orb-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(20px, 20px) scale(1.2);
+    opacity: 0.4;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes countdown-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes slide-up-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
