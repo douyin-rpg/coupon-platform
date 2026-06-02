@@ -7,8 +7,20 @@ import { useState, useEffect } from 'react';
 interface Article { id: string; title: string; }
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+      logout();
+      window.location.href = '/';
+    } catch {
+      setLoggingOut(false);
+    }
+  };
 
   useEffect(() => {
     fetch('/api/articles?limit=3')
@@ -26,7 +38,7 @@ export default function ProfilePage() {
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1890FF] to-[#7B61FF] flex items-center justify-center shadow-md shadow-blue-500/20">
           <span className="text-2xl text-white font-bold">{user.username.charAt(0).toUpperCase()}</span>
         </div>
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-gray-800">{user.username}</span>
             {user.verifyStatus === "verified" ? (
@@ -43,6 +55,17 @@ export default function ProfilePage() {
           </div>
           <p className="text-sm text-gray-400 mt-1">真实姓名：{user.realName}</p>
         </div>
+        <button
+          onClick={handleLogout}
+          className="ml-auto flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          退出
+        </button>
       </div>
 
       {/* Balance card */}

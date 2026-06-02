@@ -4,6 +4,14 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 
+interface Session {
+  id: string;
+  name: string;
+  start_time: string;
+  end_time: string;
+  is_active: boolean;
+}
+
 interface Coupon {
   id: string;
   name: string;
@@ -12,9 +20,8 @@ interface Coupon {
   remaining_quantity: number;
   sold_count: number;
   image_url: string | null;
-  session_id: string;
+  session_id: string | null;
   is_active: boolean;
-  sessions: { name: string; start_time: string; end_time: string; is_active: boolean } | null;
 }
 
 export default function CouponDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -22,33 +29,64 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
   const router = useRouter();
   const { user } = useAuth();
   const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [paymentPassword, setPaymentPassword] = useState("");
   const [grabbing, setGrabbing] = useState(false);
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    const loadCoupon = async () => {
-      const res = await fetch(`/api/coupons?id=${id}`);
-      if (res.ok) {
-        const data = await res.json();
+    const loadData = async () => {
+      const [couponRes, sessionRes] = await Promise.all([
+        fetch(`/api/coupons?id=${id}`),
+        fetch(`/api/sessions`),
+      ]);
+      if (couponRes.ok) {
+        const data = await couponRes.json();
         if (data.coupons && data.coupons.length > 0) setCoupon(data.coupons[0]);
       }
+      if (sessionRes.ok) {
+        const data = await sessionRes.json();
+        setSessions(data.sessions || []);
+      }
     };
-    loadCoupon();
+    loadData();
   }, [id]);
 
-  const getSessionStatus = () => {
-    if (!coupon?.sessions) return { status: 'ended', canGrab: false };
+  const getActiveSession = (): Session | null => {
     const now = new Date();
-    const [sh, sm] = coupon.sessions.start_time.split(':').map(Number);
-    const [eh, em] = coupon.sessions.end_time.split(':').map(Number);
-    const start = new Date(now); start.setHours(sh, sm, 0, 0);
-    const end = new Date(now); end.setHours(eh, em, 0, 0);
-    if (now >= start && now <= end && coupon.sessions.is_active) return { status: 'active', canGrab: true };
-    if (now < start) return { status: 'upcoming', canGrab: false };
-    return { status: 'ended', canGrab: false };
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    for (const s of sessions) {
+      if (!s.is_active) continue;
+      const [sh, sm] = s.start_time.split(":").map(Number);
+      const [eh, em] = s.end_time.split(":").map(Number);
+      if (currentMinutes >= sh * 60 + sm && currentMinutes <= eh * 60 + em) {
+        return s;
+      }
+    }
+    return null;
   };
+
+  const getNextSession = (): Session | null => {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    let next: Session | null = null;
+    let minDiff = Infinity;
+    for (const s of sessions) {
+      if (!s.is_active) continue;
+      const [sh, sm] = s.start_time.split(":").map(Number);
+      const startMinutes = sh * 60 + sm;
+      if (startMinutes > currentMinutes && startMinutes - currentMinutes < minDiff) {
+        minDiff = startMinutes - currentMinutes;
+        next = s;
+      }
+    }
+    return next;
+  };
+
+  const activeSession = getActiveSession();
+  const nextSession = getNextSession();
+  const canGrab = user?.verifyStatus === "verified" && !!activeSession && (coupon?.remaining_quantity ?? 0) > 0;
 
   const handleGrab = async () => {
     if (!user) { router.push("/login"); return; }
@@ -79,8 +117,6 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
 
   const progress = coupon.remaining_quantity + coupon.sold_count > 0
     ? Math.round((coupon.sold_count / (coupon.remaining_quantity + coupon.sold_count)) * 100) : 0;
-  const sessionStatus = getSessionStatus();
-  const canGrab = user?.verifyStatus === "verified" && sessionStatus.canGrab && coupon.remaining_quantity > 0;
   const formatPrice = (price: number) => price.toLocaleString('zh-CN');
 
   return (
@@ -106,7 +142,11 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-50">
                 <div className="text-center">
-                  <div className="text-6xl mb-2">🎫</div>
+                  <svg className="w-16 h-16 mx-auto mb-2 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M9 5v4" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
                   <div className="text-gray-400">优惠券</div>
                 </div>
               </div>
@@ -144,25 +184,42 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        {/* Session info */}
-        {coupon.sessions && (
-          <div className="bg-white mt-2 p-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">抢购场次</span>
-              <span className="text-sm font-medium text-[#1A1A1A]">{coupon.sessions.name}</span>
-              <span className="text-xs text-gray-400">{coupon.sessions.start_time}-{coupon.sessions.end_time}</span>
-              {sessionStatus.status === 'active' && (
-                <span className="text-xs bg-[#1890FF] text-white px-1.5 py-0.5 rounded animate-pulse">抢购中</span>
-              )}
-              {sessionStatus.status === 'upcoming' && (
-                <span className="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">即将开始</span>
-              )}
-              {sessionStatus.status === 'ended' && (
-                <span className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">已结束</span>
-              )}
-            </div>
+        {/* Session info - show all sessions */}
+        <div className="bg-white mt-2 p-4">
+          <div className="text-sm text-gray-500 mb-3">抢购场次</div>
+          <div className="space-y-2">
+            {sessions.map((s) => {
+              const now = new Date();
+              const currentMinutes = now.getHours() * 60 + now.getMinutes();
+              const [sh, sm] = s.start_time.split(":").map(Number);
+              const [eh, em] = s.end_time.split(":").map(Number);
+              const isActive = currentMinutes >= sh * 60 + sm && currentMinutes <= eh * 60 + em && s.is_active;
+              const isUpcoming = currentMinutes < sh * 60 + sm && s.is_active;
+
+              return (
+                <div key={s.id} className={`flex items-center justify-between p-2.5 rounded-xl ${isActive ? 'bg-blue-50 border border-blue-200' : isUpcoming ? 'bg-amber-50 border border-amber-200' : 'bg-gray-50'}`}>
+                  <div className="flex items-center gap-2">
+                    <svg className={`w-4 h-4 ${isActive ? 'text-[#1890FF]' : 'text-gray-400'}`} viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    <span className={`text-sm font-medium ${isActive ? 'text-[#1890FF]' : 'text-gray-700'}`}>{s.name}</span>
+                    <span className="text-xs text-gray-400">{s.start_time}-{s.end_time}</span>
+                  </div>
+                  {isActive && (
+                    <span className="text-xs bg-[#1890FF] text-white px-2 py-0.5 rounded-full animate-pulse">抢购中</span>
+                  )}
+                  {isUpcoming && (
+                    <span className="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full">即将开始</span>
+                  )}
+                  {!isActive && !isUpcoming && (
+                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">已结束</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
 
         {/* Message */}
         {msg && (
@@ -181,21 +238,33 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
           </div>
           {!user ? (
             <button onClick={() => router.push("/login")}
-              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl">
+              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl active:scale-[0.97] transition-all">
               登录抢购
             </button>
           ) : user.verifyStatus !== "verified" ? (
             <button onClick={() => router.push("/profile/settings/verify")}
-              className="px-8 py-3 border border-[#1890FF] text-[#1890FF] font-bold rounded-xl">
+              className="px-8 py-3 border border-[#1890FF] text-[#1890FF] font-bold rounded-xl active:scale-[0.97] transition-all">
               去认证
             </button>
+          ) : coupon.remaining_quantity <= 0 ? (
+            <button disabled className="px-8 py-3 bg-gray-300 text-white font-bold rounded-xl">
+              已抢光
+            </button>
+          ) : !activeSession ? (
+            <div className="text-right">
+              <button disabled className="px-8 py-3 bg-gray-300 text-white font-bold rounded-xl">
+                非抢购时间
+              </button>
+              {nextSession && (
+                <div className="text-xs text-gray-400 mt-1">{nextSession.name} {nextSession.start_time}开始</div>
+              )}
+            </div>
           ) : (
             <button
               onClick={() => setShowPaymentModal(true)}
-              disabled={!canGrab}
-              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl disabled:opacity-50 active:scale-[0.97] transition-all"
+              className="px-8 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl active:scale-[0.97] transition-all shadow-lg shadow-blue-200"
             >
-              {coupon.remaining_quantity <= 0 ? "已抢光" : sessionStatus.status !== 'active' ? "非抢购时间" : "立即抢购"}
+              立即抢购
             </button>
           )}
         </div>
@@ -203,25 +272,50 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
 
       {/* Payment modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }}>
-          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-center mb-4">确认抢购</h3>
-              <div className="bg-blue-50 rounded-xl p-4 mb-4">
-                <p className="text-sm text-gray-600">{coupon.name}</p>
-                <p className="text-2xl font-bold text-[#1890FF] mt-1">¥{formatPrice(coupon.price)}</p>
-                {user && <p className="text-xs text-gray-500 mt-1">当前余额：¥{Number(user.balance || 0).toLocaleString('zh-CN')}</p>}
-              </div>
-              <div className="mb-4">
-                <label className="text-sm text-gray-600 mb-1 block">支付密码</label>
-                <input type="password" value={paymentPassword} onChange={(e) => setPaymentPassword(e.target.value)} placeholder="请输入6位支付密码" maxLength={6} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1890FF] text-center text-lg tracking-[0.5em]" onKeyDown={(e) => e.key === "Enter" && handleGrab()} />
-              </div>
-              <div className="flex gap-3">
-                <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="flex-1 py-3 border border-gray-200 rounded-xl text-gray-600">取消</button>
-                <button onClick={handleGrab} disabled={grabbing || paymentPassword.length !== 6} className="flex-1 py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-xl font-bold disabled:opacity-50">{grabbing ? "支付中..." : "确认支付"}</button>
-              </div>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center">
+          <div className="bg-white w-full md:max-w-md md:rounded-2xl rounded-t-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#1A1A1A]">确认抢购</h3>
+              <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="text-gray-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
+
+            <div className="bg-blue-50 rounded-xl p-4 mb-4">
+              <div className="text-sm text-gray-500">商品</div>
+              <div className="font-medium text-[#1A1A1A]">{coupon.name}</div>
+              <div className="flex items-end gap-1 mt-2">
+                <span className="text-sm text-gray-500">支付金额</span>
+                <span className="text-2xl font-bold text-[#1890FF]">¥{formatPrice(coupon.price)}</span>
+              </div>
+              {activeSession && (
+                <div className="text-xs text-gray-400 mt-1">当前场次: {activeSession.name} ({activeSession.start_time}-{activeSession.end_time})</div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <label className="text-sm text-gray-500 mb-1 block">支付密码</label>
+              <input
+                type="password"
+                maxLength={6}
+                value={paymentPassword}
+                onChange={(e) => setPaymentPassword(e.target.value.replace(/\D/g, ""))}
+                placeholder="请输入6位支付密码"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF] outline-none"
+              />
+            </div>
+
+            <button
+              onClick={handleGrab}
+              disabled={grabbing || !paymentPassword}
+              className="w-full py-3 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white font-bold rounded-xl disabled:opacity-50 active:scale-[0.97] transition-all"
+            >
+              {grabbing ? "抢购中..." : "确认支付"}
+            </button>
+
+            <p className="text-xs text-gray-400 text-center mt-3">支付后可申请回收，回收通过后返还金额+5%奖励</p>
           </div>
         </div>
       )}

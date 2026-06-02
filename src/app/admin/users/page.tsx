@@ -100,6 +100,28 @@ export default function AdminUsersPage() {
     }
   };
 
+  const [ipGeo, setIpGeo] = useState<Record<string, string>>({});
+
+  const resolveIp = async (ip: string) => {
+    if (!ip || ip === '-' || ipGeo[ip]) return;
+    try {
+      const res = await fetch(`/api/geo-ip?ip=${encodeURIComponent(ip)}`);
+      const data = await res.json();
+      if (data.location) {
+        setIpGeo(prev => ({ ...prev, [ip]: data.location }));
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    users.forEach(u => {
+      if (u.register_ip) resolveIp(u.register_ip);
+      if (u.last_login_ip) resolveIp(u.last_login_ip);
+    });
+  }, [users]);
+
   const actionLabels: Record<string, { title: string; label: string; placeholder: string; description: string }> = {
     reset_password: { title: '重置登录密码', label: '新登录密码', placeholder: '请输入新密码', description: '重置用户的登录密码' },
     reset_payment_password: { title: '重置支付密码', label: '新支付密码', placeholder: '请输入新支付密码', description: '重置用户的余额支付密码' },
@@ -283,8 +305,8 @@ export default function AdminUsersPage() {
               <div className="bg-gray-50 rounded-xl p-4 space-y-3">
                 <h4 className="font-semibold text-gray-700">登录信息</h4>
                 <div className="grid grid-cols-1 gap-3">
-                  <div><span className="text-gray-400">注册IP：</span>{selectedUser.register_ip || '未知'}</div>
-                  <div><span className="text-gray-400">最后登录IP：</span>{selectedUser.last_login_ip || '未知'}</div>
+                  <div><span className="text-gray-400">注册IP：</span>{selectedUser.register_ip || '未知'} {selectedUser.register_ip && ipGeo[selectedUser.register_ip] && <span className="text-blue-500 text-xs ml-1">({ipGeo[selectedUser.register_ip]})</span>}</div>
+                  <div><span className="text-gray-400">最后登录IP：</span>{selectedUser.last_login_ip || '未知'} {selectedUser.last_login_ip && ipGeo[selectedUser.last_login_ip] && <span className="text-blue-500 text-xs ml-1">({ipGeo[selectedUser.last_login_ip]})</span>}</div>
                   <div><span className="text-gray-400">最后登录时间：</span>{selectedUser.last_login_at ? new Date(selectedUser.last_login_at).toLocaleString() : '从未登录'}</div>
                 </div>
               </div>
