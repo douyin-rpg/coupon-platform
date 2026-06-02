@@ -26,9 +26,8 @@ export async function GET(request: Request) {
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
-    if (sessionId) {
-      query = query.eq("session_id", sessionId);
-    }
+    // Note: session_id filter is not applied because all coupons are available in all sessions.
+    // The session concept is only for time-based access control (can only grab during active session).
     if (categoryId) {
       query = query.eq("category_id", categoryId);
     }

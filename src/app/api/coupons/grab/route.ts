@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     // 查询优惠券信息
     const { data: coupon, error: couponError } = await client
       .from('coupons')
-      .select('id, name, price, remaining_quantity, sold_count, is_active, session_id, grab_sessions(start_time, end_time, is_active)')
+      .select('id, name, price, remaining_quantity, sold_count, is_active')
       .eq('id', couponId)
       .maybeSingle();
 
@@ -51,21 +51,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '优惠券不存在或已下架' }, { status: 400 });
     }
 
-    // 检查是否在可抢时间内
-    const session = coupon.grab_sessions as unknown as { start_time: string; end_time: string; is_active: boolean };
-    if (!session || !session.is_active) {
-      return NextResponse.json({ error: '该场次未开放' }, { status: 400 });
-    }
+    // 检查是否有任何场次当前开放抢购
+    const { data: sessions, error: sessionsError } = await client
+      .from('grab_sessions')
+      .select('start_time, end_time, is_active')
+      .eq('is_active', true);
+
+    if (sessionsError) throw new Error(`查询场次失败: ${sessionsError.message}`);
 
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    const [startH, startM] = session.start_time.split(':').map(Number);
-    const [endH, endM] = session.end_time.split(':').map(Number);
-    const startMinutes = startH * 60 + startM;
-    const endMinutes = endH * 60 + endM;
+    const activeSession = sessions?.find((s: { start_time: string; end_time: string }) => {
+      const [startH, startM] = s.start_time.split(':').map(Number);
+      const [endH, endM] = s.end_time.split(':').map(Number);
+      const startMinutes = startH * 60 + startM;
+      const endMinutes = endH * 60 + endM;
+      return currentMinutes >= startMinutes && currentMinutes < endMinutes;
+    });
 
-    if (currentMinutes < startMinutes || currentMinutes >= endMinutes) {
-      return NextResponse.json({ error: '当前不在抢券时间内' }, { status: 400 });
+    if (!activeSession) {
+      return NextResponse.json({ error: '当前不在抢券时间内，请在活动时间段内抢购' }, { status: 400 });
     }
 
     if (coupon.remaining_quantity <= 0) {
