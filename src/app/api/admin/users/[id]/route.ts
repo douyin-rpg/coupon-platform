@@ -61,7 +61,7 @@ export async function PATCH(
 		}
 
 		if (action === "reset_login_password") {
-			const { new_password } = body;
+			const new_password = body.newPassword || body.new_password;
 			if (!new_password || new_password.length < 6) {
 				return NextResponse.json({ error: "密码至少6位" }, { status: 400 });
 			}
@@ -77,7 +77,7 @@ export async function PATCH(
 		}
 
 		if (action === "reset_payment_password") {
-			const { new_password } = body;
+			const new_password = body.newPaymentPassword || body.new_password;
 			if (!new_password || new_password.length < 6) {
 				return NextResponse.json({ error: "密码至少6位" }, { status: 400 });
 			}
