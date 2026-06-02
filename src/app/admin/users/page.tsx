@@ -17,6 +17,7 @@ interface User {
   bank_card_number: string | null;
   bank_name: string | null;
   balance: string;
+  credit_score: number;
   created_at: string;
 }
 
@@ -24,7 +25,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [actionOpen, setActionOpen] = useState(false);
-  const [actionType, setActionType] = useState<'reset_password' | 'reset_payment_password' | 'add_balance' | 'deduct_balance'>('reset_password');
+  const [actionType, setActionType] = useState<'reset_password' | 'reset_payment_password' | 'add_balance' | 'deduct_balance' | 'update_credit_score'>('reset_password');
   const [newValue, setNewValue] = useState('');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
@@ -77,6 +78,7 @@ export default function AdminUsersPage() {
     reset_payment_password: { title: '重置支付密码', label: '新支付密码', placeholder: '请输入新支付密码', description: '重置用户的余额支付密码' },
     add_balance: { title: '充值余额', label: '充值金额', placeholder: '请输入充值金额', description: '增加用户余额' },
     deduct_balance: { title: '扣款', label: '扣款金额', placeholder: '请输入扣款金额', description: '从用户余额中扣款' },
+    update_credit_score: { title: '修改信用分', label: '信用分', placeholder: '请输入信用分(0-1000)', description: '修改用户信用分' },
   };
 
   return (
@@ -121,6 +123,7 @@ export default function AdminUsersPage() {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">认证状态</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">收款账号</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">余额</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">信用分</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500">注册时间</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500">操作</th>
               </tr>
@@ -145,6 +148,9 @@ export default function AdminUsersPage() {
                     {u.bank_bound ? `${u.bank_name || ''} 尾号${u.bank_card_number?.slice(-4) || ''}` : '-'}
                   </td>
                   <td className="px-4 py-3 text-sm font-medium tabular-nums">¥{parseFloat(u.balance).toFixed(2)}</td>
+                  <td className="px-4 py-3">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${(u.credit_score ?? 100) >= 80 ? 'bg-green-50 text-green-600' : (u.credit_score ?? 100) >= 60 ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-600'}`}>{u.credit_score ?? 100}</span>
+                  </td>
                   <td className="px-4 py-3 text-xs text-gray-400">{new Date(u.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex gap-1 justify-end">
@@ -172,6 +178,12 @@ export default function AdminUsersPage() {
                       >
                         扣款
                       </button>
+                      <button
+                        onClick={() => { setSelectedUser(u); setActionType('update_credit_score'); setNewValue(String(u.credit_score ?? 100)); setActionOpen(true); }}
+                        className="text-xs text-purple-600 hover:text-purple-800 px-2 py-1 hover:bg-purple-50 rounded transition"
+                      >
+                        信用分
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -196,7 +208,7 @@ export default function AdminUsersPage() {
           <div className="space-y-4 py-2">
             {(actionType === 'add_balance' || actionType === 'deduct_balance') && (
               <div className="bg-amber-50 rounded-lg p-3 text-xs text-amber-700">
-                {actionType === 'add_balance' ? '充值将直接增加用户余额' : '扣款将从用户余额中减少，余额不足时无法扣款'}
+                {actionType === 'add_balance' ? '充值将直接增加用户余额' : actionType === 'deduct_balance' ? '扣款将从用户余额中减少，余额不足时无法扣款' : actionType === 'update_credit_score' ? '设置用户信用分(0-1000)' : '请输入新密码'}
               </div>
             )}
             <div className="space-y-2">

@@ -2,9 +2,24 @@
 
 import { useAuth } from '@/contexts/auth-context';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+}
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  useEffect(() => {
+    fetch('/api/announcements')
+      .then(res => res.json())
+      .then(data => { if (data.announcements) setAnnouncements(data.announcements); })
+      .catch(() => {});
+  }, []);
 
   if (!user) return null;
 
@@ -44,7 +59,7 @@ export default function ProfilePage() {
         </div>
         <div className="bg-gray-50 rounded-lg p-3 text-center">
           <p className="text-sm text-gray-500">信用分</p>
-          <p className="text-xl font-bold text-[#00D4FF] mt-1">500</p>
+          <p className="text-xl font-bold text-[#00D4FF] mt-1">{user.creditScore ?? 100}</p>
         </div>
         <div className="bg-gray-50 rounded-lg p-3 text-center">
           <p className="text-sm text-gray-500">账户余额</p>
@@ -54,9 +69,8 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Balance card - Douyin Blue Gradient */}
+      {/* Balance card */}
       <div className="bg-gradient-to-r from-[#1890FF] to-[#7B61FF] rounded-xl p-4 md:p-6 text-white mb-6 shadow-lg relative overflow-hidden">
-        {/* Decorative circles */}
         <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10" />
         <div className="absolute -right-4 bottom-0 w-20 h-20 rounded-full bg-white/5" />
         <div className="relative z-10 flex items-center justify-between">
@@ -72,6 +86,24 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Announcements */}
+      {announcements.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
+            <svg className="w-4 h-4 text-[#1890FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+            平台公告
+          </h3>
+          <div className="space-y-2">
+            {announcements.map(a => (
+              <div key={a.id} className="bg-blue-50/60 border border-blue-100 rounded-lg p-3">
+                <p className="text-sm font-medium text-gray-700">{a.title}</p>
+                <p className="text-xs text-gray-500 mt-1 whitespace-pre-wrap">{a.content}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Quick links */}
       <div className="grid grid-cols-3 md:grid-cols-5 gap-2">

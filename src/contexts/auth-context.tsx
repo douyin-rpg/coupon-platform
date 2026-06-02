@@ -18,6 +18,7 @@ interface User {
   idCardFront: string | null;
   idCardBack: string | null;
   verifyRejectedReason: string | null;
+  creditScore: number;
 }
 
 interface AuthContextType {

@@ -18,7 +18,7 @@ export async function GET(
 		const supabase = getSupabaseClient();
 		const { data: user, error } = await supabase
 			.from("users")
-			.select("id, username, real_name, balance, verify_status, verify_rejected_reason, id_card_name, id_card, id_card_front, id_card_back, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, created_at")
+			.select("id, username, real_name, balance, verify_status, verify_rejected_reason, id_card_name, id_card, id_card_front, id_card_back, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, credit_score, created_at")
 			.eq("id", id)
 			.single();
 
@@ -221,7 +221,24 @@ export async function PATCH(
 			return NextResponse.json({ success: true, message: "收款账户已删除" });
 		}
 
-		return NextResponse.json({ error: "未知操作" }, { status: 400 });
+		// 管理员修改信用分
+			if (action === "update_credit_score") {
+				const { credit_score } = body;
+				const score = parseInt(credit_score);
+				if (isNaN(score) || score < 0 || score > 1000) {
+					return NextResponse.json({ error: "信用分范围0-1000" }, { status: 400 });
+				}
+				const { error } = await supabase
+					.from("users")
+					.update({ credit_score: score })
+					.eq("id", id);
+				if (error) {
+					return NextResponse.json({ error: "修改失败" }, { status: 500 });
+				}
+				return NextResponse.json({ success: true, message: `信用分已更新为 ${score}` });
+			}
+
+			return NextResponse.json({ error: "未知操作" }, { status: 400 });
 	} catch {
 		return NextResponse.json({ error: "服务器错误" }, { status: 500 });
 	}

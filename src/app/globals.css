@@ -146,6 +146,15 @@ body {
   @apply font-sans;
 }
 
+/* 公告滚动动画 */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
 /* 抖音电商风格 - 浮动光球动画 */
 @keyframes float-orb-1 {
   0%, 100% {
