@@ -47,7 +47,7 @@ export default function LoginPage() {
             <Image src="/images/logo.png" alt="抖音电商" width={160} height={42} className="h-10 w-auto" priority />
           </div>
           <h1 className="text-2xl font-bold text-white">欢迎登录</h1>
-          <p className="text-sm text-white/60 mt-1">抢券即回兑，赚取5%奖励</p>
+          <p className="text-sm text-white/60 mt-1">美好生活，触手可得</p>
         </div>
 
         {/* Login Form */}
