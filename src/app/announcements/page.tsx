@@ -66,7 +66,7 @@ export default function AnnouncementsPage() {
       <div className="bg-gradient-to-r from-[#0A1628] to-[#132742] text-white px-4 py-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#1890FF]/10 -translate-y-1/2 translate-x-1/3" />
         <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full bg-[#7B61FF]/10 translate-y-1/2 -translate-x-1/3" />
-        <div className="max-w-4xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-2">
             <Link href="/" className="text-white/70 hover:text-white">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -77,7 +77,7 @@ export default function AnnouncementsPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 -mt-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4">
         {/* Category tabs */}
         <div className="bg-white rounded-2xl shadow-sm p-3 mb-4 flex items-center gap-2 overflow-x-auto scrollbar-hide">
           <button

@@ -108,13 +108,11 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, [banners.length]);
 
-  // Real-time clock for countdown
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Rotate announcements
   useEffect(() => {
     if (articles.length <= 1) return;
     const timer = setInterval(() => setCurrentAnnounceIdx(prev => (prev + 1) % articles.length), 5000);
@@ -174,12 +172,13 @@ export default function HomePage() {
             style={{ background: 'radial-gradient(circle, #1890FF 0%, transparent 70%)', top: '30%', left: '40%', animation: 'floatOrb1 7s ease-in-out infinite reverse' }} />
         </div>
 
-        {/* Top Navigation */}
+        {/* Desktop: Full-width nav bar */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-3 md:py-4">
             <div className="flex items-center gap-3">
               <Image src="/images/logo.png" alt="抖音电商" width={140} height={40} className="h-7 md:h-9 w-auto" />
             </div>
+            {/* Desktop search */}
             <div className="hidden md:flex items-center gap-2">
               <div className="relative">
                 <input type="text" placeholder="搜索优惠券..." value={searchQuery}
@@ -195,6 +194,12 @@ export default function HomePage() {
                 <IconAnnouncement className="w-4 h-4" />
                 <span className="hidden sm:inline">公告</span>
               </Link>
+              {/* Desktop nav links */}
+              <div className="hidden lg:flex items-center gap-4 text-white/60 text-sm">
+                <Link href="/" className="hover:text-white transition-colors">首页</Link>
+                <Link href="/cart" className="hover:text-white transition-colors">购物车</Link>
+                <Link href="/profile/order" className="hover:text-white transition-colors">订单</Link>
+              </div>
               {user ? (
                 <Link href="/profile" className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/8 text-white text-sm hover:bg-white/15 transition-all border border-white/10">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
@@ -210,10 +215,10 @@ export default function HomePage() {
           </div>
 
           {/* Hero Title */}
-          <div className="pb-4 pt-2 md:pt-4 md:pb-6">
+          <div className="pb-4 pt-2 md:pt-6 md:pb-8">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 tracking-wide">
+                <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-white mb-2 tracking-wide">
                   激发兴趣，引领增长
                 </h1>
                 <p className="text-white/40 text-xs md:text-sm">
@@ -222,7 +227,7 @@ export default function HomePage() {
               </div>
               {/* Countdown */}
               {activeSession && (
-                <div className="flex items-center gap-2.5 bg-white/6 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/8">
+                <div className="flex items-center gap-2.5 bg-white/6 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/8">
                   <div className="flex items-center gap-1.5">
                     <span className="flex h-2 w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -234,7 +239,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-0.5">
                     {getCountdown(activeSession)?.split(':').map((val, i) => (
                       <span key={i} className="flex items-center">
-                        <span className="bg-white/10 text-white text-sm font-bold font-mono px-1.5 py-0.5 rounded tabular-nums min-w-[26px] text-center">{val}</span>
+                        <span className="bg-white/10 text-white text-sm md:text-base font-bold font-mono px-1.5 py-0.5 rounded tabular-nums min-w-[28px] text-center">{val}</span>
                         {i < 2 && <span className="text-[#00D4FF]/60 font-bold mx-px text-xs">:</span>}
                       </span>
                     ))}
@@ -242,12 +247,12 @@ export default function HomePage() {
                 </div>
               )}
               {!activeSession && nextSession && (
-                <div className="flex items-center gap-2.5 bg-white/4 rounded-xl px-4 py-2 border border-white/6">
+                <div className="flex items-center gap-2.5 bg-white/4 rounded-xl px-4 py-2.5 border border-white/6">
                   <span className="text-amber-400 text-xs font-medium">{nextSession.name} 即将开始</span>
                   <div className="flex items-center gap-0.5">
                     {getCountdown(nextSession)?.split(':').map((val, i) => (
                       <span key={i} className="flex items-center">
-                        <span className="bg-white/8 text-white/70 text-sm font-bold font-mono px-1.5 py-0.5 rounded tabular-nums min-w-[26px] text-center">{val}</span>
+                        <span className="bg-white/8 text-white/70 text-sm md:text-base font-bold font-mono px-1.5 py-0.5 rounded tabular-nums min-w-[28px] text-center">{val}</span>
                         {i < 2 && <span className="text-white/20 font-bold mx-px text-xs">:</span>}
                       </span>
                     ))}
@@ -260,7 +265,7 @@ export default function HomePage() {
 
         {/* Banner */}
         {banners.length > 0 && (
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-6">
             <div className="relative rounded-2xl overflow-hidden shadow-lg shadow-black/20" style={{ aspectRatio: '3.5/1' }}>
               {banners.map((banner, idx) => (
                 <div key={banner.id} className="absolute inset-0 transition-opacity duration-700" style={{ opacity: idx === currentBanner ? 1 : 0 }}>
@@ -280,155 +285,221 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* ===== Announcement Bar ===== */}
-      {articles.length > 0 && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3">
-          <Link href="/announcements" className="block bg-white rounded-xl shadow-sm px-4 py-2.5 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3">
-              <div className="flex-shrink-0 flex items-center gap-1.5">
-                <IconAnnouncement className="w-4 h-4 text-[#1890FF]" />
-                <span className="text-[#1890FF] text-xs font-bold">公告</span>
-              </div>
-              <div className="flex-1 overflow-hidden relative h-5">
-                <div className="absolute inset-0 flex items-center transition-all duration-500" style={{ transform: `translateY(-${currentAnnounceIdx * 100}%)` }}>
-                  {articles.map((a) => (
-                    <div key={a.id} className="w-full flex-shrink-0 h-5 flex items-center">
-                      <span className="text-gray-600 text-sm truncate">{a.title}</span>
-                    </div>
-                  ))}
+      {/* ===== Main Content Area ===== */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* ===== Announcement Bar ===== */}
+        {articles.length > 0 && (
+          <div className="mt-3">
+            <Link href="/announcements" className="block bg-white rounded-xl shadow-sm px-4 py-2.5 hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3">
+                <div className="flex-shrink-0 flex items-center gap-1.5">
+                  <IconAnnouncement className="w-4 h-4 text-[#1890FF]" />
+                  <span className="text-[#1890FF] text-xs font-bold">公告</span>
                 </div>
-              </div>
-              <svg className="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </Link>
-        </div>
-      )}
-
-      {/* ===== Category + Session Combined ===== */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3">
-        <div className="bg-white rounded-2xl shadow-sm p-3 md:p-4 space-y-3">
-          {/* Category row with Douyin-style icons */}
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            <button onClick={() => setSelectedCategory('')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-              }`}>
-              <IconCoupon className="w-4 h-4" />
-              全部
-            </button>
-            {categories.map(cat => {
-              const IconComponent = categoryIconMap[cat.name];
-              return (
-                <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                    selectedCategory === cat.id ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                  }`}>
-                  {IconComponent ? <IconComponent className="w-4 h-4" /> : <span>{cat.icon}</span>}
-                  <span>{cat.name}</span>
-                </button>
-              );
-            })}
-          </div>
-          {/* Session tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-            {sessions.map(session => {
-              const status = getSessionStatus(session);
-              const countdown = getCountdown(session);
-              return (
-                <div key={session.id}
-                  className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                    status === 'active' ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-md shadow-blue-500/20' :
-                    status === 'upcoming' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
-                    'bg-gray-50 text-gray-400'
-                  }`}>
-                  <span className="text-sm font-bold">{session.name}</span>
-                  <span className="text-[10px] opacity-70">{session.start_time}-{session.end_time}</span>
-                  {status === 'active' && (
-                    <span className="flex h-1.5 w-1.5 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
-                    </span>
-                  )}
-                  {countdown && <span className="text-xs font-mono font-bold tabular-nums">{countdown}</span>}
-                  {status === 'ended' && <span className="text-[10px]">已结束</span>}
-                </div>
-              );
-            })}
-          </div>
-          {!activeSession && (
-            <div className="px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg text-center">
-              <span className="text-amber-600 text-xs">当前非活动时间，请在活动时间内抢购优惠券</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ===== Mobile Search ===== */}
-      <div className="md:hidden max-w-7xl mx-auto px-4 mt-3">
-        <div className="relative">
-          <input type="text" placeholder="搜索优惠券..." value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-gray-200 text-sm focus:border-[#1890FF] focus:outline-none shadow-sm" />
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-      </div>
-
-      {/* ===== Coupon Grid ===== */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 pb-24 md:pb-8">
-        {filteredCoupons.length === 0 ? (
-          <div className="text-center py-20">
-            <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24">
-              <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2" />
-            </svg>
-            <p className="text-gray-400">暂无优惠券</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
-            {filteredCoupons.map((coupon) => (
-              <Link key={coupon.id} href={`/coupon/${coupon.id}`}
-                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-                <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                  <Image src={coupon.image_url} alt={coupon.name} fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent pt-8 pb-1.5 px-2.5">
-                    <span className="text-white font-bold text-sm md:text-base">¥{coupon.price.toLocaleString()}</span>
+                <div className="flex-1 overflow-hidden relative h-5">
+                  <div className="absolute inset-0 flex items-center transition-all duration-500" style={{ transform: `translateY(-${currentAnnounceIdx * 100}%)` }}>
+                    {articles.map((a) => (
+                      <div key={a.id} className="w-full flex-shrink-0 h-5 flex items-center">
+                        <span className="text-gray-600 text-sm truncate">{a.title}</span>
+                      </div>
+                    ))}
                   </div>
-                  {coupon.remaining_quantity <= 10 && coupon.remaining_quantity > 0 && (
-                    <div className="absolute top-2 left-2 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">即将售罄</div>
-                  )}
-                  {coupon.remaining_quantity === 0 && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm bg-black/30 px-3 py-1 rounded-lg">已售罄</span>
-                    </div>
-                  )}
                 </div>
-                <div className="p-2.5 md:p-3">
-                  <h3 className="text-xs md:text-sm font-medium text-gray-800 line-clamp-2 mb-1.5 leading-tight">{coupon.name}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-400">剩{coupon.remaining_quantity}件</span>
-                  </div>
-                  {canGrab && coupon.remaining_quantity > 0 ? (
-                    <div className="mt-2 w-full py-1.5 rounded-lg bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-xs font-medium text-center group-hover:shadow-md group-hover:shadow-blue-400/20 transition-all">
-                      立即抢购
-                    </div>
-                  ) : coupon.remaining_quantity > 0 ? (
-                    <div className="mt-2 w-full py-1.5 rounded-lg bg-gray-100 text-gray-400 text-xs font-medium text-center">
-                      非活动时间
-                    </div>
-                  ) : null}
-                </div>
-              </Link>
-            ))}
+                <svg className="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
           </div>
         )}
+
+        {/* ===== Desktop: Two Column Layout (sidebar + grid) ===== */}
+        <div className="mt-3 flex gap-4 pb-24 md:pb-8">
+          {/* Left sidebar - desktop only */}
+          <div className="hidden lg:block w-[220px] flex-shrink-0 space-y-3">
+            {/* Category filter card */}
+            <div className="bg-white rounded-2xl shadow-sm p-4 space-y-2">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">分类筛选</h3>
+              <button onClick={() => setSelectedCategory('')}
+                className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                }`}>
+                <IconCoupon className="w-4 h-4" />
+                全部券
+              </button>
+              {categories.map(cat => {
+                const IconComponent = categoryIconMap[cat.name];
+                return (
+                  <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
+                    className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      selectedCategory === cat.id ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    }`}>
+                    {IconComponent ? <IconComponent className="w-4 h-4" /> : <span>{cat.icon}</span>}
+                    <span>{cat.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Session schedule card */}
+            <div className="bg-white rounded-2xl shadow-sm p-4 space-y-2">
+              <h3 className="text-sm font-bold text-gray-700 mb-3">抢购场次</h3>
+              {sessions.map(session => {
+                const status = getSessionStatus(session);
+                const countdown = getCountdown(session);
+                return (
+                  <div key={session.id}
+                    className={`p-3 rounded-xl transition-all ${
+                      status === 'active' ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-md shadow-blue-500/20' :
+                      status === 'upcoming' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                      'bg-gray-50 text-gray-400'
+                    }`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-bold">{session.name}</span>
+                      {status === 'active' && (
+                        <span className="flex h-1.5 w-1.5 relative">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] opacity-70">{session.start_time}-{session.end_time}</span>
+                    {countdown && <div className="text-xs font-mono font-bold tabular-nums mt-1">{countdown}</div>}
+                    {status === 'ended' && <div className="text-[10px] mt-1">已结束</div>}
+                  </div>
+                );
+              })}
+              {!activeSession && (
+                <div className="px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg text-center">
+                  <span className="text-amber-600 text-xs">非活动时间</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right content area */}
+          <div className="flex-1 min-w-0 space-y-3">
+            {/* Mobile: Category + Session row */}
+            <div className="lg:hidden bg-white rounded-2xl shadow-sm p-3 md:p-4 space-y-3">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                <button onClick={() => setSelectedCategory('')}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                    !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  }`}>
+                  <IconCoupon className="w-4 h-4" />
+                  全部
+                </button>
+                {categories.map(cat => {
+                  const IconComponent = categoryIconMap[cat.name];
+                  return (
+                    <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                        selectedCategory === cat.id ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                      }`}>
+                      {IconComponent ? <IconComponent className="w-4 h-4" /> : <span>{cat.icon}</span>}
+                      <span>{cat.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                {sessions.map(session => {
+                  const status = getSessionStatus(session);
+                  const countdown = getCountdown(session);
+                  return (
+                    <div key={session.id}
+                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                        status === 'active' ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-md shadow-blue-500/20' :
+                        status === 'upcoming' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                        'bg-gray-50 text-gray-400'
+                      }`}>
+                      <span className="text-sm font-bold">{session.name}</span>
+                      <span className="text-[10px] opacity-70">{session.start_time}-{session.end_time}</span>
+                      {status === 'active' && (
+                        <span className="flex h-1.5 w-1.5 relative">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                        </span>
+                      )}
+                      {countdown && <span className="text-xs font-mono font-bold tabular-nums">{countdown}</span>}
+                      {status === 'ended' && <span className="text-[10px]">已结束</span>}
+                    </div>
+                  );
+                })}
+              </div>
+              {!activeSession && (
+                <div className="px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg text-center">
+                  <span className="text-amber-600 text-xs">当前非活动时间，请在活动时间内抢购优惠券</span>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile search */}
+            <div className="md:hidden">
+              <div className="relative">
+                <input type="text" placeholder="搜索优惠券..." value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-gray-200 text-sm focus:border-[#1890FF] focus:outline-none shadow-sm" />
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Coupon Grid */}
+            {filteredCoupons.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+                <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2" />
+                </svg>
+                <p className="text-gray-400">暂无优惠券</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                {filteredCoupons.map((coupon) => (
+                  <Link key={coupon.id} href={`/coupon/${coupon.id}`}
+                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                      <Image src={coupon.image_url} alt={coupon.name} fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent pt-8 pb-1.5 px-2.5">
+                        <span className="text-white font-bold text-sm md:text-base">¥{coupon.price.toLocaleString()}</span>
+                      </div>
+                      {coupon.remaining_quantity <= 10 && coupon.remaining_quantity > 0 && (
+                        <div className="absolute top-2 left-2 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">即将售罄</div>
+                      )}
+                      {coupon.remaining_quantity === 0 && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                          <span className="text-white font-bold text-sm bg-black/30 px-3 py-1 rounded-lg">已售罄</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-2.5 md:p-3">
+                      <h3 className="text-xs md:text-sm font-medium text-gray-800 line-clamp-2 mb-1.5 leading-tight">{coupon.name}</h3>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-gray-400">剩{coupon.remaining_quantity}件</span>
+                      </div>
+                      {canGrab && coupon.remaining_quantity > 0 ? (
+                        <div className="mt-2 w-full py-1.5 rounded-lg bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-xs font-medium text-center group-hover:shadow-md group-hover:shadow-blue-400/20 transition-all">
+                          立即抢购
+                        </div>
+                      ) : coupon.remaining_quantity > 0 ? (
+                        <div className="mt-2 w-full py-1.5 rounded-lg bg-gray-100 text-gray-400 text-xs font-medium text-center">
+                          非活动时间
+                        </div>
+                      ) : null}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* ===== Bottom Navigation (Mobile) ===== */}
+      {/* ===== Bottom Navigation (Mobile only) ===== */}
       <BottomNav active="mall" />
     </div>
   );

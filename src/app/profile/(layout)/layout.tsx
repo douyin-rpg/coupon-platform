@@ -61,41 +61,45 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
   return (
     <div className="min-h-screen bg-[#F5F7FA]">
-      {/* Top bar - Douyin Blue */}
-      <div className="bg-gradient-to-r from-[#1890FF] to-[#7B61FF]">
-        <div className="max-w-[1200px] mx-auto px-4 py-3 flex items-center justify-between">
+      {/* Top bar */}
+      <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
               <Image src="/images/logo.png" alt="抖音电商" width={100} height={26} className="h-6 w-auto brightness-0 invert" priority />
             </Link>
-            <div className="hidden md:flex items-center gap-4 text-white/90 text-sm">
-              <Link href="/" className="hover:text-white">首页</Link>
-              <Link href="/profile/order" className="hover:text-white">我的订单</Link>
-              <Link href="/profile/back" className="hover:text-white">快捷回兑</Link>
+            <div className="hidden md:flex items-center gap-4 text-white/80 text-sm">
+              <Link href="/" className="hover:text-white transition-colors">首页</Link>
+              <Link href="/cart" className="hover:text-white transition-colors">购物车</Link>
+              <Link href="/profile/order" className="hover:text-white transition-colors">我的订单</Link>
+              <Link href="/profile/back" className="hover:text-white transition-colors">快捷回兑</Link>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link href="/" className="text-white/80 text-sm hover:text-white transition-colors">返回首页</Link>
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-white/60 text-sm">{user?.username}</span>
+            <Link href="/" className="text-white/80 text-sm hover:text-white transition-colors px-3 py-1.5 rounded-full border border-white/20 hover:bg-white/10">
+              返回首页
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-4 py-4">
-        <div className="flex gap-4">
-          {/* Left sidebar */}
-          <div className="hidden md:block w-[200px] flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+        <div className="flex gap-6">
+          {/* Left sidebar - desktop */}
+          <div className="hidden md:block w-[220px] flex-shrink-0">
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden sticky top-20">
               {menuItems.map((section) => (
                 <div key={section.section}>
-                  <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">{section.section}</h3>
+                  <div className="px-4 py-2.5 bg-gray-50/80 border-b border-gray-100">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{section.section}</h3>
                   </div>
                   <ul>
                     {section.items.map((item) => (
                       <li key={item.href}>
                         <Link href={item.href}
-                          className={`flex items-center gap-2.5 px-4 py-2.5 text-sm border-b border-gray-50 transition-colors ${
-                            isActive(item.href) ? 'text-[#1890FF] bg-blue-50 font-medium' : 'text-gray-600 hover:text-[#1890FF] hover:bg-blue-50'
+                          className={`flex items-center gap-2.5 px-4 py-3 text-sm border-b border-gray-50 transition-all ${
+                            isActive(item.href) ? 'text-[#1890FF] bg-blue-50/80 font-medium border-l-2 border-l-[#1890FF]' : 'text-gray-600 hover:text-[#1890FF] hover:bg-blue-50/50'
                           }`}>
                           <span className={isActive(item.href) ? 'text-[#1890FF]' : 'text-gray-400'}>{item.icon}</span>
                           {item.label}
@@ -105,7 +109,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                   </ul>
                 </div>
               ))}
-              {/* 退出登录按钮 */}
+              {/* Logout button */}
               <div className="px-4 py-3 border-t border-gray-100">
                 <button
                   onClick={async () => {
@@ -114,7 +118,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                       window.location.href = '/';
                     }
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                   退出登录
@@ -126,26 +130,26 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
           {/* Main content */}
           <div className="flex-1 min-w-0">
             {/* Mobile tabs */}
-            <div className="md:hidden mb-4 bg-white rounded-lg shadow-sm overflow-x-auto">
-              <div className="flex">
-                <Link href="/profile" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname === '/profile' ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>个人中心</Link>
-                <Link href="/profile/order" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/order') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>我的订单</Link>
-                <Link href="/profile/back" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/back') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>快捷回兑</Link>
-                <Link href="/profile/finance/deposit" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/finance') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>财务</Link>
-                <Link href="/profile/settings/info" className={`px-3 py-2 text-xs whitespace-nowrap ${pathname.startsWith('/profile/settings') ? 'text-[#1890FF] font-medium border-b-2 border-[#1890FF]' : 'text-gray-600'}`}>设置</Link>
+            <div className="md:hidden mb-4 bg-white rounded-2xl shadow-sm overflow-x-auto scrollbar-hide">
+              <div className="flex px-1">
+                <Link href="/profile" className={`px-3 py-2.5 text-xs whitespace-nowrap ${pathname === '/profile' ? 'text-[#1890FF] font-bold border-b-2 border-[#1890FF]' : 'text-gray-500'}`}>个人中心</Link>
+                <Link href="/profile/order" className={`px-3 py-2.5 text-xs whitespace-nowrap ${pathname.startsWith('/profile/order') ? 'text-[#1890FF] font-bold border-b-2 border-[#1890FF]' : 'text-gray-500'}`}>我的订单</Link>
+                <Link href="/profile/back" className={`px-3 py-2.5 text-xs whitespace-nowrap ${pathname.startsWith('/profile/back') ? 'text-[#1890FF] font-bold border-b-2 border-[#1890FF]' : 'text-gray-500'}`}>快捷回兑</Link>
+                <Link href="/profile/finance/deposit" className={`px-3 py-2.5 text-xs whitespace-nowrap ${pathname.startsWith('/profile/finance') ? 'text-[#1890FF] font-bold border-b-2 border-[#1890FF]' : 'text-gray-500'}`}>财务</Link>
+                <Link href="/profile/settings/info" className={`px-3 py-2.5 text-xs whitespace-nowrap ${pathname.startsWith('/profile/settings') ? 'text-[#1890FF] font-bold border-b-2 border-[#1890FF]' : 'text-gray-500'}`}>设置</Link>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm">
+            <div className="bg-white rounded-2xl shadow-sm">
               {children}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile bottom nav - unified */}
+      {/* Mobile bottom nav */}
       <BottomNav active="me" />
-      <div className="md:hidden h-14" />
+      <div className="md:hidden h-16" />
     </div>
   );
 }

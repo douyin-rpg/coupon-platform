@@ -147,10 +147,10 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
   const formatPrice = (price: number) => price.toLocaleString('zh-CN');
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-24">
+    <div className="min-h-screen bg-[#F5F7FA] pb-24 md:pb-0">
       {/* Top nav */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={() => router.back()} className="text-gray-600 hover:text-gray-800 transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -160,155 +160,162 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto">
-        {/* Product image */}
-        <div className="bg-white">
-          <div className="aspect-square max-h-96 bg-gray-100 relative overflow-hidden">
-            {coupon.image_url ? (
-              <img src={coupon.image_url} alt={coupon.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1890FF]/10 to-[#00D4FF]/10">
-                <div className="text-center">
-                  <svg className="w-20 h-20 mx-auto mb-3" viewBox="0 0 64 64" fill="none">
-                    <rect x="4" y="12" width="56" height="40" rx="6" fill="url(#coupon-grad)" opacity="0.15" />
-                    <rect x="4" y="12" width="56" height="40" rx="6" stroke="url(#coupon-grad)" strokeWidth="2" />
-                    <circle cx="20" cy="32" r="8" stroke="#1890FF" strokeWidth="1.5" fill="none" />
-                    <path d="M17 32l2 2 4-4" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M32 28h14M32 36h8" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-                    <defs>
-                      <linearGradient id="coupon-grad" x1="4" y1="12" x2="60" y2="52">
-                        <stop stopColor="#1890FF" />
-                        <stop offset="1" stopColor="#00D4FF" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="text-gray-400 text-sm">优惠券</div>
-                </div>
-              </div>
-            )}
-            {/* Sold badge */}
-            {coupon.sold_count > 0 && (
-              <div className="absolute top-3 right-3 bg-[#FE2C55]/90 text-white text-[10px] px-2 py-1 rounded-full font-medium backdrop-blur-sm">
-                已抢 {coupon.sold_count} 件
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Price strip */}
-        <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF] p-5 text-white relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-24 h-24 rounded-full bg-white/10 -mr-8 -mt-8" />
-          <div className="absolute right-8 bottom-0 w-16 h-16 rounded-full bg-white/5 -mb-4" />
-          <div className="relative z-10">
-            <div className="flex items-end gap-2">
-              <span className="text-sm opacity-80">面值</span>
-              <span className="text-3xl font-bold tabular-nums">¥{formatPrice(coupon.price)}</span>
-            </div>
-            <p className="text-sm mt-1.5 opacity-80">需支付 ¥{formatPrice(coupon.price)}</p>
-          </div>
-        </div>
-
-        {/* Product name */}
-        <div className="bg-white mt-2 p-4">
-          <h1 className="text-lg font-bold text-[#1A1A1A]">{coupon.name}</h1>
-          {coupon.description && <p className="text-sm text-gray-500 mt-2">{coupon.description}</p>}
-        </div>
-
-        {/* Stock progress */}
-        <div className="bg-white mt-2 p-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500 flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-[#FE2C55]" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" fill="currentColor" opacity="0.2" />
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-              </svg>
-              库存进度
-            </span>
-            <span className="text-[#FE2C55] font-bold">已抢{progress}%</span>
-          </div>
-          <div className="mt-2 h-2.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] rounded-full transition-all duration-500" style={{ width: `${Math.min(progress, 100)}%` }} />
-          </div>
-          <div className="flex justify-between mt-1.5 text-xs text-gray-400">
-            <span>已售 {coupon.sold_count}</span>
-            <span>剩余 {coupon.remaining_quantity}</span>
-          </div>
-        </div>
-
-        {/* Session info */}
-        <div className="bg-white mt-2 p-4">
-          <div className="text-sm text-gray-500 mb-3 flex items-center gap-1.5">
-            <svg className="w-4 h-4 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            抢购场次
-          </div>
-          <div className="space-y-2">
-            {sessions.map((s) => {
-              const now = new Date();
-              const currentMinutes = now.getHours() * 60 + now.getMinutes();
-              const [sh, sm] = s.start_time.split(":").map(Number);
-              const [eh, em] = s.end_time.split(":").map(Number);
-              const isActive = currentMinutes >= sh * 60 + sm && currentMinutes <= eh * 60 + em && s.is_active;
-              const isUpcoming = currentMinutes < sh * 60 + sm && s.is_active;
-
-              return (
-                <div key={s.id} className={`flex items-center justify-between p-3 rounded-xl transition-all ${isActive ? 'bg-blue-50 border-2 border-[#1890FF]/30 shadow-sm' : isUpcoming ? 'bg-amber-50/80 border border-amber-200/50' : 'bg-gray-50/50'}`}>
-                  <div className="flex items-center gap-2.5">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isActive ? 'bg-[#1890FF] text-white' : 'bg-gray-200 text-gray-400'}`}>
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-                        <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <div className="max-w-6xl mx-auto px-4 py-4 md:py-6">
+        {/* Desktop: Two column layout */}
+        <div className="md:flex md:gap-8">
+          {/* Left: Product image */}
+          <div className="md:w-1/2 md:flex-shrink-0">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <div className="aspect-square bg-gray-100 relative overflow-hidden">
+                {coupon.image_url ? (
+                  <img src={coupon.image_url} alt={coupon.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1890FF]/10 to-[#00D4FF]/10">
+                    <div className="text-center">
+                      <svg className="w-20 h-20 mx-auto mb-3" viewBox="0 0 64 64" fill="none">
+                        <rect x="4" y="12" width="56" height="40" rx="6" fill="url(#coupon-grad)" opacity="0.15" />
+                        <rect x="4" y="12" width="56" height="40" rx="6" stroke="url(#coupon-grad)" strokeWidth="2" />
+                        <circle cx="20" cy="32" r="8" stroke="#1890FF" strokeWidth="1.5" fill="none" />
+                        <path d="M17 32l2 2 4-4" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M32 28h14M32 36h8" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+                        <defs>
+                          <linearGradient id="coupon-grad" x1="4" y1="12" x2="60" y2="52">
+                            <stop stopColor="#1890FF" />
+                            <stop offset="1" stopColor="#00D4FF" />
+                          </linearGradient>
+                        </defs>
                       </svg>
-                    </div>
-                    <div>
-                      <span className={`text-sm font-medium ${isActive ? 'text-[#1890FF]' : 'text-gray-700'}`}>{s.name}</span>
-                      <span className="text-xs text-gray-400 ml-2">{s.start_time}-{s.end_time}</span>
+                      <div className="text-gray-400 text-sm">优惠券</div>
                     </div>
                   </div>
-                  {isActive && (
-                    <span className="text-xs bg-[#FE2C55] text-white px-2.5 py-1 rounded-full animate-pulse font-medium">抢购中</span>
-                  )}
-                  {isUpcoming && (
-                    <span className="text-xs bg-amber-100 text-amber-600 px-2.5 py-1 rounded-full font-medium">即将开始</span>
-                  )}
-                  {!isActive && !isUpcoming && (
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">已结束</span>
-                  )}
+                )}
+                {coupon.sold_count > 0 && (
+                  <div className="absolute top-3 right-3 bg-[#FE2C55]/90 text-white text-[10px] px-2 py-1 rounded-full font-medium backdrop-blur-sm">
+                    已抢 {coupon.sold_count} 件
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Product info */}
+          <div className="md:w-1/2 mt-4 md:mt-0 space-y-3">
+            {/* Price strip */}
+            <div className="bg-gradient-to-r from-[#1890FF] to-[#00D4FF] p-5 md:p-6 text-white rounded-2xl relative overflow-hidden shadow-sm">
+              <div className="absolute right-0 top-0 w-24 h-24 rounded-full bg-white/10 -mr-8 -mt-8" />
+              <div className="absolute right-8 bottom-0 w-16 h-16 rounded-full bg-white/5 -mb-4" />
+              <div className="relative z-10">
+                <div className="flex items-end gap-2">
+                  <span className="text-sm opacity-80">面值</span>
+                  <span className="text-3xl md:text-4xl font-bold tabular-nums">¥{formatPrice(coupon.price)}</span>
                 </div>
-              );
-            })}
+                <p className="text-sm mt-1.5 opacity-80">需支付 ¥{formatPrice(coupon.price)}</p>
+              </div>
+            </div>
+
+            {/* Product name */}
+            <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm">
+              <h1 className="text-lg md:text-xl font-bold text-[#1A1A1A]">{coupon.name}</h1>
+              {coupon.description && <p className="text-sm text-gray-500 mt-2">{coupon.description}</p>}
+            </div>
+
+            {/* Stock progress */}
+            <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-[#FE2C55]" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" fill="currentColor" opacity="0.2" />
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  </svg>
+                  库存进度
+                </span>
+                <span className="text-[#FE2C55] font-bold">已抢{progress}%</span>
+              </div>
+              <div className="mt-2 h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] rounded-full transition-all duration-500" style={{ width: `${Math.min(progress, 100)}%` }} />
+              </div>
+              <div className="flex justify-between mt-1.5 text-xs text-gray-400">
+                <span>已售 {coupon.sold_count}</span>
+                <span>剩余 {coupon.remaining_quantity}</span>
+              </div>
+            </div>
+
+            {/* Session info */}
+            <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm">
+              <div className="text-sm text-gray-500 mb-3 flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                抢购场次
+              </div>
+              <div className="space-y-2">
+                {sessions.map((s) => {
+                  const now = new Date();
+                  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                  const [sh, sm] = s.start_time.split(":").map(Number);
+                  const [eh, em] = s.end_time.split(":").map(Number);
+                  const isActive = currentMinutes >= sh * 60 + sm && currentMinutes <= eh * 60 + em && s.is_active;
+                  const isUpcoming = currentMinutes < sh * 60 + sm && s.is_active;
+
+                  return (
+                    <div key={s.id} className={`flex items-center justify-between p-3 rounded-xl transition-all ${isActive ? 'bg-blue-50 border-2 border-[#1890FF]/30 shadow-sm' : isUpcoming ? 'bg-amber-50/80 border border-amber-200/50' : 'bg-gray-50/50'}`}>
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isActive ? 'bg-[#1890FF] text-white' : 'bg-gray-200 text-gray-400'}`}>
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+                            <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                        </div>
+                        <div>
+                          <span className={`text-sm font-medium ${isActive ? 'text-[#1890FF]' : 'text-gray-700'}`}>{s.name}</span>
+                          <span className="text-xs text-gray-400 ml-2">{s.start_time}-{s.end_time}</span>
+                        </div>
+                      </div>
+                      {isActive && (
+                        <span className="text-xs bg-[#FE2C55] text-white px-2.5 py-1 rounded-full animate-pulse font-medium">抢购中</span>
+                      )}
+                      {isUpcoming && (
+                        <span className="text-xs bg-amber-100 text-amber-600 px-2.5 py-1 rounded-full font-medium">即将开始</span>
+                      )}
+                      {!isActive && !isUpcoming && (
+                        <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full">已结束</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Success message */}
+            {grabSuccess && (
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-center">
+                <svg className="w-12 h-12 mx-auto mb-2 text-green-500" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <p className="text-green-700 font-bold text-lg">抢券成功！</p>
+                <p className="text-green-600 text-sm mt-1">请前往订单查看详情</p>
+                <button onClick={() => router.push('/profile/order')}
+                  className="mt-3 px-6 py-2 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700 transition-colors">
+                  查看订单
+                </button>
+              </div>
+            )}
+
+            {/* Error/info message */}
+            {msg && !grabSuccess && (
+              <div className="p-3 rounded-xl bg-white border text-sm text-center shadow-sm">
+                <span className={msg.includes("成功") ? "text-green-600" : "text-[#FE2C55]"}>{msg}</span>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Success message */}
-        {grabSuccess && (
-          <div className="m-4 p-4 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-center">
-            <svg className="w-12 h-12 mx-auto mb-2 text-green-500" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <p className="text-green-700 font-bold text-lg">抢券成功！</p>
-            <p className="text-green-600 text-sm mt-1">请前往订单查看详情</p>
-            <button onClick={() => router.push('/profile/order')}
-              className="mt-3 px-6 py-2 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700 transition-colors">
-              查看订单
-            </button>
-          </div>
-        )}
-
-        {/* Error/info message */}
-        {msg && !grabSuccess && (
-          <div className="mx-4 mt-3 p-3 rounded-xl bg-white border text-sm text-center">
-            <span className={msg.includes("成功") ? "text-green-600" : "text-[#FE2C55]"}>{msg}</span>
-          </div>
-        )}
       </div>
 
-      {/* Bottom action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 p-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-3">
+      {/* Bottom action bar - mobile fixed, desktop inline */}
+      <div className="fixed bottom-0 left-0 right-0 md:relative md:bottom-auto bg-white border-t border-gray-100 z-40 p-4 md:mt-4 md:rounded-2xl md:shadow-sm md:border md:border-gray-100">
+        <div className="max-w-6xl mx-auto flex items-center gap-3">
           <div className="flex-1">
             <span className="text-xs text-gray-400">需支付</span>
             <div className="text-xl font-bold text-[#1890FF] tabular-nums">¥{formatPrice(coupon.price)}</div>
@@ -432,7 +439,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         </div>
       )}
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - mobile only */}
       <BottomNav active="mall" />
     </div>
   );
