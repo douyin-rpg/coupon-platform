@@ -10,6 +10,7 @@ interface Article {
   title: string;
   content: string;
   category_id: string;
+  image_url?: string;
   is_announcement: boolean;
   created_at: string;
   article_categories: { name: string; icon: string };
@@ -86,6 +87,13 @@ export default function ArticleDetailPage() {
 
           {/* Divider */}
           <div className="border-t border-gray-100 my-4" />
+
+          {/* Article Image */}
+          {article.image_url && (
+            <div className="mb-4 rounded-xl overflow-hidden">
+              <img src={article.image_url} alt={article.title} className="w-full max-h-80 object-cover" />
+            </div>
+          )}
 
           {/* Content */}
           <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap">

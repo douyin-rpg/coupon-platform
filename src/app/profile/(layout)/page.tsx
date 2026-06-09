@@ -96,7 +96,6 @@ export default function ProfilePage() {
             {user.verifyStatus === "verified" ? `¥${user.balance?.toFixed(2) || '0.00'}` : '完成认证后查看'}
           </p>
           <div className="flex gap-2 mt-4">
-            <Link href="/profile/finance/deposit" className="flex-1 py-2 bg-white/15 rounded-xl text-sm text-center hover:bg-white/25 transition-colors border border-white/10">充值</Link>
             <Link href="/profile/finance/withdraw" className="flex-1 py-2 bg-[#FFC107] text-gray-800 rounded-xl text-sm font-medium text-center hover:bg-[#FFD54F] transition-colors">提现</Link>
           </div>
         </div>

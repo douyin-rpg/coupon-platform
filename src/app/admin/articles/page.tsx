@@ -2,22 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-
-// Admin sidebar
-const sidebarItems = [
-  { href: '/admin/sessions', label: '场次管理' },
-  { href: '/admin/coupons', label: '优惠券管理' },
-  { href: '/admin/codes', label: '注册码管理' },
-  { href: '/admin/verify', label: '实名审核' },
-  { href: '/admin/redemptions', label: '回兑审核' },
-  { href: '/admin/orders', label: '订单管理' },
-  { href: '/admin/withdrawals', label: '提现审核' },
-  { href: '/admin/users', label: '用户管理' },
-  { href: '/admin/categories', label: '分类管理' },
-  { href: '/admin/articles', label: '文章管理' },
-  { href: '/admin/banners', label: '轮播图管理' },
-];
 
 interface ArticleCategory {
   id: string;
@@ -32,6 +16,7 @@ interface Article {
   title: string;
   content: string;
   category_id: string;
+  image_url?: string;
   is_published: boolean;
   is_announcement: boolean;
   sort_order: number;
@@ -49,6 +34,7 @@ export default function AdminArticlesPage() {
     title: '',
     content: '',
     category_id: '',
+    image_url: '',
     is_published: true,
     is_announcement: false,
     sort_order: 0,
@@ -91,7 +77,7 @@ export default function AdminArticlesPage() {
       if (data.error) { alert(data.error); return; }
       setShowForm(false);
       setEditingId(null);
-      setForm({ title: '', content: '', category_id: '', is_published: true, is_announcement: false, sort_order: 0 });
+      setForm({ title: '', content: '', category_id: '', image_url: '', is_published: true, is_announcement: false, sort_order: 0 });
       fetchData();
     } catch { alert('操作失败'); }
   };
@@ -102,6 +88,7 @@ export default function AdminArticlesPage() {
       title: article.title,
       content: article.content,
       category_id: article.category_id,
+      image_url: article.image_url || '',
       is_published: article.is_published,
       is_announcement: article.is_announcement,
       sort_order: article.sort_order,
@@ -120,31 +107,10 @@ export default function AdminArticlesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <div className="w-[200px] flex-shrink-0 bg-gradient-to-b from-[#0A1628] to-[#132742] min-h-screen">
-        <div className="p-4 border-b border-white/10">
-          <Link href="/admin/sessions" className="flex items-center gap-2">
-            <Image src="/images/logo.png" alt="Logo" width={80} height={20} className="brightness-0 invert" />
-          </Link>
-        </div>
-        <nav className="py-2">
-          {sidebarItems.map(item => (
-            <Link key={item.href} href={item.href}
-              className={`block px-4 py-2.5 text-sm transition-colors ${
-                item.href === '/admin/articles' ? 'text-[#1890FF] bg-blue-500/10 font-medium' : 'text-gray-300 hover:text-white hover:bg-white/5'
-              }`}>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-gray-800">文章管理</h1>
-          <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ title: '', content: '', category_id: '', is_published: true, is_announcement: false, sort_order: 0 }); }}
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-bold text-gray-800">文章管理</h1>
+          <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ title: '', content: '', category_id: '', image_url: '', is_published: true, is_announcement: false, sort_order: 0 }); }}
             className="px-4 py-2 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-lg text-sm font-medium hover:shadow-lg transition-shadow">
             + 新增文章
           </button>
@@ -170,6 +136,26 @@ export default function AdminArticlesPage() {
                       <option key={c.id} value={c.id}>{c.icon} {c.name}</option>
                     ))}
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">封面图片</label>
+                  <div className="flex items-center gap-3">
+                    <input type="file" accept="image/*" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      try {
+                        const res = await fetch('/api/admin/upload', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.url) setForm(f => ({ ...f, image_url: data.url }));
+                        else alert('上传失败');
+                      } catch { alert('上传失败'); }
+                    }} className="text-sm" />
+                    {form.image_url && (
+                      <img src={form.image_url} alt="preview" className="w-16 h-16 object-cover rounded-lg border" />
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">内容</label>
@@ -252,7 +238,6 @@ export default function AdminArticlesPage() {
             </table>
           </div>
         )}
-      </div>
     </div>
   );
 }

@@ -90,12 +90,16 @@ export async function PUT(request: Request) {
     if (discount !== undefined) updateData.discount = discount;
     if (totalQuantity !== undefined) {
       updateData.total_quantity = totalQuantity;
-      const { data: coupon } = await client.from("coupons").select("total_quantity, remaining_quantity").eq("id", id).maybeSingle();
-      if (coupon) {
-        const diff = totalQuantity - coupon.total_quantity;
-        updateData.remaining_quantity = Math.max(0, coupon.remaining_quantity + diff);
+      // Only auto-adjust remaining if not explicitly provided
+      if (body.remainingQuantity === undefined) {
+        const { data: coupon } = await client.from("coupons").select("total_quantity, remaining_quantity").eq("id", id).maybeSingle();
+        if (coupon) {
+          const diff = totalQuantity - coupon.total_quantity;
+          updateData.remaining_quantity = Math.max(0, coupon.remaining_quantity + diff);
+        }
       }
     }
+    if (body.remainingQuantity !== undefined) updateData.remaining_quantity = body.remainingQuantity;
     if (sessionId !== undefined) updateData.session_id = sessionId;
     if (categoryId !== undefined) updateData.category_id = categoryId;
     if (imageUrl !== undefined) updateData.image_url = imageUrl;

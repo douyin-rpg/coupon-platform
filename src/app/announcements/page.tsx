@@ -16,6 +16,7 @@ interface Article {
   title: string;
   content: string;
   category_id: string;
+  image_url?: string;
   is_announcement: boolean;
   created_at: string;
   article_categories: { name: string; icon: string };
@@ -111,14 +112,22 @@ export default function AnnouncementsPage() {
             <Link
               key={article.id}
               href={`/announcements/${article.id}`}
-              className="block bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
-                  {article.article_categories?.icon || '📄'}
+              className="block bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              {article.image_url && (
+                <div className="w-full h-36 bg-gray-100 overflow-hidden">
+                  <img src={article.image_url} alt={article.title} className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-gray-800 truncate">{article.title}</h3>
+              )}
+              <div className="p-4">
+                <div className="flex items-start gap-3">
+                  {!article.image_url && (
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
+                      {article.article_categories?.icon || '📄'}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-semibold text-gray-800 truncate">{article.title}</h3>
                     {article.is_announcement && (
                       <span className="flex-shrink-0 px-1.5 py-0.5 bg-red-50 text-red-500 text-[10px] font-medium rounded">公告</span>
                     )}
@@ -128,8 +137,8 @@ export default function AnnouncementsPage() {
                     <span className="text-[10px] text-[#1890FF] bg-blue-50 px-1.5 py-0.5 rounded">{article.article_categories?.name || '未分类'}</span>
                     <span className="text-[10px] text-gray-300">{new Date(article.created_at).toLocaleDateString('zh-CN')}</span>
                   </div>
+                  </div>
                 </div>
-                <svg className="w-4 h-4 text-gray-300 flex-shrink-0 mt-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </div>
             </Link>
           ))}

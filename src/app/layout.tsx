@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/contexts/auth-context';
+import IntroAnimation from '@/components/intro-animation';
 
 export const metadata: Metadata = {
   title: '惠抢券 - 优惠券抢购平台',
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className="font-sans antialiased bg-gray-50 text-gray-900 min-h-screen">
         <AuthProvider>
+          <IntroAnimation />
           {children}
         </AuthProvider>
       </body>

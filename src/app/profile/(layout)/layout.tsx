@@ -29,7 +29,7 @@ const menuItems = [
     { href: '/profile/back', label: '快捷回兑', icon: icons.redeem },
   ]},
   { section: '财务中心', items: [
-    { href: '/profile/finance/deposit', label: '充值/提现', icon: icons.wallet },
+    { href: '/profile/finance/withdraw', label: '提现', icon: icons.wallet },
     { href: '/profile/finance/transactions', label: '资金明细', icon: icons.transactions },
   ]},
   { section: '用户设置', items: [
@@ -37,7 +37,6 @@ const menuItems = [
     { href: '/profile/settings/verify', label: '实名认证', icon: icons.verify },
     { href: '/profile/settings/password', label: '修改密码', icon: icons.password },
     { href: '/profile/settings/bank', label: '收款账户', icon: icons.bank },
-    { href: '/profile/settings/address', label: '收货地址', icon: icons.address },
   ]},
 ];
 

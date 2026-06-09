@@ -9,14 +9,9 @@ interface Transaction {
   amount: number;
   balance_after: number;
   description: string | null;
+  transaction_no: string | null;
   created_at: string;
 }
-
-const typeLabels: Record<string, string> = {
-  grab: '抢券', redemption_bonus: '回兑奖励', redemption_return: '回兑返还',
-  redemption_rejected: '回兑拒绝', withdraw: '提现', withdraw_return: '提现返还',
-  withdraw_success: '提现成功', admin_deposit: '管理员充值', admin_deduct: '管理员扣款',
-};
 
 export default function TransactionsPage() {
   const { user } = useAuth();
@@ -36,13 +31,15 @@ export default function TransactionsPage() {
         <div className="space-y-2">
           {transactions.map(t => (
             <div key={t.id} className="border border-gray-100 rounded-lg p-3 flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-800">{typeLabels[t.type] || t.type}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{t.description}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800">{t.description || t.type}</p>
+                {t.transaction_no && (
+                  <p className="text-xs text-gray-300 mt-0.5 font-mono">流水号: {t.transaction_no}</p>
+                )}
                 <p className="text-xs text-gray-300 mt-0.5">{new Date(t.created_at).toLocaleString()}</p>
               </div>
-              <div className="text-right">
-                <p className={`font-bold text-sm ${t.amount >= 0 ? 'text-green-500' : 'text-[#1890FF]'}`}>
+              <div className="text-right ml-3 flex-shrink-0">
+                <p className={`font-bold text-sm ${t.amount >= 0 ? 'text-green-500' : 'text-[#FE2C55]'}`}>
                   {t.amount >= 0 ? '+' : ''}{Number(t.amount).toFixed(2)}
                 </p>
                 <p className="text-xs text-gray-400">余额 {Number(t.balance_after).toFixed(2)}</p>

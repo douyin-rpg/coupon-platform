@@ -46,7 +46,7 @@ export async function PUT(request: Request) {
     // 查询回兑申请
     const { data: redemptionRequest, error: reqError } = await client
       .from('redemption_requests')
-      .select('*, user_coupons(user_id, payment_amount, status)')
+      .select('*, user_coupons(user_id, payment_amount, status, coupons(name))')
       .eq('id', id)
       .maybeSingle();
 
@@ -59,7 +59,8 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: '该申请已处理' }, { status: 400 });
     }
 
-    const userCoupon = redemptionRequest.user_coupons as unknown as { user_id: string; payment_amount: string; status: string };
+    const userCoupon = redemptionRequest.user_coupons as unknown as { user_id: string; payment_amount: string; status: string; coupons: { name: string } };
+    const couponName = userCoupon?.coupons?.name || '优惠券';
 
     // 更新回兑申请状态
     const newStatus = action === 'approve' ? 'approved' : 'rejected';
@@ -121,10 +122,11 @@ export async function PUT(request: Request) {
     if (balanceError) throw new Error(`更新用户余额失败: ${balanceError.message}`);
 
     // 记录交易明细
+    const txnNo = 'TXN' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     const logType = action === 'approve' ? 'redemption_approved' : 'redemption_rejected';
     const logDesc = action === 'approve'
-      ? `回兑通过: 返还本金${paymentAmount.toFixed(2)}+5%奖励${(paymentAmount * 0.05).toFixed(2)}`
-      : `回兑拒绝: 返还本金${paymentAmount.toFixed(2)}`;
+      ? `回兑 - ${couponName} +${refundAmount.toFixed(2)}`
+      : `回兑退回 - ${couponName} +${refundAmount.toFixed(2)}`;
     await client
       .from('transaction_logs')
       .insert({
@@ -133,7 +135,9 @@ export async function PUT(request: Request) {
         amount: refundAmount,
         balance_after: parseFloat(newBalance),
         description: logDesc,
-        related_id: id,
+        reference_type: 'redemption',
+        reference_id: id,
+        transaction_no: txnNo,
       });
 
     return NextResponse.json({
@@ -165,7 +169,7 @@ export async function POST(request: Request) {
     // Get all pending redemption requests
     const { data: pendingRequests, error: fetchError } = await client
       .from('redemption_requests')
-      .select('id, user_coupon_id, user_coupons(user_id, payment_amount, status)')
+      .select('id, user_coupon_id, user_coupons(user_id, payment_amount, status, coupons(name))')
       .eq('status', 'pending');
 
     if (fetchError) throw new Error(`查询待审核回兑失败: ${fetchError.message}`);
@@ -179,7 +183,8 @@ export async function POST(request: Request) {
 
     for (const req of pendingRequests) {
       try {
-        const userCoupon = req.user_coupons as unknown as { user_id: string; payment_amount: string; status: string };
+        const userCoupon = req.user_coupons as unknown as { user_id: string; payment_amount: string; status: string; coupons: { name: string } };
+        const couponName = userCoupon?.coupons?.name || '优惠券';
         
         // Update redemption request status
         const newStatus = action === 'approve' ? 'approved' : 'rejected';
@@ -232,10 +237,11 @@ export async function POST(request: Request) {
         if (balanceError) { errors.push(`更新用户${userCoupon.user_id}余额失败`); continue; }
 
         // Record transaction log
+        const txnNo = 'TXN' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
         const logType = action === 'approve' ? 'redemption_approved' : 'redemption_rejected';
         const logDesc = action === 'approve'
-          ? `批量回兑通过: 返还本金${paymentAmount.toFixed(2)}+5%奖励${(paymentAmount * 0.05).toFixed(2)}`
-          : `批量回兑拒绝: 返还本金${paymentAmount.toFixed(2)}`;
+          ? `回兑 - ${couponName} +${refundAmount.toFixed(2)}`
+          : `回兑退回 - ${couponName} +${refundAmount.toFixed(2)}`;
         await client
           .from('transaction_logs')
           .insert({
@@ -244,7 +250,9 @@ export async function POST(request: Request) {
             amount: refundAmount,
             balance_after: parseFloat(newBalance),
             description: logDesc,
-            related_id: req.id,
+            reference_type: 'redemption',
+            reference_id: req.id,
+            transaction_no: txnNo,
           });
 
         processed++;

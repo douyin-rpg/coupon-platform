@@ -141,6 +141,7 @@ export async function POST(request: Request) {
     if (insertError) throw new Error(`抢券失败: ${insertError.message}`);
 
     // 记录交易明细
+    const txnNo = 'TXN' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     await client
       .from('transaction_logs')
       .insert({
@@ -148,8 +149,10 @@ export async function POST(request: Request) {
         type: 'grab',
         amount: -couponPrice,
         balance_after: parseFloat(newBalance),
-        description: `抢购优惠券: ${coupon.name}`,
-        related_id: userCoupon.id,
+        description: `抢券 - ${coupon.name}`,
+        reference_type: 'user_coupon',
+        reference_id: userCoupon.id,
+        transaction_no: txnNo,
       });
 
     // 创建后台通知

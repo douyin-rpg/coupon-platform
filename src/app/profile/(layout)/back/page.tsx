@@ -34,7 +34,6 @@ export default function BackPage() {
     { key: 'pending_use', label: '快捷申请', filter: 'pending_use' },
     { key: 'pending_redemption', label: '待审核', filter: 'pending_redemption' },
     { key: 'redeemed', label: '回收成功', filter: 'redeemed' },
-    { key: 'redemption_rejected', label: '回收被拒', filter: 'redemption_rejected' },
   ];
 
   const filtered = coupons.filter(o => o.status === activeTab);

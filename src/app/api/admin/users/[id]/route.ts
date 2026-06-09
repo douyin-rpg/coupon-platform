@@ -112,7 +112,9 @@ export async function PATCH(
 				type: "admin_deposit",
 				amount: addAmount,
 				balance_after: parseFloat(newBalance),
-				description: note || `管理员充值: ${addAmount.toFixed(2)}元`,
+				description: note || `充值 ${addAmount.toFixed(2)}元`,
+				transaction_no: `TXN` + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+				reference_type: "admin",
 			});
 			return NextResponse.json({ success: true, message: `已充值 ${addAmount} 元`, newBalance });
 		}
@@ -141,7 +143,9 @@ export async function PATCH(
 				type: "admin_deduct",
 				amount: -deductAmount,
 				balance_after: parseFloat(newBalance),
-				description: note || `管理员扣款: ${deductAmount.toFixed(2)}元`,
+				description: note || `扣款 ${deductAmount.toFixed(2)}元`,
+				transaction_no: `TXN` + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+				reference_type: "admin",
 			});
 			return NextResponse.json({ success: true, message: `已扣款 ${deductAmount} 元`, newBalance });
 		}

@@ -85,6 +85,7 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [currentBanner, setCurrentBanner] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [customerServiceUrl, setCustomerServiceUrl] = useState('/');
   const [articles, setArticles] = useState<Article[]>([]);
   const [currentAnnounceIdx, setCurrentAnnounceIdx] = useState(0);
   const [now, setNow] = useState(Date.now());
@@ -199,6 +200,10 @@ export default function HomePage() {
                 <Link href="/" className="hover:text-white transition-colors">首页</Link>
                 <Link href="/cart" className="hover:text-white transition-colors">购物车</Link>
                 <Link href="/profile/order" className="hover:text-white transition-colors">订单</Link>
+                <a href={customerServiceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-white transition-colors">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  在线客服
+                </a>
               </div>
               {user ? (
                 <Link href="/profile" className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/8 text-white text-sm hover:bg-white/15 transition-all border border-white/10">
