@@ -14,13 +14,14 @@ interface Session { id: string; name: string; start_time: string; end_time: stri
 interface Coupon { id: string; name: string; price: number; image_url: string; remaining_quantity: number; total_quantity: number; session_id: string; category_id: string; description: string; }
 interface Article { id: string; title: string; created_at: string; }
 
-import { HomeIcon, ShoppingCartIcon, HeadphoneIcon, UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, StreamIcon, ShoppingBagIcon, GoldIcon } from '@/components/icons';
+import { HomeIcon, ShoppingCartIcon, HeadphoneIcon, UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, StreamIcon, ShoppingBagIcon, GoldIcon, InfoIcon } from '@/components/icons';
 
 const categoryIconMap: Record<string, React.FC<{ className?: string }>> = {
   '官方优惠券': CouponIcon,
   '主播优惠券': StreamIcon,
   '商品优惠券': ShoppingBagIcon,
   '黄金实物': GoldIcon,
+  '优惠券说明': InfoIcon,
 };
 
 export default function HomePage() {
