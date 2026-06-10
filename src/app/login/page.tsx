@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import Image from 'next/image';
 import Link from 'next/link';
+import { HeadphoneIcon } from '@/components/icons';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -106,7 +107,7 @@ export default function LoginPage() {
           <div className="mt-3 text-center">
             <a href={customerServiceUrl} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-sm text-[#1890FF]/70 hover:text-[#1890FF] transition-colors">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              <HeadphoneIcon className="w-4 h-4" />
               在线客服
             </a>
           </div>

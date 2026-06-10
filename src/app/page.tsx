@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
-import { SearchIcon, HeadphoneIcon, UserIcon, ChevronRightIcon } from '@/components/icons';
+
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
 
@@ -14,68 +14,13 @@ interface Session { id: string; name: string; start_time: string; end_time: stri
 interface Coupon { id: string; name: string; price: number; image_url: string; remaining_quantity: number; total_quantity: number; session_id: string; category_id: string; description: string; }
 interface Article { id: string; title: string; created_at: string; }
 
-// ========== Douyin-style SVG Icon Components ==========
-function IconAnnouncement({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      <path d="M3 7C3 5.34315 4.34315 4 6 4H18C19.6569 4 21 5.34315 21 7V17C21 18.6569 19.6569 20 18 20H6C4.34315 4 3 18.6569 3 17V7Z" fill="url(#ann-grad)" />
-      <path d="M7 9H17M7 13H13" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M21 12L23 10V14L21 12Z" fill="#7B61FF" />
-      <defs><linearGradient id="ann-grad" x1="3" y1="4" x2="21" y2="20"><stop stopColor="#1890FF" /><stop offset="1" stopColor="#00D4FF" /></linearGradient></defs>
-    </svg>
-  );
-}
-
-function IconCoupon({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      <rect x="2" y="4" width="20" height="16" rx="3" fill="url(#coupon-grad)" />
-      <path d="M2 10H22" stroke="white" strokeWidth="1.5" strokeDasharray="2 2" />
-      <circle cx="7" cy="7" r="1" fill="white" opacity="0.6" />
-      <text x="12" y="17" textAnchor="middle" fill="white" fontSize="5" fontWeight="bold">¥</text>
-      <defs><linearGradient id="coupon-grad" x1="2" y1="4" x2="22" y2="20"><stop stopColor="#1890FF" /><stop offset="1" stopColor="#00D4FF" /></linearGradient></defs>
-    </svg>
-  );
-}
-
-function IconStream({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="3" width="18" height="14" rx="2" fill="url(#stream-grad)" />
-      <path d="M8 21H16M12 17V21" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="12" cy="9" r="2" fill="white" />
-      <path d="M9 12C9 10.3431 10.3431 9 12 9" stroke="white" strokeWidth="1" strokeLinecap="round" />
-      <defs><linearGradient id="stream-grad" x1="3" y1="3" x2="21" y2="17"><stop stopColor="#7B61FF" /><stop offset="1" stopColor="#1890FF" /></linearGradient></defs>
-    </svg>
-  );
-}
-
-function IconShopping({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      <path d="M4 7H20L18 20H6L4 7Z" fill="url(#shop-grad)" />
-      <path d="M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7" stroke="#1890FF" strokeWidth="1.5" />
-      <circle cx="9" cy="12" r="1" fill="white" />
-      <circle cx="15" cy="12" r="1" fill="white" />
-      <defs><linearGradient id="shop-grad" x1="4" y1="7" x2="20" y2="20"><stop stopColor="#1890FF" /><stop offset="1" stopColor="#00D4FF" /></linearGradient></defs>
-    </svg>
-  );
-}
-
-function IconGold({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none">
-      <path d="M12 2L14.5 8.5H21.5L16 12.5L18 19L12 15L6 19L8 12.5L2.5 8.5H9.5L12 2Z" fill="url(#gold-grad)" />
-      <defs><linearGradient id="gold-grad" x1="2" y1="2" x2="22" y2="19"><stop stopColor="#FFD700" /><stop offset="1" stopColor="#FFA500" /></linearGradient></defs>
-    </svg>
-  );
-}
+import { HomeIcon, ShoppingCartIcon, HeadphoneIcon, UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, StreamIcon, ShoppingBagIcon, GoldIcon } from '@/components/icons';
 
 const categoryIconMap: Record<string, React.FC<{ className?: string }>> = {
-  '官方优惠券': IconCoupon,
-  '主播优惠券': IconStream,
-  '商品优惠券': IconShopping,
-  '黄金实物': IconGold,
+  '官方优惠券': CouponIcon,
+  '主播优惠券': StreamIcon,
+  '商品优惠券': ShoppingBagIcon,
+  '黄金实物': GoldIcon,
 };
 
 export default function HomePage() {
@@ -192,7 +137,7 @@ export default function HomePage() {
             </div>
             <div className="flex items-center gap-3">
               <Link href="/announcements" className="flex items-center gap-1 text-white/50 hover:text-white/80 transition-colors text-xs">
-                <IconAnnouncement className="w-4 h-4" />
+                <AnnounceIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">公告</span>
               </Link>
               {/* Desktop nav links */}
@@ -299,7 +244,7 @@ export default function HomePage() {
             <Link href="/announcements" className="block bg-white rounded-xl shadow-sm px-4 py-2.5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3">
                 <div className="flex-shrink-0 flex items-center gap-1.5">
-                  <IconAnnouncement className="w-4 h-4 text-[#1890FF]" />
+                  <AnnounceIcon className="w-4 h-4 text-[#1890FF]" />
                   <span className="text-[#1890FF] text-xs font-bold">公告</span>
                 </div>
                 <div className="flex-1 overflow-hidden relative h-5">
@@ -328,7 +273,7 @@ export default function HomePage() {
                 className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                 }`}>
-                <IconCoupon className="w-4 h-4" />
+                <CouponIcon className="w-4 h-4" />
                 全部券
               </button>
               {categories.map(cat => {
@@ -390,7 +335,7 @@ export default function HomePage() {
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                     !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}>
-                  <IconCoupon className="w-4 h-4" />
+                  <CouponIcon className="w-4 h-4" />
                   全部
                 </button>
                 {categories.map(cat => {
@@ -468,9 +413,7 @@ export default function HomePage() {
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent pt-8 pb-1.5 px-2.5">
                         <span className="text-white font-bold text-sm md:text-base">¥{coupon.price.toLocaleString()}</span>
                       </div>
-                      {coupon.remaining_quantity <= 10 && coupon.remaining_quantity > 0 && (
-                        <div className="absolute top-2 left-2 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">即将售罄</div>
-                      )}
+                      
                       {coupon.remaining_quantity === 0 && (
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           <span className="text-white font-bold text-sm bg-black/30 px-3 py-1 rounded-lg">已售罄</span>
@@ -480,7 +423,7 @@ export default function HomePage() {
                     <div className="p-2.5 md:p-3">
                       <h3 className="text-xs md:text-sm font-medium text-gray-800 line-clamp-2 mb-1.5 leading-tight">{coupon.name}</h3>
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-gray-400">剩{coupon.remaining_quantity}件</span>
+                        <span className="text-[10px] text-[#FE2C55] font-medium">已抢999+</span>
                       </div>
                       {canGrab && coupon.remaining_quantity > 0 ? (
                         <div className="mt-2 w-full py-1.5 rounded-lg bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-xs font-medium text-center group-hover:shadow-md group-hover:shadow-blue-400/20 transition-all">

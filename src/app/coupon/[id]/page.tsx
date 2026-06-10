@@ -191,11 +191,9 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
                     </div>
                   </div>
                 )}
-                {coupon.sold_count > 0 && (
-                  <div className="absolute top-3 right-3 bg-[#FE2C55]/90 text-white text-[10px] px-2 py-1 rounded-full font-medium backdrop-blur-sm">
-                    已抢 {coupon.sold_count} 件
+                <div className="absolute top-3 right-3 bg-[#FE2C55]/90 text-white text-[10px] px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
+                    已抢999+
                   </div>
-                )}
               </div>
             </div>
           </div>
@@ -231,15 +229,12 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
                   </svg>
                   库存进度
                 </span>
-                <span className="text-[#FE2C55] font-bold">已抢{progress}%</span>
+                <span className="text-[#FE2C55] font-bold">已抢999+</span>
               </div>
               <div className="mt-2 h-2.5 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] rounded-full transition-all duration-500" style={{ width: `${Math.min(progress, 100)}%` }} />
               </div>
-              <div className="flex justify-between mt-1.5 text-xs text-gray-400">
-                <span>已售 {coupon.sold_count}</span>
-                <span>剩余 {coupon.remaining_quantity}</span>
-              </div>
+              <div className="flex justify-between mt-1.5 text-xs text-gray-400"><span className="text-[#FE2C55] font-medium">已抢999+</span><span>限量发售</span></div>
             </div>
 
             {/* Session info */}
