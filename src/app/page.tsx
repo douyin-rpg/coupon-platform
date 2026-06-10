@@ -14,7 +14,7 @@ interface Session { id: string; name: string; start_time: string; end_time: stri
 interface Coupon { id: string; name: string; price: number; image_url: string; remaining_quantity: number; total_quantity: number; session_id: string; category_id: string; description: string; }
 interface Article { id: string; title: string; created_at: string; }
 
-import { HomeIcon, ShoppingCartIcon, HeadphoneIcon, UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, StreamIcon, ShoppingBagIcon, GoldIcon, InfoIcon } from '@/components/icons';
+import { HomeIcon, ShoppingCartIcon, HeadphoneIcon, UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, StreamIcon, ShoppingBagIcon, GoldIcon, InfoIcon, StarIcon, CheckIcon, FlashIcon } from '@/components/icons';
 
 const categoryIconMap: Record<string, React.FC<{ className?: string }>> = {
   '官方优惠券': CouponIcon,
@@ -248,29 +248,132 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Banner */}
-        {banners.length > 0 && (
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-5 md:pb-8">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/30 bg-gray-900" style={{ aspectRatio: '16/7' }}>
-              {banners.map((banner, idx) => (
-                <a key={banner.id} href={banner.link_url || '#'} target={banner.link_url ? '_blank' : undefined} rel={banner.link_url ? 'noopener noreferrer' : undefined}
-                  className="absolute inset-0 transition-opacity duration-700 cursor-pointer block" style={{ opacity: idx === currentBanner ? 1 : 0 }}>
-                  <Image src={banner.image_url} alt={banner.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 1200px" priority={idx === 0} />
+        {/* Hero animated showcase - douyinec.com style */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-16 pt-4 md:pt-8">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+            {/* Left: Text + Entry buttons */}
+            <div className="flex-1 text-center lg:text-left">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight"
+                style={{ textShadow: '0 0 60px rgba(0,212,255,0.2)' }}>
+                激发兴趣
+                <br />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#00D4FF] to-[#7B61FF]">
+                  引领增长
+                </span>
+              </h2>
+              <p className="text-white/40 text-sm md:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
+                抖音电商优惠券抢购平台，限时抢券、快捷回兑、5%奖励，一站式优惠服务
+              </p>
+              {/* Entry cards */}
+              <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto lg:mx-0">
+                <a href="/login" className="group relative bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-sm font-semibold py-3 px-5 rounded-xl text-center transition-all hover:shadow-lg hover:shadow-[#1890FF]/25 hover:scale-[1.03] active:scale-[0.97]"
+                  style={{ boxShadow: '0 4px 20px rgba(24,144,255,0.3)' }}>
+                  立即抢券
                 </a>
-              ))}
-              {/* Banner overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
-              {banners.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {banners.map((_, idx) => (
-                    <button key={idx} onClick={() => setCurrentBanner(idx)}
-                      className={`h-1 rounded-full transition-all ${idx === currentBanner ? 'bg-white w-6' : 'bg-white/30 w-3'}`} />
-                  ))}
+                <a href="/announcements" className="group relative bg-white/8 backdrop-blur-sm text-white text-sm font-semibold py-3 px-5 rounded-xl text-center border border-white/10 transition-all hover:bg-white/12 hover:scale-[1.03] active:scale-[0.97]">
+                  了解更多
+                </a>
+              </div>
+            </div>
+
+            {/* Right: Animated 3D-style illustration */}
+            <div className="flex-1 relative w-full max-w-lg lg:max-w-xl">
+              {/* Floating cards animation */}
+              <div className="relative h-[320px] md:h-[400px]">
+                {/* Central floating device card */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 md:w-72 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 p-4 shadow-2xl"
+                  style={{ animation: 'floatCard 6s ease-in-out infinite', boxShadow: '0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' }}>
+                  {/* Mini header bar */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
+                    <div className="flex-1 h-4 bg-white/8 rounded ml-2" />
+                  </div>
+                  {/* Mini coupon cards */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 bg-white/8 rounded-lg p-2">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#1890FF] to-[#00D4FF] flex items-center justify-center">
+                        <CouponIcon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="h-2.5 bg-white/20 rounded w-20 mb-1" />
+                        <div className="h-2 bg-white/10 rounded w-14" />
+                      </div>
+                      <div className="text-[#FF6B35] text-xs font-bold">¥5000</div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/8 rounded-lg p-2">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#7B61FF] to-[#FE2C55] flex items-center justify-center">
+                        <ShoppingBagIcon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="h-2.5 bg-white/20 rounded w-16 mb-1" />
+                        <div className="h-2 bg-white/10 rounded w-12" />
+                      </div>
+                      <div className="text-[#FF6B35] text-xs font-bold">¥10000</div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/8 rounded-lg p-2">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                        <StarIcon className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="h-2.5 bg-white/20 rounded w-24 mb-1" />
+                        <div className="h-2 bg-white/10 rounded w-10" />
+                      </div>
+                      <div className="text-[#FF6B35] text-xs font-bold">¥10000</div>
+                    </div>
+                  </div>
                 </div>
-              )}
+
+                {/* Floating stat card - top right */}
+                <div className="absolute top-2 right-0 md:right-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/12 p-3 shadow-xl"
+                  style={{ animation: 'floatCard2 5s ease-in-out infinite', animationDelay: '0.5s' }}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                      <CheckIcon className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <div className="text-white/50 text-[10px]">回兑奖励</div>
+                      <div className="text-green-400 text-sm font-bold">+5%</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating badge - bottom left */}
+                <div className="absolute bottom-8 left-0 md:left-2 bg-white/10 backdrop-blur-xl rounded-xl border border-white/12 p-3 shadow-xl"
+                  style={{ animation: 'floatCard2 7s ease-in-out infinite', animationDelay: '1s' }}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-[#FE2C55]/20 flex items-center justify-center">
+                      <FlashIcon className="w-4 h-4 text-[#FE2C55]" />
+                    </div>
+                    <div>
+                      <div className="text-white/50 text-[10px]">限时抢购</div>
+                      <div className="text-[#FE2C55] text-sm font-bold">进行中</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating user card - top left */}
+                <div className="absolute top-6 left-2 md:left-6 bg-white/10 backdrop-blur-xl rounded-xl border border-white/12 p-3 shadow-xl"
+                  style={{ animation: 'floatCard2 8s ease-in-out infinite', animationDelay: '2s' }}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1890FF] to-[#7B61FF]" />
+                    <div>
+                      <div className="h-2 bg-white/25 rounded w-12 mb-1" />
+                      <div className="h-1.5 bg-white/10 rounded w-8" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decorative gradient orbs */}
+                <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-20"
+                  style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.8), transparent)', filter: 'blur(15px)', animation: 'aurora3 6s ease-in-out infinite' }} />
+                <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full opacity-15"
+                  style={{ background: 'radial-gradient(circle, rgba(123,97,255,0.8), transparent)', filter: 'blur(15px)', animation: 'aurora1 8s ease-in-out infinite' }} />
+              </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* ===== Main Content Area ===== */}
