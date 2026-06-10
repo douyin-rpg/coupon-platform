@@ -146,7 +146,7 @@ export default function HomePage() {
                 <Link href="/cart" className="hover:text-white transition-colors">购物车</Link>
                 <Link href="/profile/order" className="hover:text-white transition-colors">订单</Link>
                 <a href={customerServiceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-white transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  <HeadphoneIcon className="w-4 h-4" />
                   在线客服
                 </a>
               </div>
@@ -396,10 +396,7 @@ export default function HomePage() {
             {/* Coupon Grid */}
             {filteredCoupons.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
-                <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24">
-                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 2" />
-                </svg>
+                <CouponIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                 <p className="text-gray-400">暂无优惠券</p>
               </div>
             ) : (

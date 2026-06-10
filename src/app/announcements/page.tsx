@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
+import { AnnounceIcon, ArrowLeftIcon } from '@/components/icons';
 
 interface ArticleCategory {
   id: string;
@@ -71,7 +72,7 @@ export default function AnnouncementsPage() {
         <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-2">
             <Link href="/" className="text-white/70 hover:text-white">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              <ArrowLeftIcon className="w-5 h-5" />
             </Link>
             <h1 className="text-xl font-bold">平台资讯</h1>
           </div>
@@ -106,7 +107,7 @@ export default function AnnouncementsPage() {
         <div className="space-y-3 pb-8">
           {articles.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
-              <svg className="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
+              <AnnounceIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-400 text-sm">暂无文章</p>
             </div>
           ) : articles.map(article => (

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { AdminNotification } from '@/components/admin-notification';
+import { XIcon } from '@/components/icons';
 
 interface VerifyUser {
   id: string;
@@ -154,7 +155,7 @@ export default function AdminVerifyPage() {
               <h3 className="text-lg font-bold">实名认证详情</h3>
               <button onClick={() => { setSelectedUser(null); setRejectReason(''); }}
                 className="text-gray-400 hover:text-gray-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <XIcon className="w-5 h-5" />
               </button>
             </div>
 

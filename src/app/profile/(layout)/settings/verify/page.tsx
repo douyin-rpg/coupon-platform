@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/auth-context';
+import { CameraIcon, CheckIcon, ClockIcon, XIcon } from '@/components/icons';
 
 export default function VerifyPage() {
   const { user, refreshUser } = useAuth();
@@ -18,7 +19,7 @@ export default function VerifyPage() {
       <div className="p-4 md:p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4">实名认证</h2>
         <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-md shadow-green-200"><svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
+          <CheckIcon className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-md shadow-green-200" />
           <p className="text-green-700 font-medium">已完成实名认证</p>
           <p className="text-sm text-gray-500 mt-2">姓名：{user.realName}</p>
           <p className="text-xs text-gray-400 mt-1">认证后不支持自行更改，如需修改请联系管理员</p>
@@ -32,7 +33,7 @@ export default function VerifyPage() {
       <div className="p-4 md:p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4">实名认证</h2>
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md shadow-amber-200"><svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" /><path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></div>
+          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md shadow-amber-200"><ClockIcon className="w-7 h-7 text-white" /></div>
           <p className="text-yellow-700 font-medium">实名认证审核中</p>
           <p className="text-sm text-gray-500 mt-2">请耐心等待管理员审核</p>
         </div>
@@ -45,7 +46,7 @@ export default function VerifyPage() {
       <div className="p-4 md:p-6">
         <h2 className="text-lg font-bold text-gray-800 mb-4">实名认证</h2>
         <div className="bg-blue-50 border border-red-200 rounded-xl p-6 text-center mb-4">
-          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center shadow-md shadow-red-200"><svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" /></svg></div>
+          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center shadow-md shadow-red-200"><XIcon className="w-7 h-7 text-white" /></div>
           <p className="text-red-700 font-medium">实名认证被拒绝</p>
           <p className="text-sm text-gray-500 mt-2">拒绝原因：{user.verifyRejectedReason || '未说明'}</p>
           <p className="text-xs text-gray-400 mt-1">请修改后重新提交</p>
@@ -128,7 +129,7 @@ export default function VerifyPage() {
                 <img src={frontPreview} alt="正面" className="w-full h-full object-contain rounded-xl" />
               ) : (
                 <div className="text-center">
-                  <svg className="w-8 h-8 mx-auto mb-1 text-gray-400" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" /><circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.5" /><path d="M9 5l1-2h4l1 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                  <CameraIcon className="w-8 h-8 mx-auto mb-1 text-gray-400" />
                   <span className="text-sm text-gray-400">点击上传身份证正面</span>
                 </div>
               )}
@@ -146,7 +147,7 @@ export default function VerifyPage() {
                 <img src={backPreview} alt="反面" className="w-full h-full object-contain rounded-xl" />
               ) : (
                 <div className="text-center">
-                  <svg className="w-8 h-8 mx-auto mb-1 text-gray-400" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" /><circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.5" /><path d="M9 5l1-2h4l1 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                  <CameraIcon className="w-8 h-8 mx-auto mb-1 text-gray-400" />
                   <span className="text-sm text-gray-400">点击上传身份证反面</span>
                 </div>
               )}

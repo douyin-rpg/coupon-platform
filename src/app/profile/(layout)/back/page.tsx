@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/auth-context';
+import { CouponIcon, CreditCardIcon } from '@/components/icons';
 
 interface UserCoupon {
   id: string;
@@ -88,10 +89,7 @@ export default function BackPage() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
-          <svg className="w-16 h-16 mx-auto mb-3 text-gray-200" viewBox="0 0 24 24" fill="none">
-            <path d="M4 4h16v12H4z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
-            <path d="M4 8h16" stroke="currentColor" strokeWidth="1.2" />
-          </svg>
+          <CouponIcon className="w-16 h-16 mx-auto mb-3 text-gray-200" />
           <p className="text-sm">暂无记录</p>
         </div>
       ) : (
@@ -105,10 +103,7 @@ export default function BackPage() {
                 )}
                 <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
                   {o.coupon_image ? <img src={o.coupon_image} alt={o.coupon_name} className="w-full h-full object-cover" /> : (
-                    <svg className="w-6 h-6 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
-                      <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
+                    <CreditCardIcon className="w-6 h-6 text-[#1890FF]" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

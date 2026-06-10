@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import BottomNav from "@/components/bottom-nav";
 import Footer from "@/components/footer";
+import { ArrowLeftIcon, CheckCircleIcon, CheckIcon, CouponIcon, MinusIcon, PlusIcon, TrashIcon, XIcon } from '@/components/icons';
 
 interface CartItem {
   id: string;
@@ -136,9 +137,7 @@ export default function CartPage() {
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => router.back()} className="text-gray-600 hover:text-gray-800 md:hidden">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              <ArrowLeftIcon className="w-5 h-5" />
             </button>
             <span className="font-bold text-[#1A1A1A] text-lg">购物车</span>
             {items.length > 0 && <span className="text-xs text-gray-400">({items.length}件)</span>}
@@ -154,10 +153,7 @@ export default function CartPage() {
           <div className="text-center py-20 text-gray-400">加载中...</div>
         ) : items.length === 0 ? (
           <div className="text-center py-20">
-            <svg className="w-20 h-20 mx-auto text-gray-300 mb-4" viewBox="0 0 24 24" fill="none">
-              <path d="M4 7h16l-2 13H6L4 7z" stroke="currentColor" strokeWidth="1.5" fill="currentColor" opacity="0.1" />
-              <path d="M8 7V5a4 4 0 018 0v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
+            <CouponIcon className="w-20 h-20 mx-auto text-gray-300 mb-4" />
             <p className="text-gray-400 text-sm mb-4">购物车是空的</p>
             <button onClick={() => router.push("/")}
               className="px-6 py-2.5 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-xl text-sm font-medium active:scale-[0.97] transition-all shadow-lg shadow-blue-200/50">
@@ -176,9 +172,7 @@ export default function CartPage() {
                       selectedIds.has(item.id) ? "bg-[#1890FF] border-[#1890FF]" : "border-gray-300 bg-white"
                     }`}>
                     {selectedIds.has(item.id) && (
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
+                      <CheckIcon className="w-3 h-3 text-white" />
                     )}
                   </button>
 
@@ -200,9 +194,7 @@ export default function CartPage() {
 
                   <button onClick={() => removeItem(item.id)}
                     className="flex-shrink-0 text-gray-300 hover:text-[#FE2C55] transition-colors p-1">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <TrashIcon className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -221,9 +213,7 @@ export default function CartPage() {
                 selectedIds.size === items.length && items.length > 0 ? "bg-[#1890FF] border-[#1890FF]" : "border-gray-300 bg-white"
               }`}>
                 {selectedIds.size === items.length && items.length > 0 && (
-                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
+                  <CheckIcon className="w-3 h-3 text-white" />
                 )}
               </div>
               <span className="text-sm text-gray-500">全选</span>
@@ -250,9 +240,7 @@ export default function CartPage() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-[#1A1A1A]">确认结算</h3>
               <button onClick={() => { setShowPayModal(false); setPayPassword(""); }} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <XIcon className="w-5 h-5" />
               </button>
             </div>
 
@@ -298,9 +286,9 @@ export default function CartPage() {
                   <span className="font-medium truncate flex-1">{r.name}</span>
                   <span className="ml-2 flex-shrink-0">
                     {r.success ? (
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" /><path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      <CheckCircleIcon className="w-5 h-5 text-[#1890FF]" />
                     ) : (
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" /><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                      <XIcon className="w-5 h-5 text-gray-300" />
                     )}
                   </span>
                 </div>

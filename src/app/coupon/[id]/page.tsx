@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { ShoppingCartIcon, FlashIcon, ShieldIcon, ClockIcon, CheckCircleIcon, ChevronRightIcon } from '@/components/icons';
+import { ArrowLeftIcon, CheckCircleIcon, ChevronRightIcon, ClockIcon, CouponIcon, CreditCardIcon, FlashIcon, InfoIcon, LockIcon, ShieldIcon, ShoppingCartIcon, XIcon } from '@/components/icons';
 import BottomNav from "@/components/bottom-nav";
 import Footer from "@/components/footer";
 
@@ -154,9 +154,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={() => router.back()} className="text-gray-600 hover:text-gray-800 transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeftIcon className="w-5 h-5" />
           </button>
           <span className="font-bold text-[#1A1A1A]">商品详情</span>
         </div>
@@ -174,19 +172,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1890FF]/10 to-[#00D4FF]/10">
                     <div className="text-center">
-                      <svg className="w-20 h-20 mx-auto mb-3" viewBox="0 0 64 64" fill="none">
-                        <rect x="4" y="12" width="56" height="40" rx="6" fill="url(#coupon-grad)" opacity="0.15" />
-                        <rect x="4" y="12" width="56" height="40" rx="6" stroke="url(#coupon-grad)" strokeWidth="2" />
-                        <circle cx="20" cy="32" r="8" stroke="#1890FF" strokeWidth="1.5" fill="none" />
-                        <path d="M17 32l2 2 4-4" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        <path d="M32 28h14M32 36h8" stroke="#1890FF" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
-                        <defs>
-                          <linearGradient id="coupon-grad" x1="4" y1="12" x2="60" y2="52">
-                            <stop stopColor="#1890FF" />
-                            <stop offset="1" stopColor="#00D4FF" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
+                      <CouponIcon className="w-20 h-20 mx-auto mb-3" />
                       <div className="text-gray-400 text-sm">优惠券</div>
                     </div>
                   </div>
@@ -223,10 +209,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500 flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-[#FE2C55]" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" fill="currentColor" opacity="0.2" />
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                  </svg>
+                  <FlashIcon className="w-4 h-4 text-[#FE2C55]" />
                   库存进度
                 </span>
                 <span className="text-[#FE2C55] font-bold">已抢999+</span>
@@ -240,10 +223,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             {/* Session info */}
             <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm">
               <div className="text-sm text-gray-500 mb-3 flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
+                <InfoIcon className="w-4 h-4 text-[#1890FF]" />
                 抢购场次
               </div>
               <div className="space-y-2">
@@ -259,10 +239,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
                     <div key={s.id} className={`flex items-center justify-between p-3 rounded-xl transition-all ${isActive ? 'bg-blue-50 border-2 border-[#1890FF]/30 shadow-sm' : isUpcoming ? 'bg-amber-50/80 border border-amber-200/50' : 'bg-gray-50/50'}`}>
                       <div className="flex items-center gap-2.5">
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isActive ? 'bg-[#1890FF] text-white' : 'bg-gray-200 text-gray-400'}`}>
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-                            <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                          </svg>
+                          <ClockIcon className="w-4 h-4" />
                         </div>
                         <div>
                           <span className={`text-sm font-medium ${isActive ? 'text-[#1890FF]' : 'text-gray-700'}`}>{s.name}</span>
@@ -287,10 +264,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             {/* Success message */}
             {grabSuccess && (
               <div className="p-4 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-center">
-                <svg className="w-12 h-12 mx-auto mb-2 text-green-500" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <CheckCircleIcon className="w-12 h-12 mx-auto mb-2 text-green-500" />
                 <p className="text-green-700 font-bold text-lg">抢券成功！</p>
                 <p className="text-green-600 text-sm mt-1">请前往订单查看详情</p>
                 <button onClick={() => router.push('/profile/order')}
@@ -376,20 +350,14 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-[#1A1A1A]">确认抢购</h3>
               <button onClick={() => { setShowPaymentModal(false); setPaymentPassword(""); }} className="text-gray-400 hover:text-gray-600 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <XIcon className="w-5 h-5" />
               </button>
             </div>
 
             <div className="bg-gradient-to-r from-[#1890FF]/5 to-[#00D4FF]/5 rounded-xl p-4 mb-4 border border-[#1890FF]/10">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1890FF]/10 to-[#00D4FF]/10 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M7 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
+                  <CreditCardIcon className="w-6 h-6 text-[#1890FF]" />
                 </div>
                 <div className="flex-1">
                   <div className="font-medium text-[#1A1A1A] text-sm">{coupon.name}</div>
@@ -409,10 +377,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
 
             <div className="mb-4">
               <label className="text-sm text-gray-500 mb-2 block flex items-center gap-1">
-                <svg className="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
+                <LockIcon className="w-4 h-4 text-gray-400" />
                 支付密码
               </label>
               <input

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import Link from 'next/link';
+import { CheckCircleIcon, ChevronRightIcon, ClockIcon, CopyIcon, CouponIcon, CreditCardIcon, OrderIcon, TagIcon, WalletIcon } from '@/components/icons';
 
 interface UserCoupon {
   id: string;
@@ -116,11 +117,7 @@ export default function OrderPage() {
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
-          <svg className="w-16 h-16 mx-auto mb-3 text-gray-200" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.2" />
-            <path d="M3 9h18" stroke="currentColor" strokeWidth="1.2" />
-            <circle cx="8" cy="14" r="1.5" stroke="currentColor" strokeWidth="1.2" />
-          </svg>
+          <CouponIcon className="w-16 h-16 mx-auto mb-3 text-gray-200" />
           <p className="text-sm">暂无订单</p>
         </div>
       ) : (
@@ -135,11 +132,7 @@ export default function OrderPage() {
                   <div className="flex items-start gap-3">
                     <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
                       {o.coupon_image ? <img src={o.coupon_image} alt={o.coupon_name} className="w-full h-full object-cover" /> : (
-                        <svg className="w-8 h-8 text-[#1890FF]" viewBox="0 0 24 24" fill="none">
-                          <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-                          <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
-                          <path d="M7 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
+                        <CreditCardIcon className="w-8 h-8 text-[#1890FF]" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -151,9 +144,7 @@ export default function OrderPage() {
                       </div>
                       <div className="mt-1.5 flex items-center justify-between">
                         <span className="text-[#FF6B35] font-bold text-lg font-variant-numeric tabular-nums">¥{o.coupon_price.toLocaleString('zh-CN')}</span>
-                        <svg className={`w-4 h-4 text-gray-300 transition-transform ${isExpanded ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
+                            <ChevronRightIcon className={`w-4 h-4 text-gray-300 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                       </div>
                     </div>
                   </div>
@@ -166,10 +157,7 @@ export default function OrderPage() {
                       {/* Order number */}
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" strokeLinecap="round" />
-                            <rect x="9" y="3" width="6" height="4" rx="1" />
-                          </svg>
+          <OrderIcon className="w-16 h-16 mx-auto mb-3 text-gray-200" />
                           订单编号
                         </span>
                         <span className="text-xs font-mono text-gray-600 font-medium">{formatOrderId(o.id)}</span>
@@ -178,10 +166,7 @@ export default function OrderPage() {
                       {/* Payment amount */}
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <rect x="2" y="4" width="20" height="16" rx="3" />
-                            <path d="M2 10h20" />
-                          </svg>
+                          <TagIcon className="w-3.5 h-3.5" />
                           支付金额
                         </span>
                         <span className="text-sm font-bold text-[#FF6B35]">¥{o.coupon_price.toLocaleString('zh-CN')}</span>
@@ -191,9 +176,7 @@ export default function OrderPage() {
                       {o.verification_code && (
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-gray-400 flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                              <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
+                          <CopyIcon className="w-3.5 h-3.5" />
                             核销码
                           </span>
                           <div className="flex items-center gap-2">
@@ -211,10 +194,7 @@ export default function OrderPage() {
                       {/* Order time */}
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <circle cx="12" cy="12" r="9" />
-                            <path d="M12 7v5l3 3" strokeLinecap="round" />
-                          </svg>
+                          <ClockIcon className="w-3.5 h-3.5" />
                           下单时间
                         </span>
                         <span className="text-xs text-gray-600 font-variant-numeric tabular-nums">{formatTime(o.created_at)}</span>
@@ -223,10 +203,7 @@ export default function OrderPage() {
                       {/* Paid time */}
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx="12" cy="12" r="9" />
-                          </svg>
+                          <CheckCircleIcon className="w-3.5 h-3.5" />
                           支付时间
                         </span>
                         <span className="text-xs text-gray-600 font-variant-numeric tabular-nums">{formatTime(o.paid_at)}</span>

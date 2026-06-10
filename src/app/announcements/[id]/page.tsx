@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
+import { ArrowLeftIcon } from '@/components/icons';
 
 interface Article {
   id: string;
@@ -61,7 +62,7 @@ export default function ArticleDetailPage() {
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="flex items-center gap-3 mb-2">
             <Link href="/announcements" className="text-white/70 hover:text-white">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              <ArrowLeftIcon className="w-5 h-5" />
             </Link>
             <span className="text-sm text-white/60">资讯详情</span>
           </div>
