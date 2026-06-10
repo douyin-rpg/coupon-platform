@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { ArrowLeftIcon, CheckCircleIcon, ChevronRightIcon, ClockIcon, CouponIcon, CreditCardIcon, FlashIcon, InfoIcon, LockIcon, ShieldIcon, ShoppingCartIcon, XIcon } from '@/components/icons';
+import { ArrowLeftIcon, CheckCircleIcon, ChevronRightIcon, ClockIcon, CouponIcon, CreditCardIcon, InfoIcon, LockIcon, ShieldIcon, ShoppingCartIcon, XIcon } from '@/components/icons';
 import BottomNav from "@/components/bottom-nav";
 import Footer from "@/components/footer";
 
@@ -144,8 +144,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
 
   if (!coupon) return <div className="min-h-screen flex items-center justify-center text-gray-400">加载中...</div>;
 
-  const progress = coupon.remaining_quantity + coupon.sold_count > 0
-    ? Math.round((coupon.sold_count / (coupon.remaining_quantity + coupon.sold_count)) * 100) : 0;
+
   const formatPrice = (price: number) => price.toLocaleString('zh-CN');
 
   return (
@@ -203,21 +202,6 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
             <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm">
               <h1 className="text-lg md:text-xl font-bold text-[#1A1A1A]">{coupon.name}</h1>
               {coupon.description && <p className="text-sm text-gray-500 mt-2">{coupon.description}</p>}
-            </div>
-
-            {/* Stock progress */}
-            <div className="bg-white p-4 md:p-5 rounded-2xl shadow-sm">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500 flex items-center gap-1.5">
-                  <FlashIcon className="w-4 h-4 text-[#FE2C55]" />
-                  库存进度
-                </span>
-                <span className="text-[#FE2C55] font-bold">已抢999+</span>
-              </div>
-              <div className="mt-2 h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#FE2C55] to-[#FF6B35] rounded-full transition-all duration-500" style={{ width: `${Math.min(progress, 100)}%` }} />
-              </div>
-              <div className="flex justify-between mt-1.5 text-xs text-gray-400"><span className="text-[#FE2C55] font-medium">已抢999+</span><span>限量发售</span></div>
             </div>
 
             {/* Session info */}

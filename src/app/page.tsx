@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/auth-context';
 
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
+import GrabNotification from '@/components/grab-notification';
 
 interface Banner { id: string; image_url: string; title: string; link_url: string; }
 interface Category { id: string; name: string; icon: string; }
@@ -400,6 +401,13 @@ export default function HomePage() {
                 <ChevronRightIcon className="w-4 h-4 text-gray-300 flex-shrink-0" />
               </div>
             </Link>
+          </div>
+        )}
+
+        {/* 抢购轮播通知 - 仅场次开放时显示 */}
+        {activeSession && (
+          <div className="mt-3">
+            <GrabNotification isActive={canGrab} />
           </div>
         )}
 
