@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { ShoppingCartIcon, FlashIcon, ShieldIcon, ClockIcon, CheckCircleIcon, ChevronRightIcon } from '@/components/icons';
 import BottomNav from "@/components/bottom-nav";
 import Footer from "@/components/footer";
 

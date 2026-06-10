@@ -217,7 +217,7 @@ export default function ProfilePage() {
               <p className="text-sm font-medium text-blue-700">您尚未完成实名认证</p>
               <p className="text-xs text-blue-500 mt-1">完成实名认证后才能查看余额和抢购优惠券</p>
               <div className="mt-3 flex gap-2">
-                <Link href="/profile/settings/verify" className="px-4 py-2 bg-[#1890FF] text-white text-sm rounded-lg hover:bg-[#0077E6] transition-colors">去认证</Link>
+                <Link href="/profile/settings/verify" className="px-4 py-2 bg-[#1890FF] text-white text-sm rounded-lg hover:shadow-lg transition-colors">去认证</Link>
                 <Link href="/profile/settings/bank" className="px-4 py-2 border border-[#1890FF] text-[#1890FF] text-sm rounded-lg hover:bg-white transition-colors">绑定收款</Link>
               </div>
             </div>

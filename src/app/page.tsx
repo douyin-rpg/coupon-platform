@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
+import { SearchIcon, HeadphoneIcon, UserIcon, ChevronRightIcon } from '@/components/icons';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
 
@@ -186,9 +187,7 @@ export default function HomePage() {
                 <input type="text" placeholder="搜索优惠券..." value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-56 lg:w-72 h-9 pl-9 pr-4 rounded-full bg-white/8 text-white text-sm placeholder-white/30 border border-white/10 focus:border-[#00D4FF]/50 focus:outline-none focus:bg-white/10 transition-all" />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -208,12 +207,12 @@ export default function HomePage() {
               </div>
               {user ? (
                 <Link href="/profile" className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/8 text-white text-sm hover:bg-white/15 transition-all border border-white/10">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+<UserIcon className="w-4 h-4" />
                   <span className="hidden sm:inline">{user.username}</span>
                 </Link>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Link href="/login" className="px-5 py-1.5 rounded-full bg-[#1890FF] text-white text-sm font-medium hover:bg-[#0077E6] transition-all">登录</Link>
+                  <Link href="/login" className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-sm font-medium shadow-sm shadow-blue-400/30 hover:shadow-md transition-all">登录</Link>
                   <Link href="/register" className="px-4 py-1.5 rounded-full border border-white/20 text-white/80 text-sm hover:bg-white/8 transition-all">注册</Link>
                 </div>
               )}
@@ -312,9 +311,7 @@ export default function HomePage() {
                     ))}
                   </div>
                 </div>
-                <svg className="w-4 h-4 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+<ChevronRightIcon className="w-4 h-4 text-gray-300 flex-shrink-0" />
               </div>
             </Link>
           </div>
@@ -447,9 +444,7 @@ export default function HomePage() {
                 <input type="text" placeholder="搜索优惠券..." value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-gray-200 text-sm focus:border-[#1890FF] focus:outline-none shadow-sm" />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               </div>
             </div>
 
