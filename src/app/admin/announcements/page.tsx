@@ -32,8 +32,6 @@ export default function AdminAnnouncementsPage() {
     { href: '/admin/banners', label: '轮播图管理' },
   ];
 
-  useEffect(() => { fetchAnnouncements(); }, []);
-
   const fetchAnnouncements = async () => {
     setLoading(true);
     const res = await fetch('/api/admin/announcements');
@@ -41,6 +39,8 @@ export default function AdminAnnouncementsPage() {
     if (data.announcements) setAnnouncements(data.announcements);
     setLoading(false);
   };
+
+  useEffect(() => { fetchAnnouncements(); }, []);
 
   const handleSubmit = async () => {
     if (!form.title.trim() || !form.content.trim()) return;
