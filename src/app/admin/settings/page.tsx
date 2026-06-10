@@ -48,37 +48,35 @@ export default function AdminSettingsPage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-white text-center">加载中...</div>;
+    return <div className="p-8 text-gray-400 text-center">加载中...</div>;
   }
 
   return (
     <div className="p-6 md:p-8 max-w-4xl">
-      <h1 className="text-2xl font-bold text-white mb-6">系统设置</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">系统设置</h1>
 
-      <div className="bg-gray-800 rounded-xl p-6 space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
         {/* 客服设置 */}
         <div>
-          <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-            <span>🎧</span> 客服设置
-          </h2>
+          <h2 className="text-lg font-medium text-gray-800 mb-4">客服设置</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">客服链接</label>
+              <label className="block text-sm text-gray-600 mb-1">客服链接</label>
               <input
                 type="text"
                 value={settings.customer_service_url || ''}
                 onChange={e => setSettings({ ...settings, customer_service_url: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-[#1890FF]"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
                 placeholder="https://example.com/customer-service"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">客服按钮文字</label>
+              <label className="block text-sm text-gray-600 mb-1">客服按钮文字</label>
               <input
                 type="text"
                 value={settings.customer_service_text || ''}
                 onChange={e => setSettings({ ...settings, customer_service_text: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-[#1890FF]"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
                 placeholder="在线客服"
               />
             </div>
@@ -87,30 +85,28 @@ export default function AdminSettingsPage() {
 
         {/* 页脚设置 */}
         <div>
-          <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
-            <span>🏢</span> 页脚设置
-          </h2>
+          <h2 className="text-lg font-medium text-gray-800 mb-4">页脚设置</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">公司信息（显示在页脚底部）</label>
+              <label className="block text-sm text-gray-600 mb-1">公司信息（显示在页脚底部）</label>
               <input
                 type="text"
                 value={settings.company_info || ''}
                 onChange={e => setSettings({ ...settings, company_info: e.target.value })}
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-[#1890FF]"
+                className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
                 placeholder="上海格物致品网络科技有限公司"
               />
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-400 mt-2">
             页脚链接（关联官网/关联平台/联系我们）请在
-            <a href="/admin/footer-links" className="text-[#00D4FF] hover:underline">页脚链接管理</a>
+            <a href="/admin/footer-links" className="text-[#1890FF] hover:underline">页脚链接管理</a>
             中编辑
           </p>
         </div>
 
         {/* 保存按钮 */}
-        <div className="flex items-center gap-4 pt-4 border-t border-gray-700">
+        <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
           <button
             onClick={handleSave}
             disabled={saving}
@@ -119,7 +115,7 @@ export default function AdminSettingsPage() {
             {saving ? '保存中...' : '保存设置'}
           </button>
           {message && (
-            <span className={`text-sm ${message.includes('成功') ? 'text-green-400' : 'text-red-400'}`}>
+            <span className={`text-sm ${message.includes('成功') ? 'text-green-600' : 'text-red-500'}`}>
               {message}
             </span>
           )}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -92,31 +91,11 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="fixed left-0 top-0 bottom-0 w-56 bg-gradient-to-b from-[#0A1628] to-[#132742] text-white p-4">
-        <h2 className="text-lg font-bold mb-6">管理后台</h2>
-        <nav className="space-y-1">
-          <Link href="/admin/sessions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">场次管理</Link>
-          <Link href="/admin/coupons" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">优惠券管理</Link>
-          <Link href="/admin/codes" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">注册码管理</Link>
-          <Link href="/admin/verify" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">实名审核</Link>
-          <Link href="/admin/articles" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">文章管理</Link>
-          <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">回兑审核</Link>
-          <Link href="/admin/orders" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">订单管理</Link>
-          <Link href="/admin/users" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">用户管理</Link>
-          <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">提现审核</Link>
-          <Link href="/admin/categories" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">分类管理</Link>
-          <Link href="/admin/banners" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">轮播图管理</Link>
-        </nav>
-        <div className="absolute bottom-4 left-4 right-4">
-          <Link href="/" className="text-xs text-gray-400 hover:text-gray-200">返回前台</Link>
-        </div>
-      </div>
+    <div className="p-6 md:p-8">
 
-      <div className="ml-56 p-6">
-        <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">分类管理</h1>
-          <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={() => { setName(''); setIcon(''); setSortOrder('0'); setAddOpen(true); }}>
+          <Button className="bg-[#1890FF] hover:bg-[#1890FF]/80 text-white" onClick={() => { setName(''); setIcon(''); setSortOrder('0'); setAddOpen(true); }}>
             新增分类
           </Button>
         </div>
@@ -145,7 +124,6 @@ export default function AdminCategoriesPage() {
             <Card className="border-0 shadow-sm col-span-full"><CardContent className="py-12 text-center text-gray-400">暂无分类</CardContent></Card>
           )}
         </div>
-      </div>
 
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent className="sm:max-w-md">
@@ -166,7 +144,7 @@ export default function AdminCategoriesPage() {
               <Label>排序</Label>
               <Input type="number" placeholder="0" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} />
             </div>
-            <Button className="w-full bg-red-600 hover:bg-red-700 text-white" onClick={handleAdd} disabled={loading || !name}>
+            <Button className="w-full bg-[#1890FF] hover:bg-[#1890FF]/80 text-white" onClick={handleAdd} disabled={loading || !name}>
               {loading ? '创建中...' : '创建分类'}
             </Button>
           </div>

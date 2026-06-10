@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -117,31 +116,8 @@ export default function AdminRedemptionsPage() {
   const pendingCount = requests.filter((r) => r.status === 'pending').length;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="fixed left-0 top-0 bottom-0 w-56 bg-gradient-to-b from-[#0A1628] to-[#132742] text-white p-4">
-        <h2 className="text-lg font-bold mb-6">管理后台</h2>
-        <nav className="space-y-1">
-          <Link href="/admin/sessions" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">场次管理</Link>
-          <Link href="/admin/coupons" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">优惠券管理</Link>
-          <Link href="/admin/codes" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">注册码管理</Link>
-          <Link href="/admin/verify" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">实名审核</Link>
-          <Link href="/admin/articles" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">文章管理</Link>
-          <Link href="/admin/redemptions" className="block px-3 py-2 bg-gray-800 rounded-lg text-sm font-medium">
-            回兑审核 {pendingCount > 0 && <span className="ml-1 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">{pendingCount}</span>}
-          </Link>
-          <Link href="/admin/orders" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">订单管理</Link>
-          <Link href="/admin/users" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">用户管理</Link>
-          <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">提现审核</Link>
-          <Link href="/admin/categories" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">分类管理</Link>
-          <Link href="/admin/banners" className="block px-3 py-2 hover:bg-gray-800 rounded-lg text-sm">轮播图管理</Link>
-        </nav>
-        <div className="absolute bottom-4 left-4 right-4">
-          <Link href="/" className="text-xs text-gray-400 hover:text-gray-200">返回前台</Link>
-        </div>
-      </div>
-
-      <div className="ml-56 p-6">
-        <div className="flex items-center justify-between mb-6">
+    <div className="p-6 md:p-8">
+      <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">回兑审核</h1>
           <div className="flex items-center gap-3">
             <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
@@ -253,7 +229,6 @@ export default function AdminRedemptionsPage() {
             })
           )}
         </div>
-      </div>
 
       {/* Single Action Dialog */}
       <Dialog open={actionOpen} onOpenChange={setActionOpen}>

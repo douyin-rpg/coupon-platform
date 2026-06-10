@@ -165,36 +165,36 @@ export default function AdminCouponsPage() {
   return (
     <div className="p-6 md:p-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">优惠券管理</h1>
+        <h1 className="text-2xl font-bold text-gray-800">优惠券管理</h1>
         <Button className="bg-[#1890FF] hover:bg-[#1890FF]/80 text-white" onClick={openAdd}>
           新增优惠券
         </Button>
       </div>
 
       {message && (
-        <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}`}>
+        <div className={`mb-4 p-3 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
           {message.text}
         </div>
       )}
 
       <div className="space-y-3">
         {coupons.length === 0 ? (
-          <Card className="bg-gray-800 border-gray-700"><CardContent className="py-12 text-center text-gray-500">暂无优惠券</CardContent></Card>
+          <Card className="border-0 shadow-sm"><CardContent className="py-12 text-center text-gray-400">暂无优惠券</CardContent></Card>
         ) : (
           coupons.map((c) => (
-            <Card key={c.id} className="bg-gray-800 border-gray-700">
+            <Card key={c.id} className="border-0 shadow-sm">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   {c.image_url ? (
                     <img src={c.image_url} alt={c.name} className="w-12 h-12 rounded-xl object-cover" />
                   ) : (
-                    <div className="w-12 h-12 bg-[#1890FF]/20 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-[#1890FF]/10 rounded-xl flex items-center justify-center">
                       <span className="text-[#1890FF] font-bold text-sm">券</span>
                     </div>
                   )}
                   <div>
-                    <h3 className="font-medium text-white">{c.name}</h3>
-                    <p className="text-sm text-gray-400">
+                    <h3 className="font-medium text-gray-800">{c.name}</h3>
+                    <p className="text-sm text-gray-500">
                       场次：{(c.grab_sessions as unknown as { name: string } | null)?.name || '未知'} ·
                       {c.categories ? ` 分类：${(c.categories as unknown as { name: string }).name} ·` : ''}
                       {' '}价格：¥{parseFloat(c.price).toLocaleString()} ·
@@ -204,12 +204,12 @@ export default function AdminCouponsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge className={c.is_active ? 'bg-green-500/20 text-green-400' : 'bg-gray-600/20 text-gray-400'}>
+                  <Badge className={c.is_active ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-500'}>
                     {c.is_active ? '上架' : '下架'}
                   </Badge>
                   <Switch checked={c.is_active} onCheckedChange={() => handleToggleActive(c)} />
-                  <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:text-white" onClick={() => openEdit(c)}>编辑</Button>
-                  <Button variant="outline" size="sm" className="border-red-800 text-red-400 hover:text-red-300" onClick={() => handleDelete(c.id)}>删除</Button>
+                  <Button variant="outline" size="sm" onClick={() => openEdit(c)}>编辑</Button>
+                  <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700" onClick={() => handleDelete(c.id)}>删除</Button>
                 </div>
               </CardContent>
             </Card>
@@ -219,62 +219,62 @@ export default function AdminCouponsPage() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg bg-gray-800 border-gray-700 text-white">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{editId ? '编辑优惠券' : '新增优惠券'}</DialogTitle>
-            <DialogDescription className="text-gray-400">{editId ? '修改优惠券信息' : '添加新的抢购优惠券'}</DialogDescription>
+            <DialogDescription className="text-gray-500">{editId ? '修改优惠券信息' : '添加新的抢购优惠券'}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2 max-h-[70vh] overflow-y-auto">
             <div className="space-y-2">
-              <Label className="text-gray-300">券名称 *</Label>
-              <Input className="bg-gray-700 border-gray-600 text-white" placeholder="如：抖音1000元无门槛优惠券" value={name} onChange={(e) => setName(e.target.value)} />
+              <Label>券名称 *</Label>
+              <Input placeholder="如：抖音1000元无门槛优惠券" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-300">描述</Label>
-              <Textarea className="bg-gray-700 border-gray-600 text-white" placeholder="优惠券说明" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <Label>描述</Label>
+              <Textarea placeholder="优惠券说明" value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-gray-300">面值/抢购价格 *</Label>
-                <Input className="bg-gray-700 border-gray-600 text-white" type="number" step="0.01" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} />
+                <Label>面值/抢购价格 *</Label>
+                <Input type="number" step="0.01" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-300">原价</Label>
-                <Input className="bg-gray-700 border-gray-600 text-white" type="number" step="0.01" placeholder="0.00" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} />
+                <Label>原价</Label>
+                <Input type="number" step="0.01" placeholder="0.00" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-gray-300">总数量 *</Label>
-                <Input className="bg-gray-700 border-gray-600 text-white" type="number" placeholder="100" value={totalQuantity} onChange={(e) => setTotalQuantity(e.target.value)} />
+                <Label>总数量 *</Label>
+                <Input type="number" placeholder="100" value={totalQuantity} onChange={(e) => setTotalQuantity(e.target.value)} />
               </div>
               {editId && (
                 <div className="space-y-2">
-                  <Label className="text-gray-300">剩余数量</Label>
-                  <Input className="bg-gray-700 border-gray-600 text-white" type="number" value={remainingQuantity} onChange={(e) => setRemainingQuantity(e.target.value)} />
+                  <Label>剩余数量</Label>
+                  <Input type="number" value={remainingQuantity} onChange={(e) => setRemainingQuantity(e.target.value)} />
                 </div>
               )}
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-300">商品图片</Label>
+              <Label>商品图片</Label>
               <div className="flex items-center gap-3">
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handleUpload} className="hidden" />
-                <Button variant="outline" size="sm" className="border-gray-600 text-gray-300" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
                   {uploading ? '上传中...' : '本地上传'}
                 </Button>
-                <Input className="flex-1 bg-gray-700 border-gray-600 text-white" placeholder="或输入图片链接" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+                <Input className="flex-1" placeholder="或输入图片链接" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
               </div>
               {imageUrl && (
                 <div className="mt-2">
-                  <img src={imageUrl} alt="预览" className="w-24 h-24 rounded-lg object-cover border border-gray-600" />
+                  <img src={imageUrl} alt="预览" className="w-24 h-24 rounded-lg object-cover border" />
                 </div>
               )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-gray-300">所属场次 *</Label>
+                <Label>所属场次 *</Label>
                 <Select value={sessionId} onValueChange={setSessionId}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white"><SelectValue placeholder="请选择场次" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="请选择场次" /></SelectTrigger>
                   <SelectContent>
                     {sessions.map((s) => (
                       <SelectItem key={s.id} value={s.id}>{s.name} ({s.start_time}-{s.end_time})</SelectItem>
@@ -283,9 +283,9 @@ export default function AdminCouponsPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-300">分类</Label>
+                <Label>分类</Label>
                 <Select value={categoryId} onValueChange={setCategoryId}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white"><SelectValue placeholder="请选择分类" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="请选择分类" /></SelectTrigger>
                   <SelectContent>
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>{cat.icon} {cat.name}</SelectItem>

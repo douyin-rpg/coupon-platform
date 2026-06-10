@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
 import { AdminNotification } from '@/components/admin-notification';
 import { XIcon } from '@/components/icons';
 
@@ -71,81 +70,61 @@ export default function AdminVerifyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0A1628] to-[#132742] flex">
-      {/* Sidebar */}
-      <div className="w-52 flex-shrink-0 bg-gray-800 p-4">
-        <Link href="/admin" className="block text-center text-xl font-bold text-white mb-6">管理后台</Link>
-        <nav className="space-y-1">
-          <Link href="/admin/sessions" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">场次管理</Link>
-          <Link href="/admin/coupons" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">优惠券管理</Link>
-          <Link href="/admin/codes" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">注册码管理</Link>
-          <Link href="/admin/verify" className="block px-3 py-2 bg-gray-700 rounded-lg text-sm text-white font-medium">实名审核</Link>
-          <Link href="/admin/redemptions" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">回兑审核</Link>
-          <Link href="/admin/orders" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">订单管理</Link>
-          <Link href="/admin/withdrawals" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">提现审核</Link>
-          <Link href="/admin/users" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">用户管理</Link>
-          <Link href="/admin/categories" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">分类管理</Link>
-          <Link href="/admin/banners" className="block px-3 py-2 hover:bg-gray-700 rounded-lg text-sm text-gray-300">轮播图管理</Link>
-        </nav>
+    <div className="p-6 md:p-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">实名认证审核</h1>
+        <AdminNotification />
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 p-6 overflow-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-white">实名认证审核</h1>
-          <AdminNotification />
-        </div>
+      {/* Status tabs */}
+      <div className="flex gap-2 mb-6">
+        {['all', 'pending', 'verified', 'rejected'].map((s) => (
+          <button key={s} onClick={() => { setStatus(s); setLoading(true); }}
+            className={`px-4 py-2 rounded-lg text-sm ${status === s ? 'bg-[#1890FF] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            {s === 'all' ? '全部' : statusMap[s]?.label || s}
+          </button>
+        ))}
+      </div>
 
-        {/* Status tabs */}
-        <div className="flex gap-2 mb-6">
-          {['all', 'pending', 'verified', 'rejected'].map((s) => (
-            <button key={s} onClick={() => { setStatus(s); setLoading(true); }}
-              className={`px-4 py-2 rounded-lg text-sm ${status === s ? 'bg-[#1890FF] text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}>
-              {s === 'all' ? '全部' : statusMap[s]?.label || s}
-            </button>
-          ))}
-        </div>
-
-        {loading ? (
-          <div className="text-gray-400 text-center py-10">加载中...</div>
-        ) : users.length === 0 ? (
-          <div className="text-gray-500 text-center py-10">暂无实名认证记录</div>
-        ) : (
-          <div className="bg-gray-800 rounded-xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="px-4 py-3 text-left text-gray-400 font-medium">用户名</th>
-                  <th className="px-4 py-3 text-left text-gray-400 font-medium">姓名</th>
-                  <th className="px-4 py-3 text-left text-gray-400 font-medium">身份证</th>
-                  <th className="px-4 py-3 text-left text-gray-400 font-medium">状态</th>
-                  <th className="px-4 py-3 text-left text-gray-400 font-medium">操作</th>
+      {loading ? (
+        <div className="text-gray-400 text-center py-10">加载中...</div>
+      ) : users.length === 0 ? (
+        <div className="text-gray-500 text-center py-10">暂无实名认证记录</div>
+      ) : (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-gray-50">
+                <th className="px-4 py-3 text-left text-gray-600 font-medium">用户名</th>
+                <th className="px-4 py-3 text-left text-gray-600 font-medium">姓名</th>
+                <th className="px-4 py-3 text-left text-gray-600 font-medium">身份证</th>
+                <th className="px-4 py-3 text-left text-gray-600 font-medium">状态</th>
+                <th className="px-4 py-3 text-left text-gray-600 font-medium">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="px-4 py-3 text-gray-800">{u.username}</td>
+                  <td className="px-4 py-3 text-gray-600">{u.id_card_name || '-'}</td>
+                  <td className="px-4 py-3 text-gray-600">{u.id_card || '-'}</td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded text-xs ${statusMap[u.verify_status]?.color || 'bg-gray-100 text-gray-500'}`}>
+                      {statusMap[u.verify_status]?.label || u.verify_status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <button onClick={() => setSelectedUser(u)}
+                      className="px-3 py-1 bg-[#1890FF] text-white rounded text-xs hover:bg-[#1890FF]/80">
+                      查看
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} className="border-b border-gray-700/50 hover:bg-gray-700/30">
-                    <td className="px-4 py-3 text-white">{u.username}</td>
-                    <td className="px-4 py-3 text-gray-300">{u.id_card_name || '-'}</td>
-                    <td className="px-4 py-3 text-gray-300">{u.id_card || '-'}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs ${statusMap[u.verify_status]?.color || 'bg-gray-100 text-gray-500'}`}>
-                        {statusMap[u.verify_status]?.label || u.verify_status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <button onClick={() => setSelectedUser(u)}
-                        className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-500">
-                        查看
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Detail modal */}
       {selectedUser && (
@@ -188,7 +167,6 @@ export default function AdminVerifyPage() {
               )}
             </div>
 
-            {/* ID Card photos */}
             {(selectedUser.id_card_front_url || selectedUser.id_card_back_url) && (
               <div className="mb-4">
                 <p className="text-sm font-medium mb-2">身份证照片</p>
@@ -209,7 +187,6 @@ export default function AdminVerifyPage() {
               </div>
             )}
 
-            {/* Actions */}
             {selectedUser.verify_status === 'pending' && (
               <div className="space-y-3 border-t pt-4">
                 <div className="flex gap-3">
@@ -233,7 +210,6 @@ export default function AdminVerifyPage() {
               </div>
             )}
 
-            {/* Admin can always modify or delete */}
             <div className="flex gap-2 mt-4 pt-4 border-t">
               <button onClick={() => handleAction(selectedUser.id, 'delete_verify')}
                 disabled={actionLoading}

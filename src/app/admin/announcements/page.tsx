@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 
 interface Announcement {
   id: string;
@@ -18,19 +17,6 @@ export default function AdminAnnouncementsPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState({ title: '', content: '', is_active: true, sort_order: 0 });
-
-  const sidebarLinks = [
-    { href: '/admin/sessions', label: '场次管理' },
-    { href: '/admin/coupons', label: '优惠券管理' },
-    { href: '/admin/codes', label: '注册码管理' },
-    { href: '/admin/verify', label: '实名审核' },
-    { href: '/admin/redemptions', label: '回兑审核' },
-    { href: '/admin/withdrawals', label: '提现审核' },
-    { href: '/admin/users', label: '用户管理' },
-    { href: '/admin/announcements', label: '公告管理' },
-    { href: '/admin/categories', label: '分类管理' },
-    { href: '/admin/banners', label: '轮播图管理' },
-  ];
 
   const fetchAnnouncements = async () => {
     setLoading(true);
@@ -81,26 +67,7 @@ export default function AdminAnnouncementsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex">
-      {/* Sidebar */}
-      <aside className="w-56 bg-gradient-to-b from-[#0A1628] to-[#132742] text-white flex-shrink-0 hidden md:flex flex-col">
-        <div className="p-5 border-b border-white/10">
-          <Link href="/admin" className="text-lg font-bold">管理后台</Link>
-        </div>
-        <nav className="flex-1 p-3 space-y-1">
-          {sidebarLinks.map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`block px-3 py-2 hover:text-[#1890FF] hover:bg-blue-50/10 rounded-lg text-sm ${link.href === '/admin/announcements' ? 'text-[#1890FF] bg-blue-500/10' : 'text-gray-300'}`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <main className="flex-1 p-4 md:p-8">
+    <div className="p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-gray-800">公告管理</h1>
           <button
@@ -206,7 +173,6 @@ export default function AdminAnnouncementsPage() {
             </div>
           </div>
         )}
-      </main>
     </div>
   );
 }
