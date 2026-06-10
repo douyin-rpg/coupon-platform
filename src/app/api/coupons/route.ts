@@ -24,7 +24,7 @@ export async function GET(request: Request) {
       .from("coupons")
       .select("id, name, description, price, original_price, discount, total_quantity, remaining_quantity, sold_count, image_url, session_id, category_id, is_active")
       .eq("is_active", true)
-      .order("created_at", { ascending: false });
+      .order("price", { ascending: true });
 
     // Note: session_id filter is not applied because all coupons are available in all sessions.
     // The session concept is only for time-based access control (can only grab during active session).

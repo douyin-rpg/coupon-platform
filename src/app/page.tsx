@@ -262,7 +262,7 @@ export default function HomePage() {
                 </span>
               </h2>
               <p className="text-white/40 text-sm md:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
-                抖音电商优惠券抢购平台，限时抢券、快捷回兑、5%奖励，一站式优惠服务
+                抖音电商优惠券抢购平台，限时抢券，一站式优惠服务
               </p>
               {/* Entry cards */}
               <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto lg:mx-0">
@@ -333,8 +333,8 @@ export default function HomePage() {
                       <CheckIcon className="w-4 h-4 text-green-400" />
                     </div>
                     <div>
-                      <div className="text-white/50 text-[10px]">回兑奖励</div>
-                      <div className="text-green-400 text-sm font-bold">+5%</div>
+                      <div className="text-white/50 text-[10px]">限时折扣</div>
+                      <div className="text-green-400 text-sm font-bold">低至5折</div>
                     </div>
                   </div>
                 </div>
