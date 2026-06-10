@@ -148,7 +148,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
   const formatPrice = (price: number) => price.toLocaleString('zh-CN');
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pb-24 md:pb-0">
+    <div className="min-h-screen bg-[#F5F7FA] pb-40 md:pb-0">
       {/* Top nav */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
@@ -268,8 +268,8 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      {/* Bottom action bar - mobile fixed, desktop inline */}
-      <div className="fixed bottom-0 left-0 right-0 md:relative md:bottom-auto bg-white border-t border-gray-100 z-40 p-4 md:mt-4 md:rounded-2xl md:shadow-sm md:border md:border-gray-100">
+      {/* Bottom action bar - mobile fixed above BottomNav, desktop inline */}
+      <div className="fixed bottom-14 left-0 right-0 md:relative md:bottom-auto bg-white border-t border-gray-100 z-40 p-4 md:mt-4 md:rounded-2xl md:shadow-sm md:border md:border-gray-100">
         <div className="max-w-6xl mx-auto flex items-center gap-3">
           <div className="flex-1">
             <span className="text-xs text-gray-400">需支付</span>
