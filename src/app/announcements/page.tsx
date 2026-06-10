@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
-import { AnnounceIcon, ArrowLeftIcon, EyeIcon, ClockIcon } from '@/components/icons';
+import { AnnounceIcon, ArrowLeftIcon, EyeIcon, ClockIcon, RemindIcon, EditIcon, StarIcon, FileTextIcon, AllApplicationIcon } from '@/components/icons';
 
 interface ArticleCategory {
   id: string;
@@ -25,12 +25,12 @@ interface Article {
   article_categories: { name: string; icon: string };
 }
 
-// Modern category icon mapping - colorful gradient backgrounds
-const categoryStyleMap: Record<string, { bg: string; icon: string; activeBg: string }> = {
-  '平台公告': { bg: 'bg-red-50', icon: '📢', activeBg: 'bg-gradient-to-r from-red-500 to-rose-500' },
-  '使用教程': { bg: 'bg-blue-50', icon: '📖', activeBg: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
-  '活动资讯': { bg: 'bg-amber-50', icon: '🎉', activeBg: 'bg-gradient-to-r from-amber-500 to-orange-500' },
-  '规则说明': { bg: 'bg-emerald-50', icon: '📋', activeBg: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
+// Modern category icon mapping - colorful gradient backgrounds with IconPark icons
+const categoryStyleMap: Record<string, { bg: string; IconComponent: React.FC<{ className?: string }>; activeBg: string }> = {
+  '平台公告': { bg: 'bg-red-50', IconComponent: AnnounceIcon, activeBg: 'bg-gradient-to-r from-red-500 to-rose-500' },
+  '使用教程': { bg: 'bg-blue-50', IconComponent: EditIcon, activeBg: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
+  '活动资讯': { bg: 'bg-amber-50', IconComponent: StarIcon, activeBg: 'bg-gradient-to-r from-amber-500 to-orange-500' },
+  '规则说明': { bg: 'bg-emerald-50', IconComponent: FileTextIcon, activeBg: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
 };
 
 function formatViewCount(count: number): string {
@@ -109,11 +109,12 @@ export default function AnnouncementsPage() {
         <div className="bg-white rounded-2xl shadow-sm p-2.5 mb-4 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setSelectedCategory('')}
-            className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all ${
+            className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all ${
               !selectedCategory
                 ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20'
                 : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
             }`}>
+            <AllApplicationIcon className="w-3.5 h-3.5" />
             全部
           </button>
           {categories.map(cat => {
@@ -127,7 +128,7 @@ export default function AnnouncementsPage() {
                     ? `${style?.activeBg || 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF]'} text-white shadow-sm`
                     : `${style?.bg || 'bg-gray-50'} text-gray-500 hover:bg-gray-100`
                 }`}>
-                <span>{cat.icon}</span>
+                {style?.IconComponent ? <style.IconComponent className="w-3.5 h-3.5" /> : <span>{cat.icon}</span>}
                 <span>{cat.name}</span>
               </button>
             );
@@ -136,8 +137,7 @@ export default function AnnouncementsPage() {
 
         {/* Articles list - Modern card design */}
         <div className="space-y-3 pb-24 md:pb-8">
-          {articles.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
+          {articles.length === 0 ? (            <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-50 flex items-center justify-center">
                 <AnnounceIcon className="w-8 h-8 text-gray-300" />
               </div>
@@ -160,8 +160,8 @@ export default function AnnouncementsPage() {
                 <div className="p-4">
                   <div className="flex items-start gap-3">
                     {!article.image_url && (
-                      <div className={`flex-shrink-0 w-11 h-11 rounded-xl ${catStyle?.bg || 'bg-blue-50'} flex items-center justify-center text-xl`}>
-                        {article.article_categories?.icon || '📄'}
+                      <div className={`flex-shrink-0 w-11 h-11 rounded-xl ${catStyle?.bg || 'bg-blue-50'} flex items-center justify-center`}>
+                        {catStyle?.IconComponent ? <catStyle.IconComponent className="w-5 h-5 text-gray-500" /> : <AnnounceIcon className="w-5 h-5 text-gray-500" />}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">

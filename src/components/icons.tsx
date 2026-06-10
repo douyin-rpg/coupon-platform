@@ -57,6 +57,9 @@ import {
   Edit as IconParkEdit,
   More as IconParkMore,
   Help as IconParkHelp,
+  Pic as IconParkPic,
+  Key as IconParkKey,
+  Link as IconParkLink,
 } from '@icon-park/react';
 
 // 统一图标主题
@@ -269,6 +272,18 @@ export function PeopleIcon({ className = "w-5 h-5" }: IconProps) {
 
 export function RemindIcon({ className = "w-5 h-5" }: IconProps) {
   return <IconParkRemind theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function PicIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkPic theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function KeyIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkKey theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function LinkIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkLink theme="outline" size="1em" {...iconTheme} className={className} />;
 }
 
 // ===== 抖音电商风格样式常量 =====

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
-import { ArrowLeftIcon, EyeIcon } from '@/components/icons';
+import { ArrowLeftIcon, EyeIcon, AnnounceIcon, EditIcon, StarIcon, FileTextIcon } from '@/components/icons';
 
 interface Article {
   id: string;
@@ -97,8 +97,13 @@ export default function ArticleDetailPage() {
               {article.is_announcement && (
                 <span className="px-2 py-0.5 bg-gradient-to-r from-red-500 to-rose-500 text-white text-[10px] font-medium rounded-full">公告</span>
               )}
-              <span className="px-2 py-0.5 bg-blue-50 text-[#1890FF] text-[10px] font-medium rounded-full">
-                {article.article_categories?.icon} {article.article_categories?.name || '未分类'}
+              <span className="px-2 py-0.5 bg-blue-50 text-[#1890FF] text-[10px] font-medium rounded-full flex items-center gap-1">
+                {article.article_categories?.name === '平台公告' ? <AnnounceIcon className="w-3 h-3" /> :
+                 article.article_categories?.name === '使用教程' ? <EditIcon className="w-3 h-3" /> :
+                 article.article_categories?.name === '活动资讯' ? <StarIcon className="w-3 h-3" /> :
+                 article.article_categories?.name === '规则说明' ? <FileTextIcon className="w-3 h-3" /> :
+                 <AnnounceIcon className="w-3 h-3" />}
+                {article.article_categories?.name || '未分类'}
               </span>
             </div>
 

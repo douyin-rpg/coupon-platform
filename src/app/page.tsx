@@ -250,11 +250,12 @@ export default function HomePage() {
         {/* Banner */}
         {banners.length > 0 && (
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-5 md:pb-8">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/30" style={{ aspectRatio: '3.5/1' }}>
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/30 bg-gray-900" style={{ aspectRatio: '16/7' }}>
               {banners.map((banner, idx) => (
-                <div key={banner.id} className="absolute inset-0 transition-opacity duration-700" style={{ opacity: idx === currentBanner ? 1 : 0 }}>
-                  <Image src={banner.image_url} alt={banner.title} fill className="object-cover" priority={idx === 0} />
-                </div>
+                <a key={banner.id} href={banner.link_url || '#'} target={banner.link_url ? '_blank' : undefined} rel={banner.link_url ? 'noopener noreferrer' : undefined}
+                  className="absolute inset-0 transition-opacity duration-700 cursor-pointer block" style={{ opacity: idx === currentBanner ? 1 : 0 }}>
+                  <Image src={banner.image_url} alt={banner.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 1200px" priority={idx === 0} />
+                </a>
               ))}
               {/* Banner overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
@@ -360,19 +361,24 @@ export default function HomePage() {
             {/* Mobile category tabs */}
             <div className="md:flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
               <button onClick={() => setSelectedCategory('')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all mr-2 ${
+                className={`flex-shrink-0 flex items-center gap-1 px-4 py-2 rounded-full text-xs font-medium transition-all mr-2 ${
                   !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm' : 'bg-white text-gray-600 shadow-sm'
                 }`}>
+                <CouponIcon className="w-3.5 h-3.5" />
                 全部
               </button>
-              {categories.map(cat => (
-                <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all mr-2 ${
-                    selectedCategory === cat.id ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm' : 'bg-white text-gray-600 shadow-sm'
-                  }`}>
-                  {cat.icon} {cat.name}
-                </button>
-              ))}
+              {categories.map(cat => {
+                const IconComponent = categoryIconMap[cat.name];
+                return (
+                  <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
+                    className={`flex-shrink-0 flex items-center gap-1 px-4 py-2 rounded-full text-xs font-medium transition-all mr-2 ${
+                      selectedCategory === cat.id ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm' : 'bg-white text-gray-600 shadow-sm'
+                    }`}>
+                    {IconComponent ? <IconComponent className="w-3.5 h-3.5" /> : <span>{cat.icon}</span>}
+                    {cat.name}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Mobile session info */}

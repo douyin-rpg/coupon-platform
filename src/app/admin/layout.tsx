@@ -2,45 +2,50 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  CouponIcon, CategoryIcon, ClockIcon, PicIcon, OrderIcon,
+  BackIcon, WalletIcon, PeopleIcon, ShieldIcon, KeyIcon,
+  EditIcon, AnnounceIcon, SettingsIcon, LinkIcon
+} from '@/components/icons';
 
 const sidebarGroups = [
   {
     label: '商品管理',
     items: [
-      { href: '/admin/coupons', label: '优惠券管理', icon: '🎫' },
-      { href: '/admin/categories', label: '分类管理', icon: '📂' },
-      { href: '/admin/sessions', label: '场次管理', icon: '⏰' },
-      { href: '/admin/banners', label: '轮播图管理', icon: '🖼️' },
+      { href: '/admin/coupons', label: '优惠券管理', Icon: CouponIcon },
+      { href: '/admin/categories', label: '分类管理', Icon: CategoryIcon },
+      { href: '/admin/sessions', label: '场次管理', Icon: ClockIcon },
+      { href: '/admin/banners', label: '轮播图管理', Icon: PicIcon },
     ],
   },
   {
     label: '订单管理',
     items: [
-      { href: '/admin/orders', label: '订单列表', icon: '📋' },
-      { href: '/admin/redemptions', label: '回兑审核', icon: '♻️' },
-      { href: '/admin/withdrawals', label: '提现审核', icon: '💰' },
+      { href: '/admin/orders', label: '订单列表', Icon: OrderIcon },
+      { href: '/admin/redemptions', label: '回兑审核', Icon: BackIcon },
+      { href: '/admin/withdrawals', label: '提现审核', Icon: WalletIcon },
     ],
   },
   {
     label: '用户管理',
     items: [
-      { href: '/admin/users', label: '用户管理', icon: '👥' },
-      { href: '/admin/verify', label: '实名审核', icon: '🪪' },
-      { href: '/admin/codes', label: '注册码管理', icon: '🔑' },
+      { href: '/admin/users', label: '用户管理', Icon: PeopleIcon },
+      { href: '/admin/verify', label: '实名审核', Icon: ShieldIcon },
+      { href: '/admin/codes', label: '注册码管理', Icon: KeyIcon },
     ],
   },
   {
     label: '内容管理',
     items: [
-      { href: '/admin/articles', label: '文章管理', icon: '📝' },
-      { href: '/admin/announcements', label: '公告管理', icon: '📢' },
+      { href: '/admin/articles', label: '文章管理', Icon: EditIcon },
+      { href: '/admin/announcements', label: '公告管理', Icon: AnnounceIcon },
     ],
   },
   {
     label: '系统设置',
     items: [
-      { href: '/admin/settings', label: '系统设置', icon: '⚙️' },
-      { href: '/admin/footer-links', label: '页脚链接管理', icon: '🔗' },
+      { href: '/admin/settings', label: '系统设置', Icon: SettingsIcon },
+      { href: '/admin/footer-links', label: '页脚链接管理', Icon: LinkIcon },
     ],
   },
 ];
@@ -84,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
                     }`}
                   >
-                    <span className="text-base">{item.icon}</span>
+                    <item.Icon className="w-4 h-4" />
                     {item.label}
                   </Link>
                 );
