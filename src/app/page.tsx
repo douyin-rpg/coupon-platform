@@ -108,16 +108,47 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
-      {/* ===== Hero Section ===== */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#0B1929] via-[#0F2640] to-[#0B1929]">
-        {/* Animated floating orbs */}
+      {/* ===== Hero Section - Premium douyinec style ===== */}
+      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(170deg, #060E1A 0%, #0A1A30 25%, #0D2244 50%, #091B35 75%, #060E1A 100%)' }}>
+        {/* Grid dot pattern */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
+          backgroundSize: '32px 32px',
+        }} />
+
+        {/* Animated aurora / glow effects */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute w-96 h-96 rounded-full opacity-[0.12]"
-            style={{ background: 'radial-gradient(circle, #00D4FF 0%, transparent 70%)', top: '-20%', right: '5%', animation: 'floatOrb1 8s ease-in-out infinite' }} />
-          <div className="absolute w-72 h-72 rounded-full opacity-[0.08]"
-            style={{ background: 'radial-gradient(circle, #7B61FF 0%, transparent 70%)', bottom: '-15%', left: '3%', animation: 'floatOrb2 10s ease-in-out infinite' }} />
-          <div className="absolute w-56 h-56 rounded-full opacity-[0.06]"
-            style={{ background: 'radial-gradient(circle, #1890FF 0%, transparent 70%)', top: '30%', left: '40%', animation: 'floatOrb1 7s ease-in-out infinite reverse' }} />
+          {/* Primary glow - top right */}
+          <div className="absolute w-[600px] h-[600px] rounded-full opacity-[0.15]"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(0,212,255,0.6) 0%, rgba(24,144,255,0.3) 40%, transparent 70%)',
+              top: '-30%', right: '-5%',
+              animation: 'aurora1 12s ease-in-out infinite',
+              filter: 'blur(40px)',
+            }} />
+          {/* Secondary glow - bottom left */}
+          <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.10]"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(123,97,255,0.5) 0%, rgba(24,144,255,0.2) 40%, transparent 70%)',
+              bottom: '-25%', left: '-5%',
+              animation: 'aurora2 15s ease-in-out infinite',
+              filter: 'blur(50px)',
+            }} />
+          {/* Tertiary glow - center */}
+          <div className="absolute w-[300px] h-[300px] rounded-full opacity-[0.06]"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(0,212,255,0.4) 0%, transparent 70%)',
+              top: '20%', left: '35%',
+              animation: 'aurora3 10s ease-in-out infinite',
+              filter: 'blur(30px)',
+            }} />
+          {/* Horizontal light streak */}
+          <div className="absolute h-[1px] w-full opacity-[0.08]"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.5) 30%, rgba(123,97,255,0.3) 70%, transparent 100%)',
+              top: '45%',
+              animation: 'streakMove 8s ease-in-out infinite',
+            }} />
         </div>
 
         {/* Desktop: Full-width nav bar */}
@@ -132,7 +163,7 @@ export default function HomePage() {
                 <input type="text" placeholder="搜索优惠券..." value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-56 lg:w-72 h-9 pl-9 pr-4 rounded-full bg-white/8 text-white text-sm placeholder-white/30 border border-white/10 focus:border-[#00D4FF]/50 focus:outline-none focus:bg-white/10 transition-all" />
-<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -152,7 +183,7 @@ export default function HomePage() {
               </div>
               {user ? (
                 <Link href="/profile" className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/8 text-white text-sm hover:bg-white/15 transition-all border border-white/10">
-<UserIcon className="w-4 h-4" />
+                  <UserIcon className="w-4 h-4" />
                   <span className="hidden sm:inline">{user.username}</span>
                 </Link>
               ) : (
@@ -164,20 +195,22 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Hero Title */}
-          <div className="pb-4 pt-2 md:pt-6 md:pb-8">
+          {/* Hero Title - Premium style */}
+          <div className="pb-4 pt-2 md:pt-8 md:pb-10">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div>
-                <h1 className="text-xl md:text-3xl lg:text-4xl font-bold text-white mb-2 tracking-wide">
+                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 tracking-wide"
+                  style={{ textShadow: '0 0 40px rgba(0,212,255,0.15)' }}>
                   激发兴趣，引领增长
                 </h1>
-                <p className="text-white/40 text-xs md:text-sm">
+                <p className="text-white/35 text-xs md:text-sm tracking-wider">
                   抖音电商优惠券抢购平台
                 </p>
               </div>
               {/* Countdown */}
               {activeSession && (
-                <div className="flex items-center gap-2.5 bg-white/6 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/8">
+                <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 border border-white/8"
+                  style={{ boxShadow: '0 0 30px rgba(0,212,255,0.08), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
                   <div className="flex items-center gap-1.5">
                     <span className="flex h-2 w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -185,25 +218,26 @@ export default function HomePage() {
                     </span>
                     <span className="text-green-400 text-xs font-medium">抢购中</span>
                   </div>
-                  <span className="text-white/30 text-xs">{activeSession.name}</span>
+                  <span className="text-white/25 text-xs">{activeSession.name}</span>
                   <div className="flex items-center gap-0.5">
                     {getCountdown(activeSession)?.split(':').map((val, i) => (
                       <span key={i} className="flex items-center">
-                        <span className="bg-white/10 text-white text-sm md:text-base font-bold font-mono px-1.5 py-0.5 rounded tabular-nums min-w-[28px] text-center">{val}</span>
-                        {i < 2 && <span className="text-[#00D4FF]/60 font-bold mx-px text-xs">:</span>}
+                        <span className="bg-white/8 text-white text-sm md:text-base font-bold font-mono px-2 py-1 rounded-md tabular-nums min-w-[32px] text-center"
+                          style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}>{val}</span>
+                        {i < 2 && <span className="text-[#00D4FF]/50 font-bold mx-0.5 text-xs">:</span>}
                       </span>
                     ))}
                   </div>
                 </div>
               )}
               {!activeSession && nextSession && (
-                <div className="flex items-center gap-2.5 bg-white/4 rounded-xl px-4 py-2.5 border border-white/6">
+                <div className="flex items-center gap-2.5 bg-white/4 rounded-2xl px-5 py-3 border border-white/5">
                   <span className="text-amber-400 text-xs font-medium">{nextSession.name} 即将开始</span>
                   <div className="flex items-center gap-0.5">
                     {getCountdown(nextSession)?.split(':').map((val, i) => (
                       <span key={i} className="flex items-center">
-                        <span className="bg-white/8 text-white/70 text-sm md:text-base font-bold font-mono px-1.5 py-0.5 rounded tabular-nums min-w-[28px] text-center">{val}</span>
-                        {i < 2 && <span className="text-white/20 font-bold mx-px text-xs">:</span>}
+                        <span className="bg-white/6 text-white/60 text-sm md:text-base font-bold font-mono px-2 py-1 rounded-md tabular-nums min-w-[32px] text-center">{val}</span>
+                        {i < 2 && <span className="text-white/15 font-bold mx-0.5 text-xs">:</span>}
                       </span>
                     ))}
                   </div>
@@ -215,18 +249,20 @@ export default function HomePage() {
 
         {/* Banner */}
         {banners.length > 0 && (
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4 md:pb-6">
-            <div className="relative rounded-2xl overflow-hidden shadow-lg shadow-black/20" style={{ aspectRatio: '3.5/1' }}>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-5 md:pb-8">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/30" style={{ aspectRatio: '3.5/1' }}>
               {banners.map((banner, idx) => (
                 <div key={banner.id} className="absolute inset-0 transition-opacity duration-700" style={{ opacity: idx === currentBanner ? 1 : 0 }}>
                   <Image src={banner.image_url} alt={banner.title} fill className="object-cover" priority={idx === 0} />
                 </div>
               ))}
+              {/* Banner overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
               {banners.length > 1 && (
                 <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                   {banners.map((_, idx) => (
                     <button key={idx} onClick={() => setCurrentBanner(idx)}
-                      className={`h-1 rounded-full transition-all ${idx === currentBanner ? 'bg-white w-5' : 'bg-white/30 w-3'}`} />
+                      className={`h-1 rounded-full transition-all ${idx === currentBanner ? 'bg-white w-6' : 'bg-white/30 w-3'}`} />
                   ))}
                 </div>
               )}
@@ -256,7 +292,7 @@ export default function HomePage() {
                     ))}
                   </div>
                 </div>
-<ChevronRightIcon className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                <ChevronRightIcon className="w-4 h-4 text-gray-300 flex-shrink-0" />
               </div>
             </Link>
           </div>
@@ -297,86 +333,67 @@ export default function HomePage() {
                 const status = getSessionStatus(session);
                 const countdown = getCountdown(session);
                 return (
-                  <div key={session.id}
-                    className={`p-3 rounded-xl transition-all ${
-                      status === 'active' ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-md shadow-blue-500/20' :
-                      status === 'upcoming' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
-                      'bg-gray-50 text-gray-400'
-                    }`}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-bold">{session.name}</span>
-                      {status === 'active' && (
-                        <span className="flex h-1.5 w-1.5 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
-                        </span>
-                      )}
+                  <div key={session.id} className={`px-3 py-2.5 rounded-xl text-sm ${status === 'active' ? 'bg-blue-50 border border-blue-100' : 'bg-gray-50'}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {status === 'active' && <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />}
+                        {status === 'upcoming' && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
+                        {status === 'ended' && <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />}
+                        <span className={`font-medium ${status === 'active' ? 'text-[#1890FF]' : 'text-gray-600'}`}>{session.name}</span>
+                      </div>
+                      <span className="text-gray-400 text-xs">{session.start_time}-{session.end_time}</span>
                     </div>
-                    <span className="text-[10px] opacity-70">{session.start_time}-{session.end_time}</span>
-                    {countdown && <div className="text-xs font-mono font-bold tabular-nums mt-1">{countdown}</div>}
-                    {status === 'ended' && <div className="text-[10px] mt-1">已结束</div>}
+                    {countdown && status === 'active' && (
+                      <div className="mt-1.5 text-xs text-[#1890FF] font-mono tabular-nums">{countdown} 后结束</div>
+                    )}
+                    {status === 'upcoming' && countdown && (
+                      <div className="mt-1.5 text-xs text-amber-500 font-mono tabular-nums">{countdown} 后开始</div>
+                    )}
                   </div>
                 );
               })}
-              {!activeSession && (
-                <div className="px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg text-center">
-                  <span className="text-amber-600 text-xs">非活动时间</span>
-                </div>
-              )}
             </div>
           </div>
 
           {/* Right content area */}
-          <div className="flex-1 min-w-0 space-y-3">
-            {/* Mobile: Category + Session row */}
-            <div className="lg:hidden bg-white rounded-2xl shadow-sm p-3 md:p-4 space-y-3">
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                <button onClick={() => setSelectedCategory('')}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                    !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+          <div className="flex-1 min-w-0">
+            {/* Mobile category tabs */}
+            <div className="md:flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
+              <button onClick={() => setSelectedCategory('')}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all mr-2 ${
+                  !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm' : 'bg-white text-gray-600 shadow-sm'
+                }`}>
+                全部
+              </button>
+              {categories.map(cat => (
+                <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all mr-2 ${
+                    selectedCategory === cat.id ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm' : 'bg-white text-gray-600 shadow-sm'
                   }`}>
-                  <CouponIcon className="w-4 h-4" />
-                  全部
+                  {cat.icon} {cat.name}
                 </button>
-                {categories.map(cat => {
-                  const IconComponent = categoryIconMap[cat.name];
-                  return (
-                    <button key={cat.id} onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                        selectedCategory === cat.id ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                      }`}>
-                      {IconComponent ? <IconComponent className="w-4 h-4" /> : <span>{cat.icon}</span>}
-                      <span>{cat.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                {sessions.map(session => {
-                  const status = getSessionStatus(session);
-                  const countdown = getCountdown(session);
-                  return (
-                    <div key={session.id}
-                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                        status === 'active' ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-md shadow-blue-500/20' :
-                        status === 'upcoming' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
-                        'bg-gray-50 text-gray-400'
-                      }`}>
-                      <span className="text-sm font-bold">{session.name}</span>
-                      <span className="text-[10px] opacity-70">{session.start_time}-{session.end_time}</span>
-                      {status === 'active' && (
-                        <span className="flex h-1.5 w-1.5 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
-                        </span>
-                      )}
-                      {countdown && <span className="text-xs font-mono font-bold tabular-nums">{countdown}</span>}
-                      {status === 'ended' && <span className="text-[10px]">已结束</span>}
-                    </div>
-                  );
-                })}
-              </div>
-              {!activeSession && (
+              ))}
+            </div>
+
+            {/* Mobile session info */}
+            <div className="md:hidden mb-3">
+              {activeSession ? (
+                <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-[#1890FF]/5 to-[#00D4FF]/5 rounded-xl border border-[#1890FF]/10">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2 w-2 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                    </span>
+                    <span className="text-green-600 text-xs font-medium">抢购中</span>
+                    <span className="text-gray-400 text-xs">{activeSession.name}</span>
+                  </div>
+                  <span className="text-[#1890FF] text-xs font-mono font-bold tabular-nums">{getCountdown(activeSession)}</span>
+                </div>
+              ) : nextSession ? (
+                <div className="px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg text-center">
+                  <span className="text-amber-600 text-xs">{nextSession.name} 即将开始 {getCountdown(nextSession)}</span>
+                </div>
+              ) : (
                 <div className="px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg text-center">
                   <span className="text-amber-600 text-xs">当前非活动时间，请在活动时间内抢购优惠券</span>
                 </div>
@@ -389,7 +406,7 @@ export default function HomePage() {
                 <input type="text" placeholder="搜索优惠券..." value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-10 pl-10 pr-4 rounded-xl bg-white border border-gray-200 text-sm focus:border-[#1890FF] focus:outline-none shadow-sm" />
-<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               </div>
             </div>
 

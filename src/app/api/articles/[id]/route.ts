@@ -7,7 +7,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('articles')
-      .select('id, title, content, category_id, is_announcement, sort_order, created_at, updated_at, article_categories(name, icon)')
+      .select('id, title, content, category_id, is_announcement, sort_order, view_count, created_at, updated_at, image_url, article_categories(name, icon)')
       .eq('id', id)
       .eq('is_published', true)
       .single();

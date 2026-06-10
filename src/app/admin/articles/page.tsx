@@ -17,6 +17,7 @@ interface Article {
   content: string;
   category_id: string;
   image_url?: string;
+  view_count?: number;
   is_published: boolean;
   is_announcement: boolean;
   sort_order: number;
@@ -35,6 +36,7 @@ export default function AdminArticlesPage() {
     content: '',
     category_id: '',
     image_url: '',
+    view_count: 0,
     is_published: true,
     is_announcement: false,
     sort_order: 0,
@@ -77,7 +79,7 @@ export default function AdminArticlesPage() {
       if (data.error) { alert(data.error); return; }
       setShowForm(false);
       setEditingId(null);
-      setForm({ title: '', content: '', category_id: '', image_url: '', is_published: true, is_announcement: false, sort_order: 0 });
+      setForm({ title: '', content: '', category_id: '', image_url: '', view_count: 0, is_published: true, is_announcement: false, sort_order: 0 });
       fetchData();
     } catch { alert('操作失败'); }
   };
@@ -89,6 +91,7 @@ export default function AdminArticlesPage() {
       content: article.content,
       category_id: article.category_id,
       image_url: article.image_url || '',
+      view_count: article.view_count || 0,
       is_published: article.is_published,
       is_announcement: article.is_announcement,
       sort_order: article.sort_order,
@@ -110,7 +113,7 @@ export default function AdminArticlesPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-gray-800">文章管理</h1>
-          <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ title: '', content: '', category_id: '', image_url: '', is_published: true, is_announcement: false, sort_order: 0 }); }}
+          <button onClick={() => { setShowForm(true); setEditingId(null); setForm({ title: '', content: '', category_id: '', image_url: '', view_count: 0, is_published: true, is_announcement: false, sort_order: 0 }); }}
             className="px-4 py-2 bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white rounded-lg text-sm font-medium hover:shadow-lg transition-shadow">
             + 新增文章
           </button>
@@ -177,6 +180,12 @@ export default function AdminArticlesPage() {
                   <input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))}
                     className="w-32 border rounded-lg px-3 py-2 text-sm" />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">浏览量</label>
+                  <input type="number" value={form.view_count} onChange={e => setForm(f => ({ ...f, view_count: parseInt(e.target.value) || 0 }))}
+                    className="w-32 border rounded-lg px-3 py-2 text-sm" />
+                  <p className="text-xs text-gray-400 mt-1">设置前端显示的浏览量数值</p>
+                </div>
                 <div className="flex justify-end gap-3 pt-2">
                   <button type="button" onClick={() => { setShowForm(false); setEditingId(null); }}
                     className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">取消</button>
@@ -204,8 +213,8 @@ export default function AdminArticlesPage() {
                   <th className="px-4 py-3 text-left font-medium text-gray-600">分类</th>
                   <th className="px-4 py-3 text-center font-medium text-gray-600">公告</th>
                   <th className="px-4 py-3 text-center font-medium text-gray-600">状态</th>
+                  <th className="px-4 py-3 text-center font-medium text-gray-600">浏览量</th>
                   <th className="px-4 py-3 text-center font-medium text-gray-600">排序</th>
-                  <th className="px-4 py-3 text-left font-medium text-gray-600">创建时间</th>
                   <th className="px-4 py-3 text-center font-medium text-gray-600">操作</th>
                 </tr>
               </thead>
@@ -226,8 +235,8 @@ export default function AdminArticlesPage() {
                         <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">草稿</span>
                       )}
                     </td>
+                    <td className="px-4 py-3 text-center text-gray-600">{article.view_count || 0}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{article.sort_order}</td>
-                    <td className="px-4 py-3 text-gray-500">{new Date(article.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-center">
                       <button onClick={() => handleEdit(article)} className="text-[#1890FF] hover:underline text-xs mr-3">编辑</button>
                       <button onClick={() => handleDelete(article.id)} className="text-red-500 hover:underline text-xs">删除</button>

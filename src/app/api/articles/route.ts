@@ -9,7 +9,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('articles')
-      .select('id, title, content, category_id, is_announcement, sort_order, created_at, article_categories(name, icon)')
+      .select('id, title, content, category_id, is_announcement, sort_order, view_count, created_at, article_categories(name, icon)')
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false });

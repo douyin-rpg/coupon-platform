@@ -7,7 +7,7 @@ export async function GET() {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('articles')
-      .select('id, title, content, category_id, image_url, is_published, is_announcement, sort_order, created_at, updated_at, article_categories(name)')
+      .select('id, title, content, category_id, image_url, is_published, is_announcement, sort_order, view_count, created_at, updated_at, article_categories(name)')
       .order('created_at', { ascending: false });
     if (error) throw error;
     return NextResponse.json({ articles: data });
@@ -22,13 +22,13 @@ export async function POST(request: Request) {
     if (!admin) return NextResponse.json({ error: '未授权' }, { status: 401 });
 
     const body = await request.json();
-    const { title, content, category_id, image_url, is_published, is_announcement, sort_order } = body;
+    const { title, content, category_id, image_url, is_published, is_announcement, sort_order, view_count } = body;
     if (!title || !content) return NextResponse.json({ error: '标题和内容不能为空' }, { status: 400 });
 
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('articles')
-      .insert({ title, content, category_id, image_url: image_url || null, is_published: is_published ?? true, is_announcement: is_announcement ?? false, sort_order: sort_order || 0 })
+      .insert({ title, content, category_id, image_url: image_url || null, is_published: is_published ?? true, is_announcement: is_announcement ?? false, sort_order: sort_order || 0, view_count: view_count || 0 })
       .select()
       .single();
     if (error) throw error;
@@ -44,7 +44,7 @@ export async function PUT(request: Request) {
     if (!admin) return NextResponse.json({ error: '未授权' }, { status: 401 });
 
     const body = await request.json();
-    const { id, title, content, category_id, image_url, is_published, is_announcement, sort_order } = body;
+    const { id, title, content, category_id, image_url, is_published, is_announcement, sort_order, view_count } = body;
     if (!id) return NextResponse.json({ error: '缺少文章ID' }, { status: 400 });
 
     const supabase = getSupabaseClient();
@@ -56,6 +56,7 @@ export async function PUT(request: Request) {
     if (is_published !== undefined) updates.is_published = is_published;
     if (is_announcement !== undefined) updates.is_announcement = is_announcement;
     if (sort_order !== undefined) updates.sort_order = sort_order;
+    if (view_count !== undefined) updates.view_count = view_count;
 
     const { data, error } = await supabase
       .from('articles')

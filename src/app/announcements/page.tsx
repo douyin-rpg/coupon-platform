@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
-import { AnnounceIcon, ArrowLeftIcon } from '@/components/icons';
+import { AnnounceIcon, ArrowLeftIcon, EyeIcon, ClockIcon } from '@/components/icons';
 
 interface ArticleCategory {
   id: string;
@@ -19,9 +19,24 @@ interface Article {
   content: string;
   category_id: string;
   image_url?: string;
+  view_count?: number;
   is_announcement: boolean;
   created_at: string;
   article_categories: { name: string; icon: string };
+}
+
+// Modern category icon mapping - colorful gradient backgrounds
+const categoryStyleMap: Record<string, { bg: string; icon: string; activeBg: string }> = {
+  '平台公告': { bg: 'bg-red-50', icon: '📢', activeBg: 'bg-gradient-to-r from-red-500 to-rose-500' },
+  '使用教程': { bg: 'bg-blue-50', icon: '📖', activeBg: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
+  '活动资讯': { bg: 'bg-amber-50', icon: '🎉', activeBg: 'bg-gradient-to-r from-amber-500 to-orange-500' },
+  '规则说明': { bg: 'bg-emerald-50', icon: '📋', activeBg: 'bg-gradient-to-r from-emerald-500 to-teal-500' },
+};
+
+function formatViewCount(count: number): string {
+  if (count >= 10000) return `${(count / 10000).toFixed(1)}万`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
+  return String(count);
 }
 
 export default function AnnouncementsPage() {
@@ -57,93 +72,123 @@ export default function AnnouncementsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-[#1890FF] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA]">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#0A1628] to-[#132742] text-white px-4 py-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-[#1890FF]/10 -translate-y-1/2 translate-x-1/3" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full bg-[#7B61FF]/10 translate-y-1/2 -translate-x-1/3" />
-        <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Link href="/" className="text-white/70 hover:text-white">
+    <div className="min-h-screen bg-[#F0F2F5]">
+      {/* Header - Premium aurora style */}
+      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(170deg, #060E1A 0%, #0A1A30 40%, #0D2244 100%)' }}>
+        {/* Grid dot pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }} />
+        {/* Aurora glow */}
+        <div className="absolute w-80 h-80 rounded-full opacity-[0.12] -top-20 -right-10"
+          style={{ background: 'radial-gradient(ellipse, rgba(0,212,255,0.5) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+        <div className="absolute w-60 h-60 rounded-full opacity-[0.08] -bottom-16 -left-8"
+          style={{ background: 'radial-gradient(ellipse, rgba(123,97,255,0.4) 0%, transparent 70%)', filter: 'blur(30px)' }} />
+
+        <div className="max-w-7xl mx-auto relative z-10 px-4 sm:px-6 lg:px-8 py-5 md:py-6">
+          <div className="flex items-center gap-3 mb-1">
+            <Link href="/" className="text-white/60 hover:text-white transition-colors">
               <ArrowLeftIcon className="w-5 h-5" />
             </Link>
-            <h1 className="text-xl font-bold">平台资讯</h1>
+            <h1 className="text-xl font-bold text-white">平台资讯</h1>
           </div>
-          <p className="text-sm text-white/60 ml-8">公告、教程、活动资讯</p>
+          <p className="text-xs text-white/40 ml-8">公告 · 教程 · 活动资讯</p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4">
-        {/* Category tabs */}
-        <div className="bg-white rounded-2xl shadow-sm p-3 mb-4 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-3">
+        {/* Category tabs - Modern pill style */}
+        <div className="bg-white rounded-2xl shadow-sm p-2.5 mb-4 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setSelectedCategory('')}
-            className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-              !selectedCategory ? 'bg-[#1890FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+            className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all ${
+              !selectedCategory
+                ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm shadow-blue-500/20'
+                : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
             }`}>
             全部
           </button>
-          {categories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                selectedCategory === cat.id ? 'bg-[#1890FF] text-white shadow-sm shadow-blue-500/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-              }`}>
-              <span>{cat.icon}</span>
-              <span>{cat.name}</span>
-            </button>
-          ))}
+          {categories.map(cat => {
+            const style = categoryStyleMap[cat.name];
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(selectedCategory === cat.id ? '' : cat.id)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all ${
+                  selectedCategory === cat.id
+                    ? `${style?.activeBg || 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF]'} text-white shadow-sm`
+                    : `${style?.bg || 'bg-gray-50'} text-gray-500 hover:bg-gray-100`
+                }`}>
+                <span>{cat.icon}</span>
+                <span>{cat.name}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Articles list */}
-        <div className="space-y-3 pb-8">
+        {/* Articles list - Modern card design */}
+        <div className="space-y-3 pb-24 md:pb-8">
           {articles.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
-              <AnnounceIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gray-50 flex items-center justify-center">
+                <AnnounceIcon className="w-8 h-8 text-gray-300" />
+              </div>
               <p className="text-gray-400 text-sm">暂无文章</p>
             </div>
-          ) : articles.map(article => (
-            <Link
-              key={article.id}
-              href={`/announcements/${article.id}`}
-              className="block bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-              {article.image_url && (
-                <div className="w-full h-36 bg-gray-100 overflow-hidden">
-                  <img src={article.image_url} alt={article.title} className="w-full h-full object-cover" />
-                </div>
-              )}
-              <div className="p-4">
-                <div className="flex items-start gap-3">
-                  {!article.image_url && (
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
-                      {article.article_categories?.icon || '📄'}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-gray-800 truncate">{article.title}</h3>
-                    {article.is_announcement && (
-                      <span className="flex-shrink-0 px-1.5 py-0.5 bg-red-50 text-red-500 text-[10px] font-medium rounded">公告</span>
+          ) : articles.map(article => {
+            const catStyle = categoryStyleMap[article.article_categories?.name];
+            return (
+              <Link
+                key={article.id}
+                href={`/announcements/${article.id}`}
+                className="block bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 group">
+                {article.image_url && (
+                  <div className="w-full h-40 bg-gray-100 overflow-hidden relative">
+                    <img src={article.image_url} alt={article.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+                )}
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    {!article.image_url && (
+                      <div className={`flex-shrink-0 w-11 h-11 rounded-xl ${catStyle?.bg || 'bg-blue-50'} flex items-center justify-center text-xl`}>
+                        {article.article_categories?.icon || '📄'}
+                      </div>
                     )}
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1 line-clamp-2">{article.content.substring(0, 80)}...</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-[10px] text-[#1890FF] bg-blue-50 px-1.5 py-0.5 rounded">{article.article_categories?.name || '未分类'}</span>
-                    <span className="text-[10px] text-gray-300">{new Date(article.created_at).toLocaleDateString('zh-CN')}</span>
-                  </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-semibold text-gray-800 group-hover:text-[#1890FF] transition-colors line-clamp-1">{article.title}</h3>
+                        {article.is_announcement && (
+                          <span className="flex-shrink-0 px-1.5 py-0.5 bg-gradient-to-r from-red-500 to-rose-500 text-white text-[10px] font-medium rounded-full">公告</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-400 line-clamp-2 leading-relaxed">{article.content.substring(0, 100)}</p>
+                      <div className="flex items-center gap-3 mt-2.5">
+                        <span className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                          catStyle?.bg || 'bg-blue-50'
+                        } ${selectedCategory === article.category_id ? 'text-white' : 'text-gray-500'}`}>
+                          {article.article_categories?.name || '未分类'}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[10px] text-gray-300">
+                          <EyeIcon className="w-3 h-3" />
+                          {formatViewCount(article.view_count || 0)}浏览
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
