@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import BottomNav from "@/components/bottom-nav";
+import Footer from "@/components/footer";
 
 interface CartItem {
   id: string;
@@ -319,6 +320,7 @@ export default function CartPage() {
         </div>
       )}
 
+      <Footer />
       <BottomNav active="cart" />
     </div>
   );

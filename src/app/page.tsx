@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
 import BottomNav from '@/components/bottom-nav';
+import Footer from '@/components/footer';
 
 interface Banner { id: string; image_url: string; title: string; link_url: string; }
 interface Category { id: string; name: string; icon: string; }
@@ -503,6 +504,9 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* ===== Footer ===== */}
+      <Footer />
 
       {/* ===== Bottom Navigation (Mobile only) ===== */}
       <BottomNav active="mall" />

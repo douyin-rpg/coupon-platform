@@ -40,6 +40,7 @@ const sidebarGroups = [
     label: '系统设置',
     items: [
       { href: '/admin/settings', label: '系统设置', icon: '⚙️' },
+      { href: '/admin/footer-links', label: '页脚链接管理', icon: '🔗' },
     ],
   },
 ];

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import BottomNav from '@/components/bottom-nav';
+import Footer from '@/components/footer';
 
 interface Article {
   id: string;
@@ -102,6 +103,7 @@ export default function ArticleDetailPage() {
         </div>
       </div>
 
+      <Footer />
       <BottomNav active="messages" />
     </div>
   );

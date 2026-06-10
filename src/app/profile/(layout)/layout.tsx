@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import BottomNav from '@/components/bottom-nav';
+import Footer from '@/components/footer';
 
 // Douyin-style SVG icons
 const icons = {
@@ -147,6 +148,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       </div>
 
       {/* Mobile bottom nav */}
+      <Footer />
       <BottomNav active="me" />
       <div className="md:hidden h-16" />
     </div>

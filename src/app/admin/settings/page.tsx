@@ -85,6 +85,30 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
+        {/* 页脚设置 */}
+        <div>
+          <h2 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
+            <span>🏢</span> 页脚设置
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">公司信息（显示在页脚底部）</label>
+              <input
+                type="text"
+                value={settings.company_info || ''}
+                onChange={e => setSettings({ ...settings, company_info: e.target.value })}
+                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-[#1890FF]"
+                placeholder="上海格物致品网络科技有限公司"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            页脚链接（关联官网/关联平台/联系我们）请在
+            <a href="/admin/footer-links" className="text-[#00D4FF] hover:underline">页脚链接管理</a>
+            中编辑
+          </p>
+        </div>
+
         {/* 保存按钮 */}
         <div className="flex items-center gap-4 pt-4 border-t border-gray-700">
           <button

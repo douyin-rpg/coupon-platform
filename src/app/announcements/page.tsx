@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BottomNav from '@/components/bottom-nav';
+import Footer from '@/components/footer';
 
 interface ArticleCategory {
   id: string;
@@ -145,6 +146,7 @@ export default function AnnouncementsPage() {
         </div>
       </div>
 
+      <Footer />
       <BottomNav active="messages" />
     </div>
   );

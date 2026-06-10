@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import BottomNav from "@/components/bottom-nav";
+import Footer from "@/components/footer";
 
 interface Session {
   id: string;
@@ -440,6 +441,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
       )}
 
       {/* Bottom Navigation - mobile only */}
+      <Footer />
       <BottomNav active="mall" />
     </div>
   );
