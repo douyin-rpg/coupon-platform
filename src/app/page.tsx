@@ -360,7 +360,7 @@ export default function HomePage() {
           {/* Right content area */}
           <div className="flex-1 min-w-0">
             {/* Mobile category tabs */}
-            <div className="md:flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
+            <div className="flex lg:hidden gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
               <button onClick={() => setSelectedCategory('')}
                 className={`flex-shrink-0 flex items-center gap-1 px-4 py-2 rounded-full text-xs font-medium transition-all mr-2 ${
                   !selectedCategory ? 'bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white shadow-sm' : 'bg-white text-gray-600 shadow-sm'
