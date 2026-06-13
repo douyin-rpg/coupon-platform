@@ -14,6 +14,9 @@ interface RegCode {
   code: string;
   is_used: boolean;
   used_by: string | null;
+  max_uses: number;
+  current_uses: number;
+  description: string | null;
   created_at: string;
   users: { username: string } | null;
 }
@@ -22,6 +25,8 @@ export default function AdminCodesPage() {
   const [codes, setCodes] = useState<RegCode[]>([]);
   const [addOpen, setAddOpen] = useState(false);
   const [newCode, setNewCode] = useState('');
+  const [newMaxUses, setNewMaxUses] = useState('1');
+  const [newDescription, setNewDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -46,12 +51,18 @@ export default function AdminCodesPage() {
       const res = await fetch('/api/admin/codes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: newCode }),
+        body: JSON.stringify({
+          code: newCode,
+          max_uses: parseInt(newMaxUses) || 1,
+          description: newDescription,
+        }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
         setAddOpen(false);
         setNewCode('');
+        setNewMaxUses('1');
+        setNewDescription('');
         setMessage({ type: 'success', text: '注册码创建成功' });
         fetchCodes();
       } else {
@@ -86,11 +97,13 @@ export default function AdminCodesPage() {
     }
   };
 
+  const isCodeExhausted = (c: RegCode) => c.current_uses >= c.max_uses;
+
   return (
     <div className="p-6 md:p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">注册码管理</h1>
-        <Button className="bg-[#1890FF] hover:bg-[#1890FF]/80 text-white" onClick={() => { setNewCode(''); setAddOpen(true); }}>
+        <Button className="bg-[#1890FF] hover:bg-[#1890FF]/80 text-white" onClick={() => { setNewCode(''); setNewMaxUses('1'); setNewDescription(''); setAddOpen(true); }}>
           新增注册码
         </Button>
       </div>
@@ -115,15 +128,19 @@ export default function AdminCodesPage() {
                   <div>
                     <p className="font-mono font-medium text-lg tracking-wider">{c.code}</p>
                     <p className="text-sm text-gray-500">
-                      {c.is_used ? `已被 ${(c.users as unknown as { username: string } | null)?.username || '未知用户'} 使用` : '未使用'}
+                      {isCodeExhausted(c)
+                        ? `已用完 (${c.current_uses}/${c.max_uses})`
+                        : `已使用 ${c.current_uses}/${c.max_uses} 次`
+                      }
+                      {c.description && <span className="ml-2 text-gray-400">· {c.description}</span>}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge className={c.is_used ? 'bg-gray-400 text-white' : 'bg-green-500 text-white'}>
-                    {c.is_used ? '已使用' : '可用'}
+                  <Badge className={isCodeExhausted(c) ? 'bg-gray-400 text-white' : 'bg-green-500 text-white'}>
+                    {isCodeExhausted(c) ? '已用完' : '可用'}
                   </Badge>
-                  {!c.is_used && (
+                  {!isCodeExhausted(c) && (
                     <Button variant="outline" size="sm" className="text-red-600" onClick={() => handleDelete(c.id)}>删除</Button>
                   )}
                 </div>
@@ -135,7 +152,7 @@ export default function AdminCodesPage() {
 
       {/* Add Dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>新增注册码</DialogTitle>
             <DialogDescription>创建新的注册码供用户注册使用</DialogDescription>
@@ -148,7 +165,26 @@ export default function AdminCodesPage() {
                 <Button variant="outline" onClick={handleGenerate}>随机生成</Button>
               </div>
             </div>
-            <Button className="w-full bg-[#1890FF] hover:bg-[#1890FF]/80 text-white" onClick={handleAdd} disabled={loading || !newCode}>
+            <div className="space-y-2">
+              <Label>可使用次数</Label>
+              <Input
+                type="number"
+                min="1"
+                placeholder="1"
+                value={newMaxUses}
+                onChange={(e) => setNewMaxUses(e.target.value)}
+              />
+              <p className="text-xs text-gray-400">设置该注册码可被使用的次数，1表示仅可注册1个账号</p>
+            </div>
+            <div className="space-y-2">
+              <Label>备注（可选）</Label>
+              <Input
+                placeholder="注册码用途备注"
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+              />
+            </div>
+            <Button className="w-full bg-[#1890FF] hover:bg-[#1890FF]/80 text-white rounded-xl" onClick={handleAdd} disabled={loading || !newCode}>
               {loading ? '创建中...' : '创建注册码'}
             </Button>
           </div>

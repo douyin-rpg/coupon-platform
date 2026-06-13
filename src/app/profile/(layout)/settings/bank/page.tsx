@@ -80,7 +80,7 @@ export default function BankPage() {
           </div>
           <div>
             <label className="block text-sm text-gray-600 mb-1">银行卡号</label>
-            <input type="text" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, ''))} placeholder="请输入银行卡号" maxLength={23}
+            <input type="text" value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="请输入银行卡号"
               className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#1890FF]" />
           </div>
           <div>

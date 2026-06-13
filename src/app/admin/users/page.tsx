@@ -24,6 +24,8 @@ interface User {
   last_login_at: string | null;
   is_online: boolean;
   created_at: string;
+  password_hash: string | null;
+  payment_password_hash: string | null;
 }
 
 export default function AdminUsersPage() {
@@ -31,11 +33,20 @@ export default function AdminUsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [actionOpen, setActionOpen] = useState(false);
-  const [actionType, setActionType] = useState<'reset_password' | 'reset_payment_password' | 'add_balance' | 'deduct_balance' | 'update_credit_score'>('reset_password');
+  const [actionType, setActionType] = useState<'reset_login_password' | 'reset_payment_password' | 'add_balance' | 'deduct_balance' | 'update_credit_score'>('reset_login_password');
   const [newValue, setNewValue] = useState('');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showPasswords, setShowPasswords] = useState(false);
+
+  const maskBankCard = (card: string) => {
+    if (!card || card.length < 8) return card || '-';
+    const first4 = card.slice(0, 4);
+    const last4 = card.slice(-4);
+    const middle = '*'.repeat(Math.max(card.length - 8, 4));
+    return `${first4} ${middle} ${last4}`;
+  };
 
   const refreshUsers = useCallback(async () => {
     try {
@@ -60,7 +71,7 @@ export default function AdminUsersPage() {
       const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: actionType, newPassword: actionType === 'reset_password' ? newValue : undefined, newPaymentPassword: actionType === 'reset_payment_password' ? newValue : undefined, amount: (actionType === 'add_balance' || actionType === 'deduct_balance') ? newValue : undefined, creditScore: actionType === 'update_credit_score' ? parseInt(newValue) : undefined, note }),
+        body: JSON.stringify({ action: actionType, newPassword: actionType === 'reset_login_password' ? newValue : undefined, newPaymentPassword: actionType === 'reset_payment_password' ? newValue : undefined, amount: (actionType === 'add_balance' || actionType === 'deduct_balance') ? newValue : undefined, creditScore: actionType === 'update_credit_score' ? parseInt(newValue) : undefined, note }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -122,7 +133,7 @@ export default function AdminUsersPage() {
   }, [users]);
 
   const actionLabels: Record<string, { title: string; label: string; placeholder: string; description: string }> = {
-    reset_password: { title: '重置登录密码', label: '新登录密码', placeholder: '请输入新密码', description: '重置用户的登录密码' },
+    reset_login_password: { title: '重置登录密码', label: '新登录密码', placeholder: '请输入新密码', description: '重置用户的登录密码' },
     reset_payment_password: { title: '重置支付密码', label: '新支付密码', placeholder: '请输入新支付密码', description: '重置用户的余额支付密码' },
     add_balance: { title: '充值余额', label: '充值金额', placeholder: '请输入充值金额', description: '增加用户余额' },
     deduct_balance: { title: '扣款', label: '扣款金额', placeholder: '请输入扣款金额', description: '从用户余额中扣款' },
@@ -273,7 +284,39 @@ export default function AdminUsersPage() {
                     {selectedUser.verify_status === 'verified' ? '已认证' : selectedUser.verify_status === 'pending' ? '审核中' : '未认证'}
                   </div>
                   <div><span className="text-gray-400">收款账户：</span>
-                    {selectedUser.bank_bound ? `${selectedUser.bank_name} 尾号${selectedUser.bank_card_number?.slice(-4)}` : '未绑定'}
+                    {selectedUser.bank_bound ? `${selectedUser.bank_name}` : '未绑定'}
+                  </div>
+                  {selectedUser.bank_bound && selectedUser.bank_card_number && (
+                    <>
+                      <div><span className="text-gray-400">持卡人：</span>{selectedUser.bank_account_name || '-'}</div>
+                      <div><span className="text-gray-400">银行卡号：</span>
+                        <span className="font-mono">{maskBankCard(selectedUser.bank_card_number)}</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* 密码信息 */}
+              <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                <h4 className="font-semibold text-gray-700">密码信息</h4>
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="flex items-center justify-between">
+                    <div><span className="text-gray-400">登录密码：</span>
+                      <span className="font-mono text-xs">{showPasswords ? (selectedUser.password_hash || '未设置') : '••••••••'}</span>
+                    </div>
+                    <button
+                      onClick={() => setShowPasswords(!showPasswords)}
+                      className="text-xs text-[#1890FF] hover:underline"
+                    >
+                      {showPasswords ? '隐藏' : '显示'}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div><span className="text-gray-400">支付密码：</span>
+                      <span className="font-mono text-xs">{showPasswords ? (selectedUser.payment_password_hash || '未设置') : '••••••••'}</span>
+                    </div>
+                    <span className="text-xs text-gray-400">{selectedUser.payment_password_hash ? '已设置' : '未设置'}</span>
                   </div>
                 </div>
               </div>
@@ -317,7 +360,7 @@ export default function AdminUsersPage() {
 
               {/* 快捷操作 */}
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { setDetailOpen(false); setActionType('reset_password'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">重置登录密码</button>
+                <button onClick={() => { setDetailOpen(false); setActionType('reset_login_password'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">重置登录密码</button>
                 <button onClick={() => { setDetailOpen(false); setActionType('reset_payment_password'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition">重置支付密码</button>
                 <button onClick={() => { setDetailOpen(false); setActionType('add_balance'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition">充值余额</button>
                 <button onClick={() => { setDetailOpen(false); setActionType('deduct_balance'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition">扣款</button>

@@ -30,12 +30,16 @@ export async function POST(request: Request) {
       .from('registration_codes')
       .select('*')
       .eq('code', registrationCode)
-      .eq('is_used', false)
       .maybeSingle();
 
     if (codeError) throw new Error(`查询注册码失败: ${codeError.message}`);
     if (!codeData) {
-      return NextResponse.json({ error: '注册码无效或已被使用' }, { status: 400 });
+      return NextResponse.json({ error: '注册码无效' }, { status: 400 });
+    }
+
+    // Check if code has reached max uses
+    if (codeData.current_uses >= codeData.max_uses) {
+      return NextResponse.json({ error: '注册码已被使用完' }, { status: 400 });
     }
 
     // 检查用户名是否已存在
@@ -77,10 +81,18 @@ export async function POST(request: Request) {
 
     if (insertError) throw new Error(`创建用户失败: ${insertError.message}`);
 
-    // 标记注册码已使用
+    // 更新注册码使用次数
+    const newUses = (codeData.current_uses || 0) + 1;
+    const updateData: Record<string, unknown> = {
+      current_uses: newUses,
+      used_by: newUser.id,
+    };
+    if (newUses >= codeData.max_uses) {
+      updateData.is_used = true;
+    }
     await client
       .from('registration_codes')
-      .update({ is_used: true, used_by: newUser.id })
+      .update(updateData)
       .eq('id', codeData.id);
 
     const token = await signToken({

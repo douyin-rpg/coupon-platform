@@ -7,7 +7,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from('system_settings')
     .select('key, value')
-    .in('key', ['customer_service_url', 'customer_service_text']);
+    .in('key', ['customer_service_url', 'customer_service_text', 'invite_code_required']);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

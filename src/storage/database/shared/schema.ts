@@ -36,6 +36,9 @@ export const registrationCodes = pgTable(
 		code: varchar("code", { length: 50 }).notNull().unique(),
 		is_used: boolean("is_used").default(false).notNull(),
 		used_by: varchar("used_by", { length: 36 }).references(() => users.id),
+		max_uses: integer("max_uses").default(1).notNull(),
+		current_uses: integer("current_uses").default(0).notNull(),
+		description: text("description"),
 		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 	},
 	(table) => [

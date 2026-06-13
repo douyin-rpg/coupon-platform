@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { getAdminUser } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const payload = await getAdminUser();
     if (!payload?.isAdmin) {
@@ -24,14 +24,15 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const payload = await getAdminUser();
     if (!payload?.isAdmin) {
       return NextResponse.json({ error: '未授权' }, { status: 401 });
     }
 
-    const { code } = await request.json();
+    const body = await request.json();
+    const { code, max_uses, description } = body;
 
     if (!code) {
       return NextResponse.json({ error: '请填写注册码' }, { status: 400 });
@@ -40,7 +41,13 @@ export async function POST(request: Request) {
     const client = getSupabaseClient();
     const { data, error } = await client
       .from('registration_codes')
-      .insert({ code })
+      .insert({
+        code,
+        max_uses: parseInt(String(max_uses)) || 1,
+        current_uses: 0,
+        is_used: false,
+        description: description || null,
+      })
       .select()
       .single();
 
@@ -53,7 +60,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
   try {
     const payload = await getAdminUser();
     if (!payload?.isAdmin) {

@@ -83,6 +83,24 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
+        {/* 邀请码设置 */}
+        <div>
+          <h2 className="text-lg font-medium text-gray-800 mb-4">邀请码设置</h2>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-600">首次访问需要邀请码</label>
+              <button
+                onClick={() => setSettings({ ...settings, invite_code_required: settings.invite_code_required === 'true' ? 'false' : 'true' })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.invite_code_required === 'true' ? 'bg-[#1890FF]' : 'bg-gray-300'}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.invite_code_required === 'true' ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+              <span className="text-xs text-gray-400">{settings.invite_code_required === 'true' ? '已开启' : '已关闭'}</span>
+            </div>
+            <p className="text-xs text-gray-400">开启后，用户首次访问平台需输入有效的邀请码（注册码）才能进入</p>
+          </div>
+        </div>
+
         {/* 页脚设置 */}
         <div>
           <h2 className="text-lg font-medium text-gray-800 mb-4">页脚设置</h2>
