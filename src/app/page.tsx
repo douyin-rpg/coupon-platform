@@ -8,7 +8,6 @@ import { useAuth } from '@/contexts/auth-context';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
 import GrabNotification from '@/components/grab-notification';
-import CouponCardImage from '@/components/coupon-card-image';
 
 interface Banner { id: string; image_url: string; title: string; link_url: string; }
 interface Category { id: string; name: string; icon: string; }
@@ -449,8 +448,9 @@ export default function HomePage() {
                 {filteredCoupons.map((coupon) => (
                   <Link key={coupon.id} href={`/coupon/${coupon.id}`}
                     className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="relative aspect-square overflow-hidden">
-                      <CouponCardImage price={coupon.price} name={coupon.name} className="group-hover:scale-105 transition-transform duration-500" />
+                    <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+                      <Image src={coupon.image_url} alt={coupon.name} fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent pt-8 pb-1.5 px-2.5">
                         <span className="text-white font-bold text-sm md:text-base">¥{coupon.price.toLocaleString()}</span>
                       </div>
