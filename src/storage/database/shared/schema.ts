@@ -210,6 +210,22 @@ export const banners = pgTable(
 	}
 );
 
+// 邀请码表（独立于注册码，无使用次数限制）
+export const inviteCodes = pgTable(
+	"invite_codes",
+	{
+		id: serial().notNull().primaryKey(),
+		code: varchar("code", { length: 50 }).notNull().unique(),
+		description: text("description"),
+		is_active: boolean("is_active").default(true).notNull(),
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+		created_by: integer("created_by"),
+	},
+	(table) => [
+		index("invite_codes_code_idx").on(table.code),
+	]
+);
+
 // 收货地址表
 export const addresses = pgTable(
 	"addresses",

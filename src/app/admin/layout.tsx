@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   CouponIcon, CategoryIcon, ClockIcon, PicIcon, OrderIcon,
   BackIcon, WalletIcon, PeopleIcon, ShieldIcon, KeyIcon,
-  EditIcon, AnnounceIcon, SettingsIcon, LinkIcon
+  EditIcon, AnnounceIcon, SettingsIcon, LinkIcon, StarIcon
 } from '@/components/icons';
 
 const sidebarGroups = [
@@ -32,6 +32,7 @@ const sidebarGroups = [
       { href: '/admin/users', label: '用户管理', Icon: PeopleIcon },
       { href: '/admin/verify', label: '实名审核', Icon: ShieldIcon },
       { href: '/admin/codes', label: '注册码管理', Icon: KeyIcon },
+      { href: '/admin/invite-codes', label: '邀请码管理', Icon: StarIcon },
     ],
   },
   {
