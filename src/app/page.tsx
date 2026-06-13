@@ -110,8 +110,27 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
-      {/* ===== Hero Section - Premium douyinec style ===== */}
-      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(170deg, #060E1A 0%, #0A1A30 25%, #0D2244 50%, #091B35 75%, #060E1A 100%)' }}>
+      {/* ===== Hero Section - Premium douyinec style with real CDN images ===== */}
+      <div className="relative overflow-hidden">
+        {/* Ken Burns slideshow background with real 3D scene images */}
+        <div className="absolute inset-0">
+          {[1,2,3,4,5].map((num, i) => (
+            <div
+              key={num}
+              className="absolute inset-0 transition-opacity duration-[2000ms]"
+              style={{
+                opacity: currentBanner % 5 === i ? 1 : 0,
+                backgroundImage: `url(https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page1/0${num}.jpg)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                animation: currentBanner % 5 === i ? 'kenBurns 12s ease-in-out infinite' : 'none',
+              }}
+            />
+          ))}
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
+        </div>
+
         {/* Grid dot pattern */}
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
@@ -120,36 +139,19 @@ export default function HomePage() {
 
         {/* Animated aurora / glow effects */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Primary glow - top right */}
-          <div className="absolute w-[600px] h-[600px] rounded-full opacity-[0.15]"
+          <div className="absolute w-[600px] h-[600px] rounded-full opacity-[0.12]"
             style={{
               background: 'radial-gradient(ellipse at center, rgba(0,212,255,0.6) 0%, rgba(24,144,255,0.3) 40%, transparent 70%)',
               top: '-30%', right: '-5%',
               animation: 'aurora1 12s ease-in-out infinite',
               filter: 'blur(40px)',
             }} />
-          {/* Secondary glow - bottom left */}
-          <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.10]"
+          <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.08]"
             style={{
               background: 'radial-gradient(ellipse at center, rgba(123,97,255,0.5) 0%, rgba(24,144,255,0.2) 40%, transparent 70%)',
               bottom: '-25%', left: '-5%',
               animation: 'aurora2 15s ease-in-out infinite',
               filter: 'blur(50px)',
-            }} />
-          {/* Tertiary glow - center */}
-          <div className="absolute w-[300px] h-[300px] rounded-full opacity-[0.06]"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(0,212,255,0.4) 0%, transparent 70%)',
-              top: '20%', left: '35%',
-              animation: 'aurora3 10s ease-in-out infinite',
-              filter: 'blur(30px)',
-            }} />
-          {/* Horizontal light streak */}
-          <div className="absolute h-[1px] w-full opacity-[0.08]"
-            style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.5) 30%, rgba(123,97,255,0.3) 70%, transparent 100%)',
-              top: '45%',
-              animation: 'streakMove 8s ease-in-out infinite',
             }} />
         </div>
 
@@ -197,7 +199,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Hero Title - Premium style */}
+          {/* Hero Title + Countdown */}
           <div className="pb-4 pt-2 md:pt-8 md:pb-10">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
               <div>
@@ -249,7 +251,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Hero animated showcase - douyinec.com style */}
+        {/* Hero showcase with real 3D images from douyinec.com */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-16 pt-4 md:pt-8">
           <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
             {/* Left: Text + Entry buttons */}
@@ -277,51 +279,37 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Animated 3D-style illustration */}
+            {/* Right: Animated 3D scene from douyinec.com */}
             <div className="flex-1 relative w-full max-w-lg lg:max-w-xl">
-              {/* Floating cards animation */}
               <div className="relative h-[320px] md:h-[400px]">
-                {/* Central floating device card */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 md:w-72 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 p-4 shadow-2xl"
+                {/* Main scene card with real CDN image + Ken Burns */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 md:w-72 aspect-[4/3] rounded-2xl overflow-hidden border border-white/15 shadow-2xl"
                   style={{ animation: 'floatCard 6s ease-in-out infinite', boxShadow: '0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' }}>
-                  {/* Mini header bar */}
-                  <div className="flex items-center gap-2 mb-3">
+                  <Image
+                    src={`https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page1/0${(currentBanner % 5) + 1}.jpg`}
+                    alt="抖音电商"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                    style={{ transition: 'opacity 1s ease-in-out' }}
+                  />
+                  {/* Mini header bar overlay */}
+                  <div className="absolute top-0 left-0 right-0 flex items-center gap-2 p-3 bg-black/30 backdrop-blur-sm">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
                     <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
-                    <div className="flex-1 h-4 bg-white/8 rounded ml-2" />
+                    <div className="flex-1 h-3 bg-white/8 rounded ml-2" />
                   </div>
-                  {/* Mini coupon cards */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 bg-white/8 rounded-lg p-2">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#1890FF] to-[#00D4FF] flex items-center justify-center">
-                        <CouponIcon className="w-5 h-5 text-white" />
+                  {/* Bottom info overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/50 to-transparent">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1890FF] to-[#00D4FF] flex items-center justify-center">
+                        <CouponIcon className="w-4 h-4 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <div className="h-2.5 bg-white/20 rounded w-20 mb-1" />
-                        <div className="h-2 bg-white/10 rounded w-14" />
+                      <div>
+                        <div className="text-white text-xs font-medium">限时抢券</div>
+                        <div className="text-[#FF6B35] text-[10px] font-bold">低至5折</div>
                       </div>
-                      <div className="text-[#FF6B35] text-xs font-bold">¥5000</div>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/8 rounded-lg p-2">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#7B61FF] to-[#FE2C55] flex items-center justify-center">
-                        <ShoppingBagIcon className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="h-2.5 bg-white/20 rounded w-16 mb-1" />
-                        <div className="h-2 bg-white/10 rounded w-12" />
-                      </div>
-                      <div className="text-[#FF6B35] text-xs font-bold">¥10000</div>
-                    </div>
-                    <div className="flex items-center gap-2 bg-white/8 rounded-lg p-2">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                        <StarIcon className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="h-2.5 bg-white/20 rounded w-24 mb-1" />
-                        <div className="h-2 bg-white/10 rounded w-10" />
-                      </div>
-                      <div className="text-[#FF6B35] text-xs font-bold">¥10000</div>
                     </div>
                   </div>
                 </div>

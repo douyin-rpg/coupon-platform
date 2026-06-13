@@ -1,35 +1,49 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+const CDN_BASE = 'https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec';
+const CDN_BASE2 = 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//assets/home';
+
+// Floating 3D items data - using real douyinec.com CDN images
+const floatingItems = [
+  { src: `${CDN_BASE}/page1/01.jpg`, top: '5%', left: '3%', size: 90, duration: 7, delay: 0, rotate: -8 },
+  { src: `${CDN_BASE}/page1/02.jpg`, top: '12%', right: '5%', size: 80, duration: 9, delay: -2, rotate: 12 },
+  { src: `${CDN_BASE}/page1/03.jpg`, top: '40%', left: '2%', size: 85, duration: 8, delay: -3, rotate: -5 },
+  { src: `${CDN_BASE}/page1/04.jpg`, top: '55%', right: '3%', size: 75, duration: 10, delay: -1, rotate: 8 },
+  { src: `${CDN_BASE}/page1/05.jpg`, bottom: '12%', left: '6%', size: 80, duration: 7.5, delay: -4, rotate: -12 },
+  { src: `${CDN_BASE2}/page3/01.png`, top: '70%', right: '8%', size: 70, duration: 9, delay: -5, rotate: 6 },
+  { src: `${CDN_BASE2}/page3/02.png`, bottom: '5%', right: '20%', size: 65, duration: 8.5, delay: -2.5, rotate: -10 },
+  { src: `${CDN_BASE2}/page3/03.png`, top: '25%', left: '12%', size: 60, duration: 11, delay: -6, rotate: 15 },
+];
+
+// Bottom card icons
+const cardIcons = [
+  `${CDN_BASE2}/page3/01.png`,
+  `${CDN_BASE2}/page3/02.png`,
+  `${CDN_BASE2}/page3/03.png`,
+];
 
 export default function InvitePage() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
+  const [visible, setVisible] = useState(false);
   const router = useRouter();
 
-  // Check if invite is required
-  const [isRequired, setIsRequired] = useState(true);
-
   useEffect(() => {
-    fetch('/api/invite/verify')
-      .then(res => res.json())
-      .then(data => {
-        if (!data.required) {
-          router.replace('/');
-        }
-        setIsRequired(data.required);
-      })
-      .catch(() => {});
-  }, [router]);
+    setVisible(true);
+  }, []);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!code.trim()) {
       setError('请输入邀请码');
-      triggerShake();
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
       return;
     }
 
@@ -46,283 +60,183 @@ export default function InvitePage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        router.replace('/');
+        router.push('/');
+        router.refresh();
       } else {
         setError(data.error || '邀请码无效');
-        triggerShake();
+        setShake(true);
+        setTimeout(() => setShake(false), 400);
       }
     } catch {
       setError('网络错误，请重试');
-      triggerShake();
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
     } finally {
       setLoading(false);
     }
   };
 
-  const triggerShake = () => {
-    setShake(true);
-    setTimeout(() => setShake(false), 500);
-  };
-
-  if (!isRequired) return null;
-
   return (
-    <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center"
+    <div className="min-h-screen relative overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #FFD6E0 0%, #FDE2E4 20%, #FFF0F0 40%, #F5F0FF 60%, #EDE4F5 80%, #E8D5F5 100%)',
+        background: 'linear-gradient(170deg, #FFD6E8 0%, #FFEEF5 25%, #F5E6FF 50%, #E8D5F5 75%, #FFE0EC 100%)',
       }}
     >
-      {/* 浮动3D物品 - 照搬老网站设计 */}
-      {/* 左上角 - 抖音电商Logo */}
-      <div className="absolute top-6 left-8 z-10 flex items-center gap-2 invite-fade-in" style={{ animationDelay: '0.1s' }}>
-        <div className="w-8 h-8 flex items-center justify-center">
-          <svg viewBox="0 0 48 48" fill="none" className="w-8 h-8">
-            <path d="M34.1 10.2C32.3 7.1 29 5 25.2 5h-3.9v26.3c0 2.6-2.1 4.7-4.7 4.7s-4.7-2.1-4.7-4.7 2.1-4.7 4.7-4.7c1 0 1.9.3 2.7.8V18.4c-1.4-.5-2.9-.8-4.5-.8C8.7 17.6 3.6 22.7 3.6 29s5.1 11.4 11.4 11.4S26.4 35.3 26.4 29V18.1c2.9 2 6.4 3.1 10.1 3.1v-7.8c-1.7 0-3.2-.6-4.3-1.6l1.9-1.6z" fill="#1A1A1A"/>
-          </svg>
-        </div>
-        <span className="text-lg font-bold text-gray-800" style={{ letterSpacing: '2px' }}>抖音电商</span>
-      </div>
-
-      {/* 浮动3D物品 - 游戏手柄 (左上) */}
-      <div className="absolute top-[12%] left-[8%] md:left-[12%] w-16 h-16 md:w-20 md:h-20 opacity-60 pointer-events-none"
-        style={{ animation: 'floatItem1 7s ease-in-out infinite' }}>
-        <svg viewBox="0 0 80 80" fill="none" className="w-full h-full">
-          <rect x="8" y="28" width="64" height="32" rx="16" fill="url(#grad1)" />
-          <circle cx="28" cy="44" r="6" fill="#FFD26F" />
-          <circle cx="52" cy="44" r="6" fill="#4FACFE" />
-          <rect x="36" y="36" width="8" height="16" rx="4" fill="#FF9A9E" />
-          <defs>
-            <linearGradient id="grad1" x1="8" y1="28" x2="72" y2="60">
-              <stop offset="0%" stopColor="#FF6B9D" />
-              <stop offset="100%" stopColor="#A18CD1" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - 滑板 (中上偏左) */}
-      <div className="absolute top-[8%] left-[35%] md:left-[32%] w-20 h-8 md:w-28 md:h-10 opacity-50 pointer-events-none"
-        style={{ animation: 'floatItem2 9s ease-in-out infinite', animationDelay: '-2s' }}>
-        <svg viewBox="0 0 120 40" fill="none" className="w-full h-full">
-          <rect x="4" y="14" width="112" height="14" rx="7" fill="url(#grad2)" />
-          <circle cx="24" cy="34" r="5" fill="#4FACFE" />
-          <circle cx="96" cy="34" r="5" fill="#4FACFE" />
-          <defs>
-            <linearGradient id="grad2" x1="4" y1="14" x2="116" y2="28">
-              <stop offset="0%" stopColor="#C44FE2" />
-              <stop offset="100%" stopColor="#FF9A9E" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - 马克笔 (中上) */}
-      <div className="absolute top-[15%] right-[30%] md:right-[28%] w-4 h-16 md:w-5 md:h-20 opacity-50 pointer-events-none"
-        style={{ animation: 'floatItem3 8s ease-in-out infinite', animationDelay: '-4s', transform: 'rotate(-20deg)' }}>
-        <svg viewBox="0 0 24 80" fill="none" className="w-full h-full">
-          <rect x="4" y="4" width="16" height="56" rx="3" fill="url(#grad3)" />
-          <polygon points="8,60 16,60 12,76" fill="#333" />
-          <defs>
-            <linearGradient id="grad3" x1="4" y1="4" x2="20" y2="60">
-              <stop offset="0%" stopColor="#4FACFE" />
-              <stop offset="100%" stopColor="#A18CD1" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - 笑脸表情 (中下偏右) */}
-      <div className="absolute top-[55%] right-[8%] md:right-[12%] w-14 h-14 md:w-16 md:h-16 opacity-55 pointer-events-none"
-        style={{ animation: 'floatItem1 8.5s ease-in-out infinite', animationDelay: '-3s' }}>
-        <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-          <circle cx="32" cy="32" r="28" fill="#FFD26F" />
-          <circle cx="22" cy="26" r="4" fill="#333" />
-          <circle cx="42" cy="26" r="4" fill="#333" />
-          <path d="M20 38 Q32 50 44 38" stroke="#333" strokeWidth="3" fill="none" strokeLinecap="round" />
-          <circle cx="22" cy="24" r="1.5" fill="white" />
-          <circle cx="42" cy="24" r="1.5" fill="white" />
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - 行李箱 (右上) */}
-      <div className="absolute top-[10%] right-[6%] md:right-[10%] w-14 h-18 md:w-18 md:h-22 opacity-55 pointer-events-none"
-        style={{ animation: 'floatItem2 7.5s ease-in-out infinite', animationDelay: '-1s' }}>
-        <svg viewBox="0 0 64 80" fill="none" className="w-full h-full">
-          <rect x="8" y="24" width="48" height="48" rx="6" fill="#FF6B9D" />
-          <rect x="12" y="28" width="40" height="20" rx="3" fill="#FF9AB8" />
-          <rect x="24" y="8" width="16" height="20" rx="4" fill="#FF6B9D" />
-          <rect x="28" y="4" width="8" height="8" rx="2" fill="#FF9AB8" />
-          <circle cx="18" cy="76" r="5" fill="#4FACFE" />
-          <circle cx="46" cy="76" r="5" fill="#4FACFE" />
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - 黄色笔 (右侧中间) */}
-      <div className="absolute top-[42%] right-[5%] md:right-[8%] w-3 h-14 md:w-4 md:h-18 opacity-50 pointer-events-none"
-        style={{ animation: 'floatItem3 9s ease-in-out infinite', animationDelay: '-5s', transform: 'rotate(15deg)' }}>
-        <svg viewBox="0 0 16 72" fill="none" className="w-full h-full">
-          <rect x="2" y="2" width="12" height="56" rx="3" fill="#FFD26F" />
-          <polygon points="4,58 12,58 8,70" fill="#F0A030" />
-          <rect x="2" y="2" width="12" height="10" rx="3" fill="#F0A030" />
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - 紫色短靴 (右下) */}
-      <div className="absolute bottom-[15%] right-[12%] md:right-[15%] w-14 h-14 md:w-16 md:h-16 opacity-50 pointer-events-none"
-        style={{ animation: 'floatItem1 10s ease-in-out infinite', animationDelay: '-6s' }}>
-        <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-          <path d="M18 8 L18 40 L8 48 L8 56 L56 56 L56 48 L38 40 L38 8 Z" fill="url(#grad4)" />
-          <ellipse cx="28" cy="8" rx="12" ry="4" fill="#C44FE2" />
-          <defs>
-            <linearGradient id="grad4" x1="8" y1="8" x2="56" y2="56">
-              <stop offset="0%" stopColor="#C44FE2" />
-              <stop offset="100%" stopColor="#A18CD1" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - V键 (左下) */}
-      <div className="absolute bottom-[20%] left-[8%] md:left-[12%] w-12 h-12 md:w-14 md:h-14 opacity-50 pointer-events-none"
-        style={{ animation: 'floatItem2 8s ease-in-out infinite', animationDelay: '-3s' }}>
-        <svg viewBox="0 0 56 56" fill="none" className="w-full h-full">
-          <rect x="4" y="4" width="48" height="48" rx="10" fill="url(#grad5)" />
-          <text x="28" y="38" textAnchor="middle" fill="white" fontSize="24" fontWeight="bold" fontFamily="Arial">V</text>
-          <defs>
-            <linearGradient id="grad5" x1="4" y1="4" x2="52" y2="52">
-              <stop offset="0%" stopColor="#A18CD1" />
-              <stop offset="100%" stopColor="#C44FE2" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* 浮动3D物品 - 粉红小球 (右下角) */}
-      <div className="absolute bottom-[8%] right-[6%] w-10 h-10 md:w-12 md:h-12 opacity-40 pointer-events-none"
-        style={{ animation: 'floatItem3 6s ease-in-out infinite', animationDelay: '-2s' }}>
-        <div className="w-full h-full rounded-full"
-          style={{ background: 'linear-gradient(135deg, #FF6B9D, #FF9A9E)', filter: 'blur(1px)' }} />
-      </div>
-
-      {/* 闪光粒子 */}
-      <div className="sparkle sparkle-1" />
-      <div className="sparkle sparkle-2" />
-      <div className="sparkle sparkle-3" />
-      <div className="sparkle sparkle-4" />
-      <div className="sparkle sparkle-5" />
-      <div className="sparkle sparkle-6" />
-
-      {/* 主内容区 */}
-      <div className="relative z-10 w-full max-w-lg mx-auto px-6 invite-fade-in">
-        {/* 输入框组件 - 胶囊形状：输入框+确认按钮一体 */}
-        <div className={`flex items-center bg-white rounded-full shadow-lg border border-gray-100 overflow-hidden ${shake ? 'invite-shake' : ''}`}
-          style={{ height: '52px' }}>
-          {/* 输入图标 */}
-          <div className="pl-5 pr-2 flex items-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </div>
-          {/* 输入框 */}
-          <input
-            type="text"
-            value={code}
-            onChange={(e) => { setCode(e.target.value); setError(''); }}
-            className="flex-1 h-full bg-transparent border-none outline-none text-gray-800 placeholder-gray-400 text-base"
-            placeholder="请输入邀请码"
-            autoFocus
-            disabled={loading}
+      {/* Floating 3D items */}
+      {floatingItems.map((item, i) => (
+        <div
+          key={i}
+          className="absolute pointer-events-none hidden md:block"
+          style={{
+            top: item.top,
+            left: item.left,
+            right: item.right,
+            bottom: item.bottom,
+            width: item.size,
+            height: item.size,
+            borderRadius: '16px',
+            overflow: 'hidden',
+            opacity: 0.5,
+            filter: 'blur(1px)',
+            transform: `rotate(${item.rotate}deg)`,
+            animation: `floatItem${(i % 3) + 1} ${item.duration}s ease-in-out infinite`,
+            animationDelay: `${item.delay}s`,
+            boxShadow: '0 8px 32px rgba(180,100,200,0.2)',
+          }}
+        >
+          <Image
+            src={item.src}
+            alt=""
+            fill
+            className="object-cover"
+            unoptimized
           />
-          {/* 确认按钮 */}
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="h-full px-8 text-white font-semibold text-base transition-all duration-200 disabled:opacity-60 whitespace-nowrap"
-            style={{ background: '#FF6B6B', minWidth: '90px' }}
-          >
-            {loading ? '验证中' : '确认'}
-          </button>
         </div>
+      ))}
 
-        {/* 错误提示 */}
-        {error && (
-          <div className="mt-3 text-center text-sm text-red-500 invite-fade-in">
-            {error}
-          </div>
-        )}
+      {/* Sparkle particles */}
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={`sparkle-${i}`}
+          className="sparkle"
+          style={{
+            top: `${10 + i * 14}%`,
+            left: `${15 + (i * 17) % 70}%`,
+            animationDelay: `${i * 0.5}s`,
+          }}
+        />
+      ))}
 
-        {/* 价值展示卡片 - 白色大卡片内三等分 */}
-        <div className="mt-8 bg-white rounded-2xl shadow-sm p-6 md:p-8">
-          <div className="grid grid-cols-3 gap-4 md:gap-6">
-            {/* 左：兴趣电商 */}
-            <div className="text-center">
-              <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-3 flex items-center justify-center">
-                <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-                  {/* 爱心3D图标 - 粉红小球聚合 */}
-                  <path d="M32 56 C32 56 8 40 8 24 C8 16 14 10 22 10 C26 10 30 12 32 16 C34 12 38 10 42 10 C50 10 56 16 56 24 C56 40 32 56 32 56Z" fill="url(#heartGrad)" />
-                  <circle cx="20" cy="22" r="3" fill="#FFB6C1" opacity="0.8" />
-                  <circle cx="28" cy="18" r="2.5" fill="#FF9AB8" opacity="0.7" />
-                  <circle cx="36" cy="18" r="2.5" fill="#FF9AB8" opacity="0.7" />
-                  <circle cx="44" cy="22" r="3" fill="#FFB6C1" opacity="0.8" />
-                  <circle cx="24" cy="30" r="2" fill="#FFB6C1" opacity="0.6" />
-                  <circle cx="40" cy="30" r="2" fill="#FFB6C1" opacity="0.6" />
-                  <circle cx="32" cy="26" r="2.5" fill="#FF9AB8" opacity="0.7" />
-                  <defs>
-                    <linearGradient id="heartGrad" x1="8" y1="10" x2="56" y2="56">
-                      <stop offset="0%" stopColor="#FF6B9D" />
-                      <stop offset="100%" stopColor="#FF9A9E" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <h3 className="text-sm md:text-base font-bold text-gray-800 mb-2 leading-tight">兴趣电商<br/>新增量激发</h3>
-              <p className="text-[11px] md:text-xs text-gray-400 leading-relaxed hidden md:block">实现个性化推荐精准匹配，激发潜在用户兴趣，促成发现式消费，为商家带来新的生意增量</p>
-            </div>
-
-            {/* 中：全链经营 */}
-            <div className="text-center">
-              <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-3 flex items-center justify-center">
-                <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-                  {/* 方块堆叠3D图标 */}
-                  <rect x="18" y="30" width="28" height="14" rx="3" fill="#4FACFE" opacity="0.7" />
-                  <rect x="14" y="22" width="28" height="14" rx="3" fill="#4FACFE" opacity="0.85" />
-                  <rect x="10" y="14" width="28" height="14" rx="3" fill="#4FACFE" />
-                  <rect x="22" y="38" width="28" height="14" rx="3" fill="#00F2FE" opacity="0.5" />
-                  <rect x="26" y="30" width="28" height="14" rx="3" fill="#00F2FE" opacity="0.7" />
-                </svg>
-              </div>
-              <h3 className="text-sm md:text-base font-bold text-gray-800 mb-2 leading-tight">全链经营<br/>一站式服务</h3>
-              <p className="text-[11px] md:text-xs text-gray-400 leading-relaxed hidden md:block">为商家提供全链路经营服务，助力商家长效经营生意阵地，有效沉淀用户价值，实现品销合一</p>
-            </div>
-
-            {/* 右：优价好物 */}
-            <div className="text-center">
-              <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-3 flex items-center justify-center">
-                <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-                  {/* 球体+环形3D图标 */}
-                  <circle cx="32" cy="32" r="18" fill="url(#sphereGrad)" />
-                  <ellipse cx="32" cy="32" rx="28" ry="10" stroke="#A18CD1" strokeWidth="3" fill="none" opacity="0.6" transform="rotate(-20 32 32)" />
-                  <ellipse cx="32" cy="32" rx="28" ry="10" stroke="#C44FE2" strokeWidth="2" fill="none" opacity="0.4" transform="rotate(20 32 32)" />
-                  <circle cx="26" cy="26" r="4" fill="white" opacity="0.3" />
-                  <defs>
-                    <linearGradient id="sphereGrad" x1="14" y1="14" x2="50" y2="50">
-                      <stop offset="0%" stopColor="#A18CD1" />
-                      <stop offset="100%" stopColor="#C44FE2" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <h3 className="text-sm md:text-base font-bold text-gray-800 mb-2 leading-tight">优价好物<br/>多场景转化</h3>
-              <p className="text-[11px] md:text-xs text-gray-400 leading-relaxed hidden md:block">短视频、直播双擎内容形式，搭载商家自播、达人矩阵、营销活动、头部大V四大经营赛道</p>
-            </div>
-          </div>
-        </div>
+      {/* Logo */}
+      <div
+        className={`absolute top-6 left-6 md:top-8 md:left-8 flex items-center gap-2 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+      >
+        <Image
+          src={`${CDN_BASE2}/header/logo.png`}
+          alt="抖音电商"
+          width={32}
+          height={32}
+          className="w-7 h-7 md:w-8 md:h-8"
+          unoptimized
+        />
+        <span className="text-lg md:text-xl font-bold text-gray-800">抖音电商</span>
       </div>
 
-      {/* 底部版权 */}
-      <div className="relative z-10 mt-6 text-center text-xs text-gray-400/60 pb-4">
-        © 2024 抖音电商
+      {/* Main content */}
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+        <div
+          className={`w-full max-w-md transition-all duration-700 delay-200 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+        >
+          {/* Title */}
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-8">
+            欢迎来到抖音电商
+          </h1>
+          <p className="text-gray-500 text-center mb-8 text-sm md:text-base">
+            请输入邀请码以访问平台
+          </p>
+
+          {/* Input capsule */}
+          <form
+            onSubmit={handleSubmit}
+            className={`flex items-center bg-white rounded-full overflow-hidden shadow-lg border border-gray-100 transition-all ${shake ? 'invite-shake' : ''}`}
+            style={{ height: 52 }}
+          >
+            <div className="flex-1 flex items-center px-4 gap-3">
+              <svg className="w-5 h-5 text-gray-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <input
+                type="text"
+                value={code}
+                onChange={(e) => { setCode(e.target.value); setError(''); }}
+                placeholder="请输入邀请码"
+                className="flex-1 outline-none text-gray-700 text-base placeholder:text-gray-400 bg-transparent"
+                disabled={loading}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="h-full px-6 md:px-8 text-white font-medium text-base flex-shrink-0 transition-all duration-200 disabled:opacity-60"
+              style={{
+                background: 'linear-gradient(135deg, #FF6B9D, #FF4D8D)',
+              }}
+            >
+              {loading ? '验证中...' : '确认'}
+            </button>
+          </form>
+
+          {/* Error message */}
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-3 animate-pulse">{error}</p>
+          )}
+        </div>
+
+        {/* Bottom feature cards */}
+        <div
+          className={`w-full max-w-2xl mt-10 md:mt-14 transition-all duration-700 delay-500 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-6 md:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {[
+                {
+                  icon: cardIcons[0],
+                  title: '兴趣电商，新增量激发',
+                  desc: '实现个性化推荐精准匹配，激发潜在用户兴趣，促成发现式消费，为商家带来新的生意增量',
+                },
+                {
+                  icon: cardIcons[1],
+                  title: '全链经营，一站式服务',
+                  desc: '为商家提供全链路经营服务，助力商家长效经营生意阵地，有效沉淀用户价值，实现品销合一',
+                },
+                {
+                  icon: cardIcons[2],
+                  title: '优价好物，多场景转化',
+                  desc: '短视频、直播双擎内容形式，搭载商家自播、达人矩阵、营销活动、头部大V四大经营赛道',
+                },
+              ].map((card, i) => (
+                <div key={i} className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 relative mb-3">
+                    <Image
+                      src={card.icon}
+                      alt={card.title}
+                      fill
+                      className="object-contain"
+                      unoptimized
+                    />
+                  </div>
+                  <h3 className="font-bold text-gray-800 text-sm md:text-base mb-1.5 whitespace-pre-line">
+                    {card.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-gray-500 leading-relaxed">
+                    {card.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
