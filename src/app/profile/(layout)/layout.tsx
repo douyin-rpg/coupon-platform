@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/auth-context';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
 
@@ -45,13 +45,14 @@ const menuItems = [
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center"><span className="text-gray-400">加载中...</span></div>;
   }
 
   if (!user) {
-    if (typeof window !== 'undefined') { window.location.href = '/login'; }
+    if (typeof window !== 'undefined') { router.push('/login'); }
     return null;
   }
 
@@ -116,7 +117,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                   onClick={async () => {
                     if (confirm('确定要退出登录吗？')) {
                       await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
-                      window.location.href = '/';
+                      router.push('/');
                     }
                   }}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors"

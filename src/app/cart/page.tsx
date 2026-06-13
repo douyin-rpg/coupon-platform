@@ -30,10 +30,6 @@ export default function CartPage() {
   const [payResults, setPayResults] = useState<{ name: string; success: boolean; error?: string }[]>([]);
   const [showResults, setShowResults] = useState(false);
 
-  useEffect(() => {
-    loadCart();
-  }, []);
-
   const loadCart = async () => {
     try {
       const res = await fetch("/api/user/cart");
@@ -44,6 +40,10 @@ export default function CartPage() {
     } catch { /* ignore */ }
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadCart();
+  }, []);
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {

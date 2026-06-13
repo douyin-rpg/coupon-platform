@@ -15,7 +15,7 @@ interface Session { id: string; name: string; start_time: string; end_time: stri
 interface Coupon { id: string; name: string; price: number; image_url: string; remaining_quantity: number; total_quantity: number; session_id: string; category_id: string; description: string; }
 interface Article { id: string; title: string; created_at: string; }
 
-import { HomeIcon, ShoppingCartIcon, HeadphoneIcon, UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, StreamIcon, ShoppingBagIcon, GoldIcon, InfoIcon, StarIcon, CheckIcon, FlashIcon } from '@/components/icons';
+import { UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, CheckIcon, StreamIcon, GoldIcon, ShoppingBagIcon, InfoIcon, FlashIcon, CategoryIcon } from '@/components/icons';
 
 const categoryIconMap: Record<string, React.FC<{ className?: string }>> = {
   '官方优惠券': CouponIcon,
@@ -37,7 +37,7 @@ export default function HomePage() {
   const [customerServiceUrl, setCustomerServiceUrl] = useState('/');
   const [articles, setArticles] = useState<Article[]>([]);
   const [currentAnnounceIdx, setCurrentAnnounceIdx] = useState(0);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     fetch('/api/banners').then(r => r.json()).then(d => setBanners(d.banners || [])).catch(() => {});
