@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { ArrowLeftIcon, CheckCircleIcon, ChevronRightIcon, ClockIcon, CouponIcon, CreditCardIcon, InfoIcon, LockIcon, ShieldIcon, ShoppingCartIcon, XIcon } from '@/components/icons';
 import BottomNav from "@/components/bottom-nav";
 import Footer from "@/components/footer";
+import CouponCardImage from "@/components/coupon-card-image";
 
 interface Session {
   id: string;
@@ -166,16 +167,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
           <div className="md:w-1/2 md:flex-shrink-0">
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
               <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                {coupon.image_url ? (
-                  <img src={coupon.image_url} alt={coupon.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1890FF]/10 to-[#00D4FF]/10">
-                    <div className="text-center">
-                      <CouponIcon className="w-20 h-20 mx-auto mb-3" />
-                      <div className="text-gray-400 text-sm">优惠券</div>
-                    </div>
-                  </div>
-                )}
+                <CouponCardImage price={coupon.price} name={coupon.name} />
                 <div className="absolute top-3 right-3 bg-[#FE2C55]/90 text-white text-[10px] px-2.5 py-1 rounded-full font-medium backdrop-blur-sm">
                     已抢999+
                   </div>
