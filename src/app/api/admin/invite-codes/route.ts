@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { verifyAdminAuth } from '@/lib/auth';
 
-const supabase = getSupabaseClient();
-
 // GET: 获取所有邀请码
 export async function GET(request: NextRequest) {
   try {
@@ -12,6 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: '未授权' }, { status: 401 });
     }
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('invite_codes')
       .select('*')
@@ -39,6 +38,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: '邀请码不能为空' }, { status: 400 });
     }
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('invite_codes')
       .insert({

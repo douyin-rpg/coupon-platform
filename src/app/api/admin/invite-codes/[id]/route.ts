@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { verifyAdminAuth } from '@/lib/auth';
 
-const supabase = getSupabaseClient();
-
 // PUT: 更新邀请码
 export async function PUT(
   request: NextRequest,
@@ -23,6 +21,7 @@ export async function PUT(
     if (description !== undefined) updateData.description = description;
     if (is_active !== undefined) updateData.is_active = is_active;
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('invite_codes')
       .update(updateData)
@@ -57,6 +56,7 @@ export async function DELETE(
 
     const { id } = await params;
 
+    const supabase = getSupabaseClient();
     const { error } = await supabase
       .from('invite_codes')
       .delete()

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
-const supabase = getSupabaseClient();
-
 // GET: 检查是否需要邀请码
 export async function GET() {
   try {
+    const supabase = getSupabaseClient();
     const { data: settings } = await supabase
       .from('system_settings')
       .select('value')
@@ -27,6 +26,8 @@ export async function POST(request: NextRequest) {
     if (!code || typeof code !== 'string') {
       return NextResponse.json({ error: '请输入邀请码' }, { status: 400 });
     }
+
+    const supabase = getSupabaseClient();
 
     // 检查是否需要邀请码
     const { data: settings } = await supabase
