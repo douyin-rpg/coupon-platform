@@ -217,14 +217,14 @@ export default function HomePage() {
             <div className="flex-1 w-full">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {[
-                  { name: '境内商家', desc: '在抖音开店卖货，带来生意增量', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/doudian.7349dac0.png', href: '/login' },
-                  { name: '即时零售', desc: '线上线下联动，即时送达', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/kuajing.ca0721db.png', href: '/login' },
-                  { name: '跨境商家', desc: '境外商家在抖音开店卖货', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/daren.ae87ee58.png', href: '/register' },
-                  { name: '达人', desc: '抖音好物推荐官', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/daremcn.b6d7dd6d.png', href: '/register' },
-                  { name: '达人机构', desc: 'MCN/招商团长/精选联盟', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/doudian.7349dac0.png', href: '/register' },
-                  { name: '服务商', desc: '与商家共同构建经营阵地', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/kuajing.ca0721db.png', href: '/register' },
+                  { name: '境内商家', desc: '在抖音开店卖货，带来生意增量', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/doudian.7349dac0.png', href: 'https://fxg.jinritemai.com?from=douyinofficial_table&source=dydsgwpcxb' },
+                  { name: '即时零售', desc: '线上线下联动，即时送达', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/kuajing.ca0721db.png', href: 'https://fxg.jinritemai.com/instant-retail?source=oldpcsidebar' },
+                  { name: '跨境商家', desc: '境外商家在抖音开店卖货', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/daren.ae87ee58.png', href: 'https://b.guantou.com?from=douyinofficial_table' },
+                  { name: '达人', desc: '抖音好物推荐官', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/daremcn.b6d7dd6d.png', href: 'https://buyin.douyinec.com/daren?from=douyinofficial_table' },
+                  { name: '达人机构', desc: 'MCN/招商团长/精选联盟', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/doudian.7349dac0.png', href: 'https://buyin.douyinec.com/darenmcn?from=douyinofficial_table' },
+                  { name: '服务商', desc: '与商家共同构建经营阵地', icon: 'https://lf3-fe.ecombdstatic.com/obj/ecom-cdn-default/ecom/fe-alliance-home/out//_next/static/media/kuajing.ca0721db.png', href: 'https://partner.jinritemai.com/home?from=douyinofficial_table' },
                 ].map((item, i) => (
-                  <a key={i} href={item.href} className="group bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/8 hover:bg-white/15 hover:border-white/15 transition-all">
+                  <a key={i} href={item.href} target="_blank" rel="noopener noreferrer" className="group bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/8 hover:bg-white/15 hover:border-white/15 transition-all">
                     <div className="flex items-start gap-3">
                       <Image src={item.icon} alt={item.name} width={40} height={40} className="w-9 h-9 md:w-10 md:h-10 flex-shrink-0 group-hover:scale-110 transition-transform" unoptimized />
                       <div className="min-w-0">
