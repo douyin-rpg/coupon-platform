@@ -110,81 +110,68 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
-      {/* ===== Hero Section - Premium douyinec style with real CDN images ===== */}
+      {/* ===== Hero Section - douyinec.com style full-screen slideshow ===== */}
       <div className="relative overflow-hidden">
-        {/* Ken Burns slideshow background with real 3D scene images */}
+        {/* Full-screen slideshow background with real CDN images + video */}
         <div className="absolute inset-0">
-          {[1,2,3,4,5].map((num, i) => (
+          {[
+            { bg: '#5ac8ff', img: '01' },
+            { bg: '#acc9f7', img: '02' },
+            { bg: '#7eb6ff', img: '03' },
+            { bg: '#b8d4ff', img: '04' },
+            { bg: '#8ec5ff', img: '05' },
+          ].map((slide, i) => (
             <div
-              key={num}
-              className="absolute inset-0 transition-opacity duration-[2000ms]"
+              key={slide.img}
+              className="absolute inset-0 transition-opacity duration-[1500ms]"
               style={{
                 opacity: currentBanner % 5 === i ? 1 : 0,
-                backgroundImage: `url(https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page1/0${num}.jpg)`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                animation: currentBanner % 5 === i ? 'kenBurns 12s ease-in-out infinite' : 'none',
+                backgroundColor: slide.bg,
               }}
-            />
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page1/${slide.img}.jpg)`,
+                }}
+              />
+              {/* Video animation layer */}
+              {currentBanner % 5 === i && (
+                <video
+                  className="absolute inset-0 w-full h-full object-cover"
+                  muted
+                  playsInline
+                  autoPlay
+                  loop
+                  poster={`https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page1/${slide.img}.jpg`}
+                >
+                  <source src={`https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page1/${slide.img}-b.mp4`} type="video/mp4" />
+                </video>
+              )}
+            </div>
           ))}
-          {/* Dark overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/40" />
         </div>
 
-        {/* Grid dot pattern */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }} />
-
-        {/* Animated aurora / glow effects */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute w-[600px] h-[600px] rounded-full opacity-[0.12]"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(0,212,255,0.6) 0%, rgba(24,144,255,0.3) 40%, transparent 70%)',
-              top: '-30%', right: '-5%',
-              animation: 'aurora1 12s ease-in-out infinite',
-              filter: 'blur(40px)',
-            }} />
-          <div className="absolute w-[500px] h-[500px] rounded-full opacity-[0.08]"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(123,97,255,0.5) 0%, rgba(24,144,255,0.2) 40%, transparent 70%)',
-              bottom: '-25%', left: '-5%',
-              animation: 'aurora2 15s ease-in-out infinite',
-              filter: 'blur(50px)',
-            }} />
-        </div>
-
-        {/* Desktop: Full-width nav bar */}
+        {/* Desktop nav bar - douyinec.com style */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-3 md:py-4">
             <div className="flex items-center gap-3">
               <Image src="/images/logo.png" alt="抖音电商" width={140} height={40} className="h-7 md:h-9 w-auto" />
             </div>
-            {/* Desktop search */}
-            <div className="hidden md:flex items-center gap-2">
-              <div className="relative">
-                <input type="text" placeholder="搜索优惠券..." value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-56 lg:w-72 h-9 pl-9 pr-4 rounded-full bg-white/8 text-white text-sm placeholder-white/30 border border-white/10 focus:border-[#00D4FF]/50 focus:outline-none focus:bg-white/10 transition-all" />
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-              </div>
+            {/* Desktop nav links - matching douyinec.com */}
+            <div className="hidden lg:flex items-center gap-6 text-white/70 text-sm">
+              <span className="text-white font-medium border-b-2 border-white pb-0.5">首页</span>
+              <Link href="/cart" className="hover:text-white transition-colors">购物车</Link>
+              <Link href="/profile/order" className="hover:text-white transition-colors">我的订单</Link>
+              <Link href="/announcements" className="hover:text-white transition-colors">公告中心</Link>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/announcements" className="flex items-center gap-1 text-white/50 hover:text-white/80 transition-colors text-xs">
-                <AnnounceIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">公告</span>
+              {/* Mobile: search + service */}
+              <Link href="/announcements" className="md:hidden flex items-center text-white/50 hover:text-white/80 transition-colors">
+                <AnnounceIcon className="w-5 h-5" />
               </Link>
-              {/* Desktop nav links */}
-              <div className="hidden lg:flex items-center gap-4 text-white/60 text-sm">
-                <Link href="/" className="hover:text-white transition-colors">首页</Link>
-                <Link href="/cart" className="hover:text-white transition-colors">购物车</Link>
-                <Link href="/profile/order" className="hover:text-white transition-colors">订单</Link>
-                <a href={customerServiceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-white transition-colors">
-                  <HeadphoneIcon className="w-4 h-4" />
-                  在线客服
-                </a>
-              </div>
               {user ? (
                 <Link href="/profile" className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/8 text-white text-sm hover:bg-white/15 transition-all border border-white/10">
                   <UserIcon className="w-4 h-4" />
@@ -192,174 +179,108 @@ export default function HomePage() {
                 </Link>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Link href="/login" className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-sm font-medium shadow-sm shadow-blue-400/30 hover:shadow-md transition-all">登录</Link>
-                  <Link href="/register" className="px-4 py-1.5 rounded-full border border-white/20 text-white/80 text-sm hover:bg-white/8 transition-all">注册</Link>
+                  <Link href="/login" className="px-5 py-1.5 rounded-full bg-[#1890FF] text-white text-sm font-medium hover:bg-[#1890FF]/80 transition-colors shadow-sm shadow-blue-400/20">登录</Link>
+                  <Link href="/register" className="hidden sm:inline-flex px-4 py-1.5 rounded-full border border-white/20 text-white/80 text-sm hover:bg-white/8 transition-all">注册</Link>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Hero Title + Countdown */}
-          <div className="pb-4 pt-2 md:pt-8 md:pb-10">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 tracking-wide"
-                  style={{ textShadow: '0 0 40px rgba(0,212,255,0.15)' }}>
-                  激发兴趣，引领增长
-                </h1>
-                <p className="text-white/35 text-xs md:text-sm tracking-wider">
-                  抖音电商优惠券抢购平台
-                </p>
+          {/* Hero title - matching douyinec.com */}
+          <div className="pb-4 pt-4 md:pt-8 md:pb-6 text-center">
+            <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold text-white mb-4 tracking-wide"
+              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
+              加入抖音电商，激发兴趣 引领增长
+            </h1>
+            {/* Feature tags */}
+            <div className="flex items-center justify-center gap-4 md:gap-6 mb-6 flex-wrap">
+              <div className="flex items-center gap-1.5 text-white/80 text-xs md:text-sm">
+                <CheckIcon className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                <span>抖音超6亿日活</span>
               </div>
-              {/* Countdown */}
+              <div className="flex items-center gap-1.5 text-white/80 text-xs md:text-sm">
+                <CheckIcon className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                <span>全面购物场景</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-white/80 text-xs md:text-sm">
+                <CheckIcon className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                <span>一站式全链经营</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Entry cards + countdown - douyinec.com style */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-16">
+          <div className="flex flex-col lg:flex-row items-start gap-6">
+            {/* Left: Entry cards matching douyinec.com */}
+            <div className="flex-1 w-full">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {[
+                  { name: '境内商家', desc: '在抖音开店卖货，带来生意增量', icon: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page3/01.png', href: '/login' },
+                  { name: '即时零售', desc: '线上线下联动，即时送达', icon: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page3/02.png', href: '/login' },
+                  { name: '跨境商家', desc: '境外商家在抖音开店卖货', icon: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page3/03.png', href: '/register' },
+                  { name: '达人', desc: '抖音好物推荐官', icon: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page3/04.png', href: '/register' },
+                  { name: '达人机构', desc: 'MCN/招商团长/精选联盟', icon: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page3/01.png', href: '/register' },
+                  { name: '服务商', desc: '与商家共同构建经营阵地', icon: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page3/02.png', href: '/register' },
+                ].map((item, i) => (
+                  <a key={i} href={item.href} className="group bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/8 hover:bg-white/15 hover:border-white/15 transition-all">
+                    <div className="flex items-start gap-3">
+                      <Image src={item.icon} alt={item.name} width={40} height={40} className="w-9 h-9 md:w-10 md:h-10 flex-shrink-0 group-hover:scale-110 transition-transform" unoptimized />
+                      <div className="min-w-0">
+                        <div className="text-white text-sm font-medium">{item.name}</div>
+                        <div className="text-white/35 text-[11px] mt-0.5 line-clamp-2">{item.desc}</div>
+                        <div className="flex items-center gap-1 mt-2 text-[#00D4FF] text-[11px] font-medium group-hover:gap-1.5 transition-all">
+                          立即入驻 <ChevronRightIcon className="w-3 h-3" />
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Countdown + GrabNotification */}
+            <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
+              {/* Countdown card */}
               {activeSession && (
-                <div className="flex items-center gap-2.5 bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 border border-white/8"
+                <div className="bg-white/8 backdrop-blur-md rounded-2xl p-5 border border-white/8"
                   style={{ boxShadow: '0 0 30px rgba(0,212,255,0.08), inset 0 1px 0 rgba(255,255,255,0.05)' }}>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 mb-3">
                     <span className="flex h-2 w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
                     </span>
                     <span className="text-green-400 text-xs font-medium">抢购中</span>
+                    <span className="text-white/25 text-xs ml-auto">{activeSession.name}</span>
                   </div>
-                  <span className="text-white/25 text-xs">{activeSession.name}</span>
-                  <div className="flex items-center gap-0.5">
+                  <div className="flex items-center justify-center gap-1">
                     {getCountdown(activeSession)?.split(':').map((val, i) => (
                       <span key={i} className="flex items-center">
-                        <span className="bg-white/8 text-white text-sm md:text-base font-bold font-mono px-2 py-1 rounded-md tabular-nums min-w-[32px] text-center"
+                        <span className="bg-white/8 text-white text-lg md:text-xl font-bold font-mono px-3 py-1.5 rounded-lg tabular-nums min-w-[40px] text-center"
                           style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}>{val}</span>
-                        {i < 2 && <span className="text-[#00D4FF]/50 font-bold mx-0.5 text-xs">:</span>}
+                        {i < 2 && <span className="text-[#00D4FF]/50 font-bold mx-0.5 text-sm">:</span>}
                       </span>
                     ))}
                   </div>
                 </div>
               )}
               {!activeSession && nextSession && (
-                <div className="flex items-center gap-2.5 bg-white/4 rounded-2xl px-5 py-3 border border-white/5">
-                  <span className="text-amber-400 text-xs font-medium">{nextSession.name} 即将开始</span>
-                  <div className="flex items-center gap-0.5">
+                <div className="bg-white/4 rounded-2xl p-5 border border-white/5">
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <span className="text-amber-400 text-xs font-medium">{nextSession.name} 即将开始</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-1">
                     {getCountdown(nextSession)?.split(':').map((val, i) => (
                       <span key={i} className="flex items-center">
-                        <span className="bg-white/6 text-white/60 text-sm md:text-base font-bold font-mono px-2 py-1 rounded-md tabular-nums min-w-[32px] text-center">{val}</span>
-                        {i < 2 && <span className="text-white/15 font-bold mx-0.5 text-xs">:</span>}
+                        <span className="bg-white/6 text-white/60 text-lg md:text-xl font-bold font-mono px-3 py-1.5 rounded-lg tabular-nums min-w-[40px] text-center">{val}</span>
+                        {i < 2 && <span className="text-white/15 font-bold mx-0.5 text-sm">:</span>}
                       </span>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-
-        {/* Hero showcase with real 3D images from douyinec.com */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-16 pt-4 md:pt-8">
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-            {/* Left: Text + Entry buttons */}
-            <div className="flex-1 text-center lg:text-left">
-              <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight"
-                style={{ textShadow: '0 0 60px rgba(0,212,255,0.2)' }}>
-                激发兴趣
-                <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#00D4FF] to-[#7B61FF]">
-                  引领增长
-                </span>
-              </h2>
-              <p className="text-white/40 text-sm md:text-base mb-8 max-w-md mx-auto lg:mx-0 leading-relaxed">
-                抖音电商优惠券抢购平台，限时抢券，一站式优惠服务
-              </p>
-              {/* Entry cards */}
-              <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto lg:mx-0">
-                <a href="/login" className="group relative bg-gradient-to-r from-[#1890FF] to-[#00D4FF] text-white text-sm font-semibold py-3 px-5 rounded-xl text-center transition-all hover:shadow-lg hover:shadow-[#1890FF]/25 hover:scale-[1.03] active:scale-[0.97]"
-                  style={{ boxShadow: '0 4px 20px rgba(24,144,255,0.3)' }}>
-                  立即抢券
-                </a>
-                <a href="/announcements" className="group relative bg-white/8 backdrop-blur-sm text-white text-sm font-semibold py-3 px-5 rounded-xl text-center border border-white/10 transition-all hover:bg-white/12 hover:scale-[1.03] active:scale-[0.97]">
-                  了解更多
-                </a>
-              </div>
-            </div>
-
-            {/* Right: Animated 3D scene from douyinec.com */}
-            <div className="flex-1 relative w-full max-w-lg lg:max-w-xl">
-              <div className="relative h-[320px] md:h-[400px]">
-                {/* Main scene card with real CDN image + Ken Burns */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 md:w-72 aspect-[4/3] rounded-2xl overflow-hidden border border-white/15 shadow-2xl"
-                  style={{ animation: 'floatCard 6s ease-in-out infinite', boxShadow: '0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)' }}>
-                  <Image
-                    src={`https://lf3-static.bytednsdoc.com/obj/eden-cn/uvpahylwvauhojylt_lm_tvjl/ljhwZthlaukjlkulzlp/douyin-ec/page1/0${(currentBanner % 5) + 1}.jpg`}
-                    alt="抖音电商"
-                    fill
-                    className="object-cover"
-                    unoptimized
-                    style={{ transition: 'opacity 1s ease-in-out' }}
-                  />
-                  {/* Mini header bar overlay */}
-                  <div className="absolute top-0 left-0 right-0 flex items-center gap-2 p-3 bg-black/30 backdrop-blur-sm">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
-                    <div className="flex-1 h-3 bg-white/8 rounded ml-2" />
-                  </div>
-                  {/* Bottom info overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/50 to-transparent">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1890FF] to-[#00D4FF] flex items-center justify-center">
-                        <CouponIcon className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-white text-xs font-medium">限时抢券</div>
-                        <div className="text-[#FF6B35] text-[10px] font-bold">低至5折</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating stat card - top right */}
-                <div className="absolute top-2 right-0 md:right-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/12 p-3 shadow-xl"
-                  style={{ animation: 'floatCard2 5s ease-in-out infinite', animationDelay: '0.5s' }}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
-                      <CheckIcon className="w-4 h-4 text-green-400" />
-                    </div>
-                    <div>
-                      <div className="text-white/50 text-[10px]">限时折扣</div>
-                      <div className="text-green-400 text-sm font-bold">低至5折</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating badge - bottom left */}
-                <div className="absolute bottom-8 left-0 md:left-2 bg-white/10 backdrop-blur-xl rounded-xl border border-white/12 p-3 shadow-xl"
-                  style={{ animation: 'floatCard2 7s ease-in-out infinite', animationDelay: '1s' }}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#FE2C55]/20 flex items-center justify-center">
-                      <FlashIcon className="w-4 h-4 text-[#FE2C55]" />
-                    </div>
-                    <div>
-                      <div className="text-white/50 text-[10px]">限时抢购</div>
-                      <div className="text-[#FE2C55] text-sm font-bold">进行中</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating user card - top left */}
-                <div className="absolute top-6 left-2 md:left-6 bg-white/10 backdrop-blur-xl rounded-xl border border-white/12 p-3 shadow-xl"
-                  style={{ animation: 'floatCard2 8s ease-in-out infinite', animationDelay: '2s' }}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1890FF] to-[#7B61FF]" />
-                    <div>
-                      <div className="h-2 bg-white/25 rounded w-12 mb-1" />
-                      <div className="h-1.5 bg-white/10 rounded w-8" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Decorative gradient orbs */}
-                <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-20"
-                  style={{ background: 'radial-gradient(circle, rgba(0,212,255,0.8), transparent)', filter: 'blur(15px)', animation: 'aurora3 6s ease-in-out infinite' }} />
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full opacity-15"
-                  style={{ background: 'radial-gradient(circle, rgba(123,97,255,0.8), transparent)', filter: 'blur(15px)', animation: 'aurora1 8s ease-in-out infinite' }} />
-              </div>
+              <GrabNotification isActive={canGrab} />
             </div>
           </div>
         </div>
