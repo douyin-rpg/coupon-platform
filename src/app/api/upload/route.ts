@@ -36,7 +36,12 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const ext = file.name.split(".").pop() || "jpg";
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    // 只允许安全扩展名
+    const allowedExts = ["jpg", "jpeg", "png", "webp"];
+    if (!allowedExts.includes(ext)) {
+      return NextResponse.json({ error: "不支持的文件格式" }, { status: 400 });
+    }
     const fileName = `id-cards/${userId}/${Date.now()}.${ext}`;
 
     const key = await storage.uploadFile({

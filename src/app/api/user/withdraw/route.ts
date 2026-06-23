@@ -62,15 +62,19 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: "余额不足" }, { status: 400 });
 		}
 
-		// 扣减余额
+		// 原子扣减余额（使用gte条件防止并发超额扣减）
 		const newBalance = (currentBalance - numAmount).toFixed(2);
-		const { error: updateError } = await supabase
+		const { error: updateError, count: updateCount } = await supabase
 			.from("users")
 			.update({ balance: newBalance })
-			.eq("id", userId);
+			.eq("id", userId)
+			.gte("balance", numAmount);
 
 		if (updateError) {
 			return NextResponse.json({ error: "余额扣减失败" }, { status: 500 });
+		}
+		if (updateCount === 0) {
+			return NextResponse.json({ error: "余额不足" }, { status: 400 });
 		}
 
 		// 创建提现记录

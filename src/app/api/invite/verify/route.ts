@@ -59,8 +59,9 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ success: true, message: '验证成功' });
     response.cookies.set('invite_verified', 'true', {
       path: '/',
-      maxAge: 60 * 60 * 24 * 365, // 1年有效
-      httpOnly: false,
+      maxAge: 60 * 60 * 24 * 30, // 30天有效
+      httpOnly: true,
+      sameSite: 'lax',
     });
     return response;
   } catch (error) {

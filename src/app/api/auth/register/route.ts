@@ -81,7 +81,7 @@ export async function POST(request: Request) {
 
     if (insertError) throw new Error(`创建用户失败: ${insertError.message}`);
 
-    // 更新注册码使用次数
+    // 原子更新注册码使用次数（使用lt条件防止超出max_uses）
     const newUses = (codeData.current_uses || 0) + 1;
     const updateData: Record<string, unknown> = {
       current_uses: newUses,
@@ -90,10 +90,17 @@ export async function POST(request: Request) {
     if (newUses >= codeData.max_uses) {
       updateData.is_used = true;
     }
-    await client
+    const { count: codeUpdateCount } = await client
       .from('registration_codes')
       .update(updateData)
-      .eq('id', codeData.id);
+      .eq('id', codeData.id)
+      .lt('current_uses', codeData.max_uses);
+
+    if (codeUpdateCount === 0) {
+      // 注册码已被用完，回滚用户创建
+      await client.from('users').delete().eq('id', newUser.id);
+      return NextResponse.json({ error: '注册码已被使用完' }, { status: 400 });
+    }
 
     const token = await signToken({
       userId: newUser.id,
@@ -107,7 +114,7 @@ export async function POST(request: Request) {
 
     response.cookies.set('auth_token', token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 7,
       path: '/',

@@ -100,26 +100,39 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: '您已抢过该优惠券' }, { status: 400 });
     }
 
-    // 扣减余额
+    // 原子扣减余额（使用gte条件防止并发超额扣减）
     const newBalance = (userBalance - couponPrice).toFixed(2);
-    const { error: balanceError } = await client
+    const { error: balanceError, count: balanceCount } = await client
       .from('users')
       .update({ balance: newBalance, updated_at: new Date().toISOString() })
-      .eq('id', payload.userId);
+      .eq('id', payload.userId)
+      .gte('balance', couponPrice);
 
     if (balanceError) throw new Error(`扣减余额失败: ${balanceError.message}`);
+    if (balanceCount === 0) {
+      return NextResponse.json({ error: '余额不足，抢券失败' }, { status: 400 });
+    }
 
-    // 减少库存 + 增加已售数
-    const { error: stockError } = await client
+    // 原子减少库存（使用gt条件防止超卖）
+    const { error: stockError, count: stockCount } = await client
       .from('coupons')
       .update({
         remaining_quantity: coupon.remaining_quantity - 1,
         sold_count: ((coupon as Record<string, unknown>).sold_count as number || 0) + 1,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', couponId);
+      .eq('id', couponId)
+      .gt('remaining_quantity', 0);
 
     if (stockError) throw new Error(`更新库存失败: ${stockError.message}`);
+    if (stockCount === 0) {
+      // 库存已被抢光，回滚余额
+      await client
+        .from('users')
+        .update({ balance: user.balance, updated_at: new Date().toISOString() })
+        .eq('id', payload.userId);
+      return NextResponse.json({ error: '优惠券已抢光' }, { status: 400 });
+    }
 
     // 生成核销码
     const verificationCode = `${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
