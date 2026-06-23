@@ -450,6 +450,8 @@ export default function HomePage() {
                     className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                     <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
                       <Image src={coupon.image_url} alt={coupon.name} fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        loading="lazy"
                         className="object-cover group-hover:scale-105 transition-transform duration-500" />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent pt-8 pb-1.5 px-2.5">
                         <span className="text-white font-bold text-sm md:text-base">¥{coupon.price.toLocaleString()}</span>
