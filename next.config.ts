@@ -3,9 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['*.dev.coze.site'],
 
-  turbopack: {
-    root: '/workspace/projects',
-  },
+
 
   images: {
     remotePatterns: [
