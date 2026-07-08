@@ -15,20 +15,11 @@ export function InviteGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Check if invite_verified cookie exists
-    const cookies = document.cookie.split(';');
-    const verified = cookies.some(c => c.trim().startsWith('invite_verified=true'));
-
-    if (verified) {
-      setChecked(true);
-      return;
-    }
-
-    // Need to check with server if invite code is required
+    // 通过服务端 API 检查是否需要邀请码 & 是否已验证（cookie 是 httpOnly，JS 无法直接读取）
     fetch('/api/invite/verify')
       .then(res => res.json())
       .then(data => {
-        if (data.required && !verified) {
+        if (data.required && !data.verified) {
           router.replace('/invite');
         } else {
           setChecked(true);

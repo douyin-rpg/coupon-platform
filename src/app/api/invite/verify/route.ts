@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 
-// GET: 检查是否需要邀请码
-export async function GET() {
+// GET: 检查是否需要邀请码 & 是否已验证
+export async function GET(request: NextRequest) {
   try {
     const supabase = getSupabaseClient();
     const { data: settings } = await supabase
@@ -12,9 +12,13 @@ export async function GET() {
       .single();
 
     const required = settings?.value === 'true';
-    return NextResponse.json({ required });
+
+    // 检查 httpOnly cookie 判断是否已验证
+    const verified = request.cookies.get('invite_verified')?.value === 'true';
+
+    return NextResponse.json({ required, verified });
   } catch {
-    return NextResponse.json({ required: false });
+    return NextResponse.json({ required: false, verified: true });
   }
 }
 
