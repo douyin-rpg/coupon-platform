@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/auth';
-import { S3Storage } from 'coze-coding-dev-sdk';
-
-const storage = new S3Storage({
-  endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
-  accessKey: '',
-  secretKey: '',
-  bucketName: process.env.COZE_BUCKET_NAME,
-  region: 'cn-beijing',
-});
+import { getSupabaseClient } from '@/storage/database/supabase-client';
 
 export async function POST(req: NextRequest) {
   const admin = await verifyAdminAuth(req);
@@ -23,29 +15,61 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '请选择文件' }, { status: 400 });
     }
 
+    // 限制文件大小 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ error: '文件大小不能超过5MB' }, { status: 400 });
+    }
+
+    // 限制文件类型
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json({ error: '仅支持JPG/PNG/WEBP格式' }, { status: 400 });
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Generate a clean filename
-    const ext = file.name.split('.').pop() || 'jpg';
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const timestamp = Date.now();
     const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const fileName = `${folder}/${timestamp}_${cleanName}`;
 
-    const key = await storage.uploadFile({
-      fileContent: buffer,
-      fileName,
-      contentType: file.type || 'image/jpeg',
-    });
+    // 使用 Supabase Storage 上传
+    const supabase = getSupabaseClient();
 
-    const url = await storage.generatePresignedUrl({
-      key,
-      expireTime: 86400 * 365, // 1 year for admin uploads
-    });
+    // 确保 bucket 存在（首次使用时自动创建）
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const hasBucket = buckets?.some((b: { name: string }) => b.name === 'uploads');
+    if (!hasBucket) {
+      await supabase.storage.createBucket('uploads', { public: true });
+    }
 
-    return NextResponse.json({ key, url, fileName: cleanName });
+    const { data, error } = await supabase.storage
+      .from('uploads')
+      .upload(fileName, buffer, {
+        contentType: file.type || 'image/jpeg',
+        upsert: false,
+      });
+
+    if (error) {
+      console.error('Supabase Storage upload error:', error);
+      return NextResponse.json({ error: `上传失败: ${error.message}` }, { status: 500 });
+    }
+
+    // 获取公开 URL
+    const { data: urlData } = supabase.storage
+      .from('uploads')
+      .getPublicUrl(fileName);
+
+    const publicUrl = urlData?.publicUrl || '';
+
+    return NextResponse.json({
+      key: fileName,
+      url: publicUrl,
+      fileName: cleanName,
+    });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : '上传失败';
+    console.error('Upload error:', error);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
