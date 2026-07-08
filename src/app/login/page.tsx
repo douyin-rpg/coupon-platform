@@ -16,7 +16,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     fetch('/api/settings').then(r => r.json()).then(d => {
-      if (d.customer_service_url) setCustomerServiceUrl(d.customer_service_url);
+      if (d.settings?.customer_service_url) setCustomerServiceUrl(d.settings.customer_service_url);
     }).catch(() => {});
   }, []);
 
