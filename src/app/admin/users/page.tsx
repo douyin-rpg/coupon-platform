@@ -196,8 +196,18 @@ export default function AdminUsersPage() {
                     <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">{u.credit_score ?? 500}</span>
                   </td>
                   <td className="px-3 py-3 text-xs text-gray-400">
-                    <div>{u.last_login_ip || '-'}</div>
-                    <div className="text-gray-300">注册: {u.register_ip || '-'}</div>
+                    <div>
+                      {u.last_login_ip || '-'}
+                      {u.last_login_ip && ipGeo[u.last_login_ip] && (
+                        <span className="block text-blue-500 text-[10px]">{ipGeo[u.last_login_ip]}</span>
+                      )}
+                    </div>
+                    <div className="text-gray-300">
+                      注册: {u.register_ip || '-'}
+                      {u.register_ip && ipGeo[u.register_ip] && (
+                        <span className="block text-blue-400 text-[10px]">{ipGeo[u.register_ip]}</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-3 py-3">
                     {u.is_online ? (

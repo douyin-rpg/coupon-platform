@@ -1,40 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyAdminAuth } from '@/lib/auth';
-import { getGeoBatch } from '@/lib/geo-ip';
 
-export async function POST(request: NextRequest) {
-  // 需要管理员权限
-  const authResult = await verifyAdminAuth(request);
-  if (!authResult) {
-    return NextResponse.json({ error: '未授权' }, { status: 401 });
+export async function GET(request: NextRequest) {
+  const ip = request.nextUrl.searchParams.get('ip');
+
+  if (!ip || ip === '-' || ip === '127.0.0.1' || ip === '::1') {
+    return NextResponse.json({ location: '本地' });
   }
 
   try {
-    const { ips } = await request.json();
-    if (!Array.isArray(ips)) {
-      return NextResponse.json({ error: '参数错误' }, { status: 400 });
-    }
-
-    const geoMap = await getGeoBatch(ips);
-    const result: Record<string, string> = {};
-    geoMap.forEach((location, ip) => {
-      result[ip] = location;
+    // 使用 ip-api.com 免费 IP 地理位置服务
+    const res = await fetch(`http://ip-api.com/json/${ip}?lang=zh-CN&fields=status,country,regionName,city,isp`, {
+      next: { revalidate: 86400 }, // 缓存 24 小时
     });
 
-    // 本地IP特殊处理
-    for (const ip of ips) {
-      if (!result[ip]) {
-        if (ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || !ip) {
-          result[ip] = '本地';
-        } else {
-          result[ip] = '未知';
-        }
-      }
+    if (!res.ok) {
+      return NextResponse.json({ location: '未知' });
     }
 
-    return NextResponse.json({ locations: result });
-  } catch (error) {
-    console.error('Geo IP error:', error);
-    return NextResponse.json({ error: '查询失败' }, { status: 500 });
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      const parts = [data.country, data.regionName, data.city].filter(Boolean);
+      const location = parts.length > 0 ? parts.join(' ') : '未知';
+      return NextResponse.json({ location });
+    }
+
+    return NextResponse.json({ location: '未知' });
+  } catch {
+    return NextResponse.json({ location: '未知' });
   }
 }
