@@ -97,7 +97,8 @@ export default function AdminVerifyPage() {
               <tr className="border-b bg-gray-50">
                 <th className="px-4 py-3 text-left text-gray-600 font-medium">用户名</th>
                 <th className="px-4 py-3 text-left text-gray-600 font-medium">姓名</th>
-                <th className="px-4 py-3 text-left text-gray-600 font-medium">身份证</th>
+                <th className="px-4 py-3 text-left text-gray-600 font-medium">身份证号</th>
+                <th className="px-4 py-3 text-left text-gray-600 font-medium">身份证照片</th>
                 <th className="px-4 py-3 text-left text-gray-600 font-medium">状态</th>
                 <th className="px-4 py-3 text-left text-gray-600 font-medium">操作</th>
               </tr>
@@ -107,7 +108,19 @@ export default function AdminVerifyPage() {
                 <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="px-4 py-3 text-gray-800">{u.username}</td>
                   <td className="px-4 py-3 text-gray-600">{u.id_card_name || '-'}</td>
-                  <td className="px-4 py-3 text-gray-600">{u.id_card || '-'}</td>
+                  <td className="px-4 py-3 text-gray-600 text-xs">{u.id_card || '-'}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      {u.id_card_front ? (
+                        <img src={u.id_card_front} alt="正面" className="w-16 h-10 object-cover rounded border cursor-pointer hover:scale-110 transition-transform"
+                          onClick={() => setSelectedUser(u)} title="点击查看大图" />
+                      ) : <span className="text-gray-400 text-xs">无</span>}
+                      {u.id_card_back ? (
+                        <img src={u.id_card_back} alt="反面" className="w-16 h-10 object-cover rounded border cursor-pointer hover:scale-110 transition-transform"
+                          onClick={() => setSelectedUser(u)} title="点击查看大图" />
+                      ) : null}
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-0.5 rounded text-xs ${statusMap[u.verify_status]?.color || 'bg-gray-100 text-gray-500'}`}>
                       {statusMap[u.verify_status]?.label || u.verify_status}
@@ -116,7 +129,7 @@ export default function AdminVerifyPage() {
                   <td className="px-4 py-3">
                     <button onClick={() => setSelectedUser(u)}
                       className="px-3 py-1 bg-[#1890FF] text-white rounded text-xs hover:bg-[#1890FF]/80">
-                      查看
+                      审核
                     </button>
                   </td>
                 </tr>
