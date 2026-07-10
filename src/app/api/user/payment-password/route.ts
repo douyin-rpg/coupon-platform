@@ -1,57 +1,55 @@
-import { NextResponse } from 'next/server';
-import { getSupabaseClient } from '@/storage/database/supabase-client';
-import { getCurrentUser } from '@/lib/auth';
-import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from "next/server";
+import { getSupabaseClient } from "@/storage/database/supabase-client";
+import { verifyAuth } from "@/lib/auth";
+import bcrypt from "bcryptjs";
 
 // 修改支付密码
-export async function POST(request: Request) {
-  try {
-    const payload = await getCurrentUser();
-    if (!payload) {
-      return NextResponse.json({ error: '未登录' }, { status: 401 });
-    }
-
-    const { oldPassword, newPassword } = await request.json();
-
-    if (!oldPassword || !newPassword) {
-      return NextResponse.json({ error: '请填写旧密码和新密码' }, { status: 400 });
-    }
-
-    if (newPassword.length < 6) {
-      return NextResponse.json({ error: '新支付密码至少6位' }, { status: 400 });
-    }
-
-    const client = getSupabaseClient();
-    const { data: user, error: userError } = await client
-      .from('users')
-      .select('payment_password_hash')
-      .eq('id', payload.userId)
-      .maybeSingle();
-
-    if (userError) throw new Error(`查询用户失败: ${userError.message}`);
-    if (!user?.payment_password_hash) {
-      return NextResponse.json({ error: '请先完成实名认证' }, { status: 400 });
-    }
-
-    const match = await bcrypt.compare(oldPassword, user.payment_password_hash);
-    if (!match) {
-      return NextResponse.json({ error: '旧支付密码错误' }, { status: 400 });
-    }
-
-    const newHash = await bcrypt.hash(newPassword, 10);
-    const { error: updateError } = await client
-      .from('users')
-      .update({
-        payment_password_hash: newHash,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', payload.userId);
-
-    if (updateError) throw new Error(`修改支付密码失败: ${updateError.message}`);
-
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : '修改支付密码失败';
-    return NextResponse.json({ error: message }, { status: 500 });
+export async function PATCH(request: NextRequest) {
+  const userId = await verifyAuth(request);
+  if (!userId) {
+    return NextResponse.json({ error: "未登录" }, { status: 401 });
   }
+
+  const body = await request.json();
+  const { oldPaymentPassword, newPaymentPassword } = body;
+
+  if (!oldPaymentPassword || !newPaymentPassword) {
+    return NextResponse.json({ error: "请输入原支付密码和新支付密码" }, { status: 400 });
+  }
+
+  if (newPaymentPassword.length < 6) {
+    return NextResponse.json({ error: "新支付密码至少6位" }, { status: 400 });
+  }
+
+  const supabase = getSupabaseClient();
+  const { data: user } = await supabase
+    .from("users")
+    .select("payment_password_hash")
+    .eq("id", userId)
+    .single();
+
+  if (!user) {
+    return NextResponse.json({ error: "用户不存在" }, { status: 404 });
+  }
+
+  if (!user.payment_password_hash) {
+    return NextResponse.json({ error: "尚未设置支付密码" }, { status: 400 });
+  }
+
+  const valid = await bcrypt.compare(oldPaymentPassword, user.payment_password_hash);
+  if (!valid) {
+    return NextResponse.json({ error: "原支付密码不正确" }, { status: 400 });
+  }
+
+  const hashed = await bcrypt.hash(newPaymentPassword, 10);
+  const { error } = await supabase
+    .from("users")
+    .update({ payment_password_hash: hashed })
+    .eq("id", userId);
+
+  if (error) {
+    return NextResponse.json({ error: "修改失败" }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
 }
