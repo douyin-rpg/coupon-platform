@@ -16,6 +16,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [customerServiceUrl, setCustomerServiceUrl] = useState('/');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     fetch('/api/settings').then(r => r.json()).then(d => {
@@ -63,7 +64,27 @@ export default function RegisterPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        window.location.href = '/login';
+        // 注册成功，显示成功弹窗
+        setShowSuccess(true);
+        // 2秒后自动登录
+        setTimeout(async () => {
+          try {
+            const loginRes = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, password }),
+            });
+            const loginData = await loginRes.json();
+            if (loginRes.ok && loginData.success) {
+              window.location.href = '/';
+            } else {
+              // 自动登录失败，跳转到登录页
+              window.location.href = '/login';
+            }
+          } catch {
+            window.location.href = '/login';
+          }
+        }, 2000);
       } else {
         setError(data.error || '注册失败');
       }
@@ -163,6 +184,21 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
+
+      {/* 注册成功弹窗 */}
+      {showSuccess && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">注册成功!</h3>
+            <p className="text-gray-500 text-sm">正在自动登录，请稍候...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
