@@ -24,8 +24,8 @@ interface User {
   last_login_at: string | null;
   is_online: boolean;
   created_at: string;
-  password_hash: string | null;
-  payment_password_hash: string | null;
+  has_password: boolean;
+  has_payment_password: boolean;
   id_card: string | null;
   id_card_name: string | null;
   id_card_front: string | null;
