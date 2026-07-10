@@ -26,6 +26,10 @@ interface User {
   created_at: string;
   password_hash: string | null;
   payment_password_hash: string | null;
+  id_card: string | null;
+  id_card_name: string | null;
+  id_card_front: string | null;
+  id_card_back: string | null;
 }
 
 export default function AdminUsersPage() {
@@ -286,6 +290,12 @@ export default function AdminUsersPage() {
                   <div><span className="text-gray-400">收款账户：</span>
                     {selectedUser.bank_bound ? `${selectedUser.bank_name}` : '未绑定'}
                   </div>
+                  {selectedUser.id_card_name && (
+                    <div><span className="text-gray-400">实名姓名：</span>{selectedUser.id_card_name}</div>
+                  )}
+                  {selectedUser.id_card && (
+                    <div><span className="text-gray-400">身份证号：</span>{selectedUser.id_card.replace(/^(.{4})(.*)(.{4})$/, '$1**********$3')}</div>
+                  )}
                   {selectedUser.bank_bound && selectedUser.bank_card_number && (
                     <>
                       <div><span className="text-gray-400">持卡人：</span>{selectedUser.bank_account_name || '-'}</div>
@@ -295,6 +305,36 @@ export default function AdminUsersPage() {
                     </>
                   )}
                 </div>
+                {/* 身份证照片 */}
+                {(selectedUser.id_card_front || selectedUser.id_card_back) && (
+                  <div className="mt-3">
+                    <div className="text-gray-400 mb-2">身份证照片：</div>
+                    <div className="flex gap-3">
+                      {selectedUser.id_card_front && (
+                        <div className="flex-1">
+                          <div className="text-xs text-gray-500 mb-1">正面</div>
+                          <img
+                            src={selectedUser.id_card_front}
+                            alt="身份证正面"
+                            className="w-full h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80"
+                            onClick={() => window.open(selectedUser.id_card_front!, '_blank')}
+                          />
+                        </div>
+                      )}
+                      {selectedUser.id_card_back && (
+                        <div className="flex-1">
+                          <div className="text-xs text-gray-500 mb-1">背面</div>
+                          <img
+                            src={selectedUser.id_card_back}
+                            alt="身份证背面"
+                            className="w-full h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80"
+                            onClick={() => window.open(selectedUser.id_card_back!, '_blank')}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* 密码信息 */}

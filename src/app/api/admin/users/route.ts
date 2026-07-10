@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 		const supabase = getSupabaseClient();
 		const { data: users, error } = await supabase
 			.from("users")
-			.select("id, username, real_name, balance, verify_status, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, credit_score, login_frozen, funds_frozen, register_ip, last_login_ip, last_login_at, is_online, created_at, password_hash, payment_password_hash")
+			.select("id, username, real_name, balance, verify_status, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, credit_score, login_frozen, funds_frozen, register_ip, last_login_ip, last_login_at, is_online, created_at, password_hash, payment_password_hash, id_card, id_card_name, id_card_front, id_card_back")
 			.order("created_at", { ascending: false });
 
 		if (error) {
