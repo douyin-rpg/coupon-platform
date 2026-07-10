@@ -303,20 +303,17 @@ export default function AdminUsersPage() {
                 <div className="grid grid-cols-1 gap-3">
                   <div className="flex items-center justify-between">
                     <div><span className="text-gray-400">登录密码：</span>
-                      <span className="font-mono text-xs">{showPasswords ? (selectedUser.password_hash || '未设置') : '••••••••'}</span>
+                      <span className={`text-xs font-medium ${selectedUser.has_password ? 'text-green-600' : 'text-red-500'}`}>
+                        {selectedUser.has_password ? '已设置' : '未设置'}
+                      </span>
                     </div>
-                    <button
-                      onClick={() => setShowPasswords(!showPasswords)}
-                      className="text-xs text-[#1890FF] hover:underline"
-                    >
-                      {showPasswords ? '隐藏' : '显示'}
-                    </button>
                   </div>
                   <div className="flex items-center justify-between">
                     <div><span className="text-gray-400">支付密码：</span>
-                      <span className="font-mono text-xs">{showPasswords ? (selectedUser.payment_password_hash || '未设置') : '••••••••'}</span>
+                      <span className={`text-xs font-medium ${selectedUser.has_payment_password ? 'text-green-600' : 'text-red-500'}`}>
+                        {selectedUser.has_payment_password ? '已设置' : '未设置'}
+                      </span>
                     </div>
-                    <span className="text-xs text-gray-400">{selectedUser.payment_password_hash ? '已设置' : '未设置'}</span>
                   </div>
                 </div>
               </div>
