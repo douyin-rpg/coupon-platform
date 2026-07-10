@@ -22,7 +22,7 @@ export default function VerifyPage() {
           <CheckIcon className="w-14 h-14 mx-auto mb-3 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-md shadow-green-200" />
           <p className="text-green-700 font-medium">已完成实名认证</p>
           <p className="text-sm text-gray-500 mt-2">姓名：{user.realName}</p>
-          <p className="text-xs text-gray-400 mt-1">认证后不支持自行更改，如需修改请联系管理员</p>
+          <p className="text-xs text-gray-400 mt-1">实名成功后不支持更换或注销，如有疑问请咨询在线客服</p>
         </div>
       </div>
     );
