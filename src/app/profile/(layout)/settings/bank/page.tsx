@@ -57,7 +57,7 @@ export default function BankPage() {
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">银行卡号</label>
-              <input type="text" value={user?.bankCardNumber ? `****${user.bankCardNumber.slice(-4)}` : ''} disabled
+              <input type="text" value={user?.bankCardNumber ? `${user.bankCardNumber.slice(0, 4)}****${user.bankCardNumber.slice(-4)}` : ''} disabled
                 className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500" />
             </div>
             <div>
