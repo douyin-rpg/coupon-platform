@@ -18,7 +18,7 @@ export async function GET(
 		const supabase = getSupabaseClient();
 		const { data: user, error } = await supabase
 			.from("users")
-			.select("id, username, real_name, balance, verify_status, verify_rejected_reason, id_card_name, id_card, id_card_front, id_card_back, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, credit_score, created_at")
+			.select("id, username, real_name, balance, verify_status, verify_rejected_reason, id_card_name, id_card, id_card_front, id_card_back, bank_bound, bank_account_name, bank_card_number, bank_name, payment_password_set, credit_score, last_login_at, created_at")
 			.eq("id", id)
 			.single();
 
@@ -26,7 +26,12 @@ export async function GET(
 			return NextResponse.json({ error: "用户不存在" }, { status: 404 });
 		}
 
-		return NextResponse.json({ user });
+		// 基于 last_login_at 判断在线状态（10分钟内视为在线）
+		const now = new Date();
+		const lastLoginAt = user.last_login_at ? new Date(user.last_login_at) : null;
+		const isOnline = lastLoginAt ? (now.getTime() - lastLoginAt.getTime()) < 10 * 60 * 1000 : false;
+
+		return NextResponse.json({ user: { ...user, is_online: isOnline } });
 	} catch {
 		return NextResponse.json({ error: "服务器错误" }, { status: 500 });
 	}

@@ -20,14 +20,21 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: "获取用户列表失败" }, { status: 500 });
 		}
 
-		// 返回用户列表，密码字段转为布尔值（不暴露哈希）
-		const safeUsers = (users || []).map((u: Record<string, unknown>) => ({
-			...u,
-			has_password: !!u.password_hash,
-			has_payment_password: !!(u.payment_password_hash || u.payment_password_set),
-			password_hash: undefined,
-			payment_password_hash: undefined,
-		}));
+		// 返回用户列表，密码字段转为布尔值（不暴露哈希），在线状态基于 last_login_at 判断
+		const now = new Date();
+		const safeUsers = (users || []).map((u: Record<string, unknown>) => {
+			const lastLoginAt = u.last_login_at ? new Date(u.last_login_at as string) : null;
+			// 10分钟内有活动视为在线
+			const isOnline = lastLoginAt ? (now.getTime() - lastLoginAt.getTime()) < 10 * 60 * 1000 : false;
+			return {
+				...u,
+				is_online: isOnline,
+				has_password: !!u.password_hash,
+				has_payment_password: !!(u.payment_password_hash || u.payment_password_set),
+				password_hash: undefined,
+				payment_password_hash: undefined,
+			};
+		});
 
 		return NextResponse.json({ users: safeUsers });
 	} catch (error: unknown) {
