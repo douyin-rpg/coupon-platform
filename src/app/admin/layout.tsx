@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import {
   CouponIcon, CategoryIcon, ClockIcon, PicIcon, OrderIcon,
   BackIcon, WalletIcon, PeopleIcon, ShieldIcon, KeyIcon,
-  EditIcon, AnnounceIcon, SettingsIcon, LinkIcon, StarIcon
+  EditIcon, AnnounceIcon, SettingsIcon, LinkIcon, StarIcon,
+  CreditCardIcon
 } from '@/components/icons';
 
 const sidebarGroups = [
@@ -24,6 +25,7 @@ const sidebarGroups = [
       { href: '/admin/orders', label: '订单列表', Icon: OrderIcon },
       { href: '/admin/redemptions', label: '回兑审核', Icon: BackIcon },
       { href: '/admin/withdrawals', label: '提现审核', Icon: WalletIcon },
+      { href: '/admin/transactions', label: '资金明细', Icon: CreditCardIcon },
     ],
   },
   {
