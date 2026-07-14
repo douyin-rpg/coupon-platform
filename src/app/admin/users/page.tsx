@@ -37,7 +37,7 @@ export default function AdminUsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [actionOpen, setActionOpen] = useState(false);
-  const [actionType, setActionType] = useState<'reset_login_password' | 'reset_payment_password' | 'add_balance' | 'deduct_balance' | 'update_credit_score'>('reset_login_password');
+  const [actionType, setActionType] = useState<'reset_login_password' | 'reset_payment_password' | 'add_balance' | 'deduct_balance' | 'update_credit_score' | 'send_red_packet'>('reset_login_password');
   const [newValue, setNewValue] = useState('');
   const [rechargeType, setRechargeType] = useState('');
   const [note, setNote] = useState('');
