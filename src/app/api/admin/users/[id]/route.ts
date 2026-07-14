@@ -98,7 +98,7 @@ export async function PATCH(
 		}
 
 		if (action === "add_balance") {
-			const { amount } = body;
+			const { amount, recharge_type } = body;
 			const addAmount = parseFloat(amount);
 			if (isNaN(addAmount) || addAmount <= 0) {
 				return NextResponse.json({ error: "金额必须大于0" }, { status: 400 });
@@ -111,15 +111,16 @@ export async function PATCH(
 			if (error) {
 				return NextResponse.json({ error: "充值失败" }, { status: 500 });
 			}
+			const txnNo = `TXN` + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 			// 记录交易明细
 			await supabase.from("transaction_logs").insert({
 				user_id: id,
-				type: "admin_deposit",
+				type: "recharge",
 				amount: addAmount,
 				balance_after: parseFloat(newBalance),
-				description: note || `充值 ${addAmount.toFixed(2)}元`,
-				transaction_no: `TXN` + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-				reference_type: "admin",
+				description: recharge_type ? `充值(${recharge_type}) ${addAmount.toFixed(2)}元` : `充值 ${addAmount.toFixed(2)}元`,
+				transaction_no: txnNo,
+				reference_type: recharge_type || "admin",
 			});
 			return NextResponse.json({ success: true, message: `已充值 ${addAmount} 元`, newBalance });
 		}

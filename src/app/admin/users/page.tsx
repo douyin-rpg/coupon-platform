@@ -39,10 +39,14 @@ export default function AdminUsersPage() {
   const [actionOpen, setActionOpen] = useState(false);
   const [actionType, setActionType] = useState<'reset_login_password' | 'reset_payment_password' | 'add_balance' | 'deduct_balance' | 'update_credit_score'>('reset_login_password');
   const [newValue, setNewValue] = useState('');
+  const [rechargeType, setRechargeType] = useState('');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [showPasswords, setShowPasswords] = useState(false);
+  const [redPacketOpen, setRedPacketOpen] = useState(false);
+  const [redPacketAmount, setRedPacketAmount] = useState('');
+  const [redPacketNote, setRedPacketNote] = useState('');
 
   const maskBankCard = (card: string) => {
     if (!card || card.length < 8) return card || '-';
@@ -72,20 +76,39 @@ export default function AdminUsersPage() {
     setLoading(true);
     setMessage(null);
     try {
-      const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: actionType, newPassword: actionType === 'reset_login_password' ? newValue : undefined, newPaymentPassword: actionType === 'reset_payment_password' ? newValue : undefined, amount: (actionType === 'add_balance' || actionType === 'deduct_balance') ? newValue : undefined, creditScore: actionType === 'update_credit_score' ? parseInt(newValue) : undefined, note }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setMessage({ type: 'success', text: data.message || '操作成功' });
-        setActionOpen(false);
-        setNewValue('');
-        setNote('');
-        refreshUsers();
+      // 发红包使用独立的API
+      if (actionType === 'send_red_packet') {
+        const res = await fetch('/api/admin/red-packet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: selectedUser.id, amount: parseFloat(newValue), note }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setMessage({ type: 'success', text: data.message || '红包发送成功' });
+          setActionOpen(false);
+          setNewValue('');
+          setNote('');
+          refreshUsers();
+        } else {
+          setMessage({ type: 'error', text: data.error || '发送失败' });
+        }
       } else {
-        setMessage({ type: 'error', text: data.error || '操作失败' });
+        const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: actionType, newPassword: actionType === 'reset_login_password' ? newValue : undefined, newPaymentPassword: actionType === 'reset_payment_password' ? newValue : undefined, amount: (actionType === 'add_balance' || actionType === 'deduct_balance') ? newValue : undefined, rechargeType: actionType === 'add_balance' ? rechargeType : undefined, creditScore: actionType === 'update_credit_score' ? parseInt(newValue) : undefined, note }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setMessage({ type: 'success', text: data.message || '操作成功' });
+          setActionOpen(false);
+          setNewValue('');
+          setNote('');
+          refreshUsers();
+        } else {
+          setMessage({ type: 'error', text: data.error || '操作失败' });
+        }
       }
     } catch {
       setMessage({ type: 'error', text: '网络错误' });
@@ -409,8 +432,9 @@ export default function AdminUsersPage() {
               <div className="grid grid-cols-2 gap-2">
                 <button onClick={() => { setDetailOpen(false); setActionType('reset_login_password'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">重置登录密码</button>
                 <button onClick={() => { setDetailOpen(false); setActionType('reset_payment_password'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition">重置支付密码</button>
-                <button onClick={() => { setDetailOpen(false); setActionType('add_balance'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition">充值余额</button>
+                <button onClick={() => { setDetailOpen(false); setActionType('add_balance'); setNewValue(''); setRechargeType(''); setActionOpen(true); }} className="p-2 text-xs bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition">充值余额</button>
                 <button onClick={() => { setDetailOpen(false); setActionType('deduct_balance'); setNewValue(''); setActionOpen(true); }} className="p-2 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition">扣款</button>
+                <button onClick={() => { setDetailOpen(false); setActionType('send_red_packet'); setNewValue(''); setRechargeType(''); setNote(''); setActionOpen(true); }} className="p-2 text-xs bg-pink-50 text-pink-600 rounded-lg hover:bg-pink-100 transition"> 发红包</button>
                 <button onClick={() => { setDetailOpen(false); setActionType('update_credit_score'); setNewValue(String(selectedUser.credit_score ?? 500)); setActionOpen(true); }} className="p-2 text-xs bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition col-span-2">修改信用分</button>
               </div>
             </div>
@@ -447,6 +471,36 @@ export default function AdminUsersPage() {
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="可选备注"
+                  className="rounded-xl"
+                />
+              </div>
+            )}
+            {actionType === 'add_balance' && (
+              <div className="space-y-2">
+                <Label>充值类型</Label>
+                <Input
+                  value={rechargeType}
+                  onChange={(e) => setRechargeType(e.target.value)}
+                  placeholder="如：活动奖励、后台充值、红包等"
+                  className="rounded-xl"
+                />
+              </div>
+            )}
+            {actionType === 'send_red_packet' && (
+              <div className="space-y-2">
+                <Label>红包金额（元）</Label>
+                <Input
+                  type="number"
+                  value={newValue}
+                  onChange={(e) => setNewValue(e.target.value)}
+                  placeholder="输入红包金额"
+                  className="rounded-xl"
+                />
+                <Label>红包备注</Label>
+                <Input
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="如：新年红包、活动奖励等"
                   className="rounded-xl"
                 />
               </div>
