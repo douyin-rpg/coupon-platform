@@ -43,11 +43,6 @@ export default function AdminTransactionsPage() {
   const pageSize = 20;
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (!token) {
-      router.push('/admin');
-      return;
-    }
     fetchTransactions();
   }, [page, type, transactionNo, startDate, endDate]);
 
@@ -63,9 +58,11 @@ export default function AdminTransactionsPage() {
       if (startDate) params.set('startDate', startDate);
       if (endDate) params.set('endDate', endDate);
 
-      const res = await fetch(`/api/admin/transactions?${params}`, {
-        headers: { 'x-admin-token': localStorage.getItem('admin_token') || '' },
-      });
+      const res = await fetch(`/api/admin/transactions?${params}`);
+      if (res.status === 401) {
+        window.location.href = '/admin';
+        return;
+      }
       const data = await res.json();
       if (res.ok) {
         setTransactions(data.transactions || []);

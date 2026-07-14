@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        window.location.href = '/admin/sessions';
+        window.location.href = '/admin/dashboard';
       } else {
         setError(data.error || '登录失败');
       }

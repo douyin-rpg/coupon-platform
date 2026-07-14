@@ -6,10 +6,16 @@ import {
   CouponIcon, CategoryIcon, ClockIcon, PicIcon, OrderIcon,
   BackIcon, WalletIcon, PeopleIcon, ShieldIcon, KeyIcon,
   EditIcon, AnnounceIcon, SettingsIcon, LinkIcon, StarIcon,
-  CreditCardIcon
+  CreditCardIcon, HomeIcon
 } from '@/components/icons';
 
 const sidebarGroups = [
+  {
+    label: '数据概览',
+    items: [
+      { href: '/admin/dashboard', label: '数据概览', Icon: HomeIcon },
+    ],
+  },
   {
     label: '商品管理',
     items: [
