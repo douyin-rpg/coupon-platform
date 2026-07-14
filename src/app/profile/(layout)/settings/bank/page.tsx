@@ -47,7 +47,7 @@ export default function BankPage() {
         <div className="space-y-4">
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <p className="text-green-700 text-sm font-medium">已绑定收款账户</p>
-            <p className="text-gray-400 text-xs mt-1">收款账户绑定后不可自行修改，如需修改请联系管理员</p>
+            <p className="text-gray-400 text-xs mt-1">收款账户绑定后不可自行修改，如需更换绑定请联系客服</p>
           </div>
           <div className="space-y-3">
             <div>
