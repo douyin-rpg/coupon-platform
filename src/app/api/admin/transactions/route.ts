@@ -3,9 +3,9 @@ import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { verifyAdminAuth } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
-  const authResult = await verifyAdminAuth(request);
-  if (!authResult.success) {
-    return NextResponse.json({ error: authResult.error }, { status: 401 });
+  const isAdmin = await verifyAdminAuth(request);
+  if (!isAdmin) {
+    return NextResponse.json({ error: '未授权' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
