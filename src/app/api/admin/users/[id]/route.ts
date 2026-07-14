@@ -113,15 +113,18 @@ export async function PATCH(
 			}
 			const txnNo = `TXN` + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.random().toString(36).substring(2, 8).toUpperCase();
 			// 记录交易明细
-			await supabase.from("transaction_logs").insert({
+			const { error: txnError } = await supabase.from("transaction_logs").insert({
 				user_id: id,
-				type: "recharge",
+				type: "admin_deposit",
 				amount: addAmount,
 				balance_after: parseFloat(newBalance),
 				description: recharge_type ? `充值(${recharge_type}) ${addAmount.toFixed(2)}元` : `充值 ${addAmount.toFixed(2)}元`,
 				transaction_no: txnNo,
 				reference_type: recharge_type || "admin",
 			});
+			if (txnError) {
+				console.error("交易记录插入失败:", txnError);
+			}
 			return NextResponse.json({ success: true, message: `已充值 ${addAmount} 元`, newBalance });
 		}
 
@@ -144,7 +147,7 @@ export async function PATCH(
 				return NextResponse.json({ error: "扣款失败" }, { status: 500 });
 			}
 			// 记录交易明细
-			await supabase.from("transaction_logs").insert({
+			const { error: txnError } = await supabase.from("transaction_logs").insert({
 				user_id: id,
 				type: "admin_deduct",
 				amount: -deductAmount,
@@ -153,6 +156,9 @@ export async function PATCH(
 				transaction_no: `TXN` + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
 				reference_type: "admin",
 			});
+			if (txnError) {
+				console.error("交易记录插入失败:", txnError);
+			}
 			return NextResponse.json({ success: true, message: `已扣款 ${deductAmount} 元`, newBalance });
 		}
 

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // 记录交易流水
     const transactionNo = `RP${Date.now()}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    await supabase.from('transaction_logs').insert({
+    const { error: txnError } = await supabase.from('transaction_logs').insert({
       user_id,
       transaction_no: transactionNo,
       type: 'red_packet',
@@ -55,6 +55,9 @@ export async function POST(request: NextRequest) {
       description: note || '红包',
       reference_type: 'red_packet',
     });
+    if (txnError) {
+      console.error('交易记录插入失败:', txnError);
+    }
 
     return NextResponse.json({
       success: true,
