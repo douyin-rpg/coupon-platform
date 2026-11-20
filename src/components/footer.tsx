@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * 页脚 - 仿抖音商城官网样式
+ * 页脚 - 仿抖音电商官网样式（白底）
  * 左侧：Logo 图片
  * 右侧：联系我们 / 关联平台 / 资质证照（三栏链接，来自 footer_links 数据）
  * 底部：版权声明
@@ -26,7 +26,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-[#0A1628] text-[#8C8C8C] mt-auto">
+    <footer className="bg-white text-[#666] mt-auto">
       {/* 主内容区 */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col md:flex-row gap-10">
@@ -44,7 +44,7 @@ export default function Footer() {
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-8">
               {Object.entries(groups).map(([section, links]) => (
                 <div key={section}>
-                  <h4 className="text-white text-sm font-semibold mb-4">{section}</h4>
+                  <h4 className="text-[#1A1A1A] text-sm font-semibold mb-4">{section}</h4>
                   <ul className="space-y-2.5">
                     {links.map((link) => (
                       <li key={link.id}>
@@ -52,7 +52,7 @@ export default function Footer() {
                           href={link.url}
                           target={link.url.startsWith("http") ? "_blank" : undefined}
                           rel={link.url.startsWith("http") ? "nofollow noopener" : undefined}
-                          className="text-[#8C8C8C] text-[13px] hover:text-white transition-colors"
+                          className="text-[#8C8C8C] text-[13px] hover:text-[#1890FF] transition-colors"
                         >
                           {link.label}
                         </a>
@@ -67,9 +67,9 @@ export default function Footer() {
       </div>
 
       {/* 底部版权条 */}
-      <div className="border-t border-white/5">
+      <div className="border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 py-4 text-center">
-          <p className="text-[#6B7280] text-xs">© 2027 惠抢券 版权所有</p>
+          <p className="text-[#8C8C8C] text-xs">© 2027 惠抢券 版权所有</p>
         </div>
       </div>
     </footer>
