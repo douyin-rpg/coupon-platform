@@ -111,12 +111,12 @@ export default function AdminVerifyPage() {
                   <td className="px-4 py-3 text-gray-600 text-xs">{u.id_card || '-'}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
-                      {u.id_card_front ? (
-                        <img src={u.id_card_front} alt="正面" className="w-16 h-10 object-cover rounded border cursor-pointer hover:scale-110 transition-transform"
+                      {u.id_card_front_url ? (
+                        <img src={u.id_card_front_url} alt="正面" className="w-16 h-10 object-cover rounded border cursor-pointer hover:scale-110 transition-transform"
                           onClick={() => setSelectedUser(u)} title="点击查看大图" />
                       ) : <span className="text-gray-400 text-xs">无</span>}
-                      {u.id_card_back ? (
-                        <img src={u.id_card_back} alt="反面" className="w-16 h-10 object-cover rounded border cursor-pointer hover:scale-110 transition-transform"
+                      {u.id_card_back_url ? (
+                        <img src={u.id_card_back_url} alt="反面" className="w-16 h-10 object-cover rounded border cursor-pointer hover:scale-110 transition-transform"
                           onClick={() => setSelectedUser(u)} title="点击查看大图" />
                       ) : null}
                     </div>

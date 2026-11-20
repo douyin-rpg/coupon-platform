@@ -83,10 +83,25 @@ export async function PATCH(request: NextRequest) {
 
 			if (user) {
 				const newBalance = (parseFloat(user.balance) + parseFloat(withdrawal.amount)).toFixed(2);
-				await supabase
+				const { error: balanceError } = await supabase
 					.from("users")
 					.update({ balance: newBalance })
 					.eq("id", withdrawal.user_id);
+				
+				if (!balanceError) {
+					// 记录交易明细
+					const txnNo = `TXN${new Date().toISOString().slice(0,10).replace(/-/g,"")}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+					await supabase.from("transaction_logs").insert({
+						user_id: withdrawal.user_id,
+						type: "withdrawal_rejected",
+						amount: parseFloat(withdrawal.amount),
+						balance_after: parseFloat(newBalance),
+						description: `提现退回 ${withdrawal.amount}元`,
+						transaction_no: txnNo,
+						reference_type: "withdrawal",
+						reference_id: id,
+					});
+				}
 			}
 		}
 

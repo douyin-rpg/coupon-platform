@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/storage/database/supabase-client";
 import { verifyAdminAuth } from "@/lib/auth";
-import { S3Storage } from "coze-coding-dev-sdk";
-
-const storage = new S3Storage({
-  endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
-  accessKey: "",
-  secretKey: "",
-  bucketName: process.env.COZE_BUCKET_NAME,
-  region: "cn-beijing",
-});
 
 // 获取待审核/所有实名认证列表
 export async function GET(request: NextRequest) {
@@ -37,30 +28,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "查询失败" }, { status: 500 });
   }
 
-  // 为身份证照片生成签名URL
-  const usersWithUrls = await Promise.all(
-    (users || []).map(async (user: Record<string, unknown>) => {
-      let frontUrl = null;
-      let backUrl = null;
-      if (user.id_card_front) {
-        try {
-          frontUrl = await storage.generatePresignedUrl({
-            key: user.id_card_front as string,
-            expireTime: 3600,
-          });
-        } catch { /* ignore */ }
-      }
-      if (user.id_card_back) {
-        try {
-          backUrl = await storage.generatePresignedUrl({
-            key: user.id_card_back as string,
-            expireTime: 3600,
-          });
-        } catch { /* ignore */ }
-      }
-      return { ...user, id_card_front_url: frontUrl, id_card_back_url: backUrl };
-    })
-  );
+  // 为身份证照片生成公开 URL（Supabase Storage）
+  const usersWithUrls = (users || []).map((user: Record<string, unknown>) => {
+    let frontUrl = null;
+    let backUrl = null;
+    if (user.id_card_front) {
+      const { data: frontData } = supabase.storage
+        .from("uploads")
+        .getPublicUrl(user.id_card_front as string);
+      frontUrl = frontData?.publicUrl || null;
+    }
+    if (user.id_card_back) {
+      const { data: backData } = supabase.storage
+        .from("uploads")
+        .getPublicUrl(user.id_card_back as string);
+      backUrl = backData?.publicUrl || null;
+    }
+    return { ...user, id_card_front_url: frontUrl, id_card_back_url: backUrl };
+  });
 
   return NextResponse.json({ users: usersWithUrls });
 }
