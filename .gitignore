@@ -158,3 +158,4 @@ Desktop.ini
 .coze-logs
 .preview
 .codegraph
+.env*
