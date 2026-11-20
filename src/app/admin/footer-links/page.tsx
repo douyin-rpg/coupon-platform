@@ -12,9 +12,9 @@ interface FooterLink {
 }
 
 const sectionOptions = [
-  { value: 'official', label: '关联官网' },
-  { value: 'platform', label: '关联平台' },
   { value: 'contact', label: '联系我们' },
+  { value: 'platform', label: '关联平台' },
+  { value: 'qualification', label: '资质证照' },
 ];
 
 export default function AdminFooterLinks() {
