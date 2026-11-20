@@ -1,14 +1,13 @@
 "use client";
 
 export default function Footer() {
-
   return (
     <footer className="bg-[#0A1628] text-[#8C8C8C] mt-auto">
       {/* 主内容区 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* 左侧：Logo + 标语 + 二维码 */}
-          <div className="md:col-span-4 flex flex-col items-center md:items-start">
+          {/* 左侧：Logo + 标语 + 二维码（手机端置顶居中） */}
+          <div className="md:col-span-4 flex flex-col items-center md:items-start order-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00D4FF] to-[#7B61FF] flex items-center justify-center">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -21,8 +20,8 @@ export default function Footer() {
             </div>
             <p className="text-[#8C8C8C] text-sm mb-6 italic">总能发现好优惠！</p>
 
-            {/* 二维码区域 */}
-            <div className="text-center md:text-left">
+            {/* 关注或联系我们 - 三个按钮 */}
+            <div className="text-center md:text-left w-full">
               <p className="text-[#8C8C8C] text-xs mb-3">关注或联系我们</p>
               <div className="flex gap-4 justify-center md:justify-start">
                 <div className="text-center">
@@ -61,16 +60,12 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* 右侧：链接区域 */}
-          <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {/* 联系我们 */}
+          {/* 右侧：链接区域（手机端置后） */}
+          <div className="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6 order-2">
+            {/* 联系我们（人工咨询热线已去掉） */}
             <div>
               <h4 className="text-white text-sm font-medium mb-4">联系我们</h4>
               <ul className="space-y-3">
-                <li>
-                  <span className="text-[#8C8C8C] text-xs">人工咨询热线</span>
-                  <p className="text-[#C0C0C0] text-sm mt-0.5">950518</p>
-                </li>
                 <li>
                   <span className="text-[#8C8C8C] text-xs">廉洁举报</span>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -203,7 +198,7 @@ export default function Footer() {
       <div className="border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[#555] text-xs">
-            © 2024 惠抢券 版权所有
+            © 2027 惠抢券 版权所有
           </p>
         </div>
       </div>
