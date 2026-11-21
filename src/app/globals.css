@@ -460,3 +460,30 @@ body {
   50% { transform: scale(1.08) translate(-1%, -1%); }
   100% { transform: scale(1) translate(0, 0); }
 }
+
+/* ===== 红包领取页动效 ===== */
+/* 金光爆开（放射线） */
+@keyframes rp_burst {
+  0% { transform: scale(0.15) rotate(0deg); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: scale(1) rotate(28deg); opacity: 0; }
+}
+
+/* 中心脉冲 */
+@keyframes rp_pulse {
+  0% { transform: scale(0.65); opacity: 0.7; }
+  100% { transform: scale(1.15); opacity: 0.25; }
+}
+
+/* 文字弹出 */
+@keyframes rp_pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 金额卡片上浮渐入 */
+@keyframes rp_rise {
+  0% { transform: translateY(26px) scale(0.92); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
