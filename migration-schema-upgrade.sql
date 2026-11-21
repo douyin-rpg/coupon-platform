@@ -144,10 +144,25 @@ ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS payment_account varchar;
 ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS bank_card_number varchar;
 ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS bank_name varchar;
 ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS bank_account_name varchar;
+ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS fee numeric DEFAULT 0;
+ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS actual_amount numeric;
+ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS user_ip varchar;
 
 -- ---------- 11. user_coupons 补充列 ----------
 ALTER TABLE public.user_coupons ADD COLUMN IF NOT EXISTS verification_code varchar;
 ALTER TABLE public.user_coupons ADD COLUMN IF NOT EXISTS paid_at timestamptz;
+
+-- ---------- 12. system_settings 系统设置表（含提现手续费率） ----------
+CREATE TABLE IF NOT EXISTS public.system_settings (
+  key varchar NOT NULL,
+  value text NOT NULL,
+  updated_at timestamptz DEFAULT now(),
+  CONSTRAINT system_settings_pkey PRIMARY KEY (key)
+);
+
+INSERT INTO public.system_settings (key, value, updated_at)
+VALUES ('withdraw_fee_rate', '1', now())
+ON CONFLICT (key) DO NOTHING;
 
 -- ---------- 完成提示 ----------
 SELECT '数据库结构升级完成！' AS result,
@@ -156,4 +171,9 @@ SELECT '数据库结构升级完成！' AS result,
        (SELECT to_regclass('public.withdrawals')) AS withdrawals_ok,
        (SELECT column_name FROM information_schema.columns
         WHERE table_schema='public' AND table_name='withdrawals' AND column_name='payment_account'
-        LIMIT 1) AS payment_account_ok;
+        LIMIT 1) AS payment_account_ok,
+       (SELECT column_name FROM information_schema.columns
+        WHERE table_schema='public' AND table_name='withdrawals' AND column_name='fee'
+        LIMIT 1) AS fee_ok,
+       (SELECT value FROM public.system_settings WHERE key='withdraw_fee_rate'
+        LIMIT 1) AS withdraw_fee_rate;

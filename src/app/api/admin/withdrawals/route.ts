@@ -42,6 +42,11 @@ export async function PATCH(request: NextRequest) {
 			return NextResponse.json({ error: "参数无效" }, { status: 400 });
 		}
 
+		// 拒绝时必须填写原因（用户端可见）
+		if (status === "rejected" && !adminNote?.trim()) {
+			return NextResponse.json({ error: "请填写拒绝原因，用户将看到该原因" }, { status: 400 });
+		}
+
 		const supabase = getSupabaseClient();
 
 		// 获取提现申请
@@ -73,7 +78,7 @@ export async function PATCH(request: NextRequest) {
 			return NextResponse.json({ error: "更新提现状态失败" }, { status: 500 });
 		}
 
-		// 如果拒绝，返还余额
+		// 如果拒绝，返还余额（全额，含手续费）
 		if (status === "rejected") {
 			const { data: user } = await supabase
 				.from("users")
@@ -87,21 +92,40 @@ export async function PATCH(request: NextRequest) {
 					.from("users")
 					.update({ balance: newBalance })
 					.eq("id", withdrawal.user_id);
-				
+
 				if (!balanceError) {
-					// 记录交易明细
+					// 记录交易明细（退回全额，原因透出给用户）
 					const txnNo = `TXN${new Date().toISOString().slice(0,10).replace(/-/g,"")}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 					await supabase.from("transaction_logs").insert({
 						user_id: withdrawal.user_id,
 						type: "withdrawal_rejected",
 						amount: parseFloat(withdrawal.amount),
 						balance_after: parseFloat(newBalance),
-						description: `提现退回 ${withdrawal.amount}元`,
+						description: `提现被拒绝，退回 ${withdrawal.amount}元${adminNote ? `（原因：${adminNote}）` : ""}`,
 						transaction_no: txnNo,
 						reference_type: "withdrawal",
 						reference_id: id,
 					});
 				}
+			}
+		}
+
+		// 如果通过，资金明细中的提现流水标记为到账
+		if (status === "approved") {
+			const fee = parseFloat(withdrawal.fee || 0);
+			const actual = parseFloat(withdrawal.actual_amount || (parseFloat(withdrawal.amount) - fee));
+			// 更新申请时写入的流水描述（reference_id 对应提现记录）
+			const { data: pendingTxns } = await supabase
+				.from("transaction_logs")
+				.select("id")
+				.eq("reference_type", "withdrawal")
+				.eq("reference_id", id)
+				.eq("type", "withdraw");
+			if (pendingTxns && pendingTxns.length > 0) {
+				await supabase
+					.from("transaction_logs")
+					.update({ description: `提现成功到账 ${actual.toFixed(2)}元（手续费 ${fee.toFixed(2)}元）` })
+					.in("id", pendingTxns.map((t: { id: string }) => t.id));
 			}
 		}
 

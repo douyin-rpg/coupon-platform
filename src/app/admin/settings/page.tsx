@@ -56,6 +56,30 @@ export default function AdminSettingsPage() {
       <h1 className="text-2xl font-bold text-gray-800 mb-6">系统设置</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+        {/* 提现设置 */}
+        <div>
+          <h2 className="text-lg font-medium text-gray-800 mb-4">提现设置</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">提现手续费率（%）</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  value={settings.withdraw_fee_rate || '1'}
+                  onChange={e => setSettings({ ...settings, withdraw_fee_rate: e.target.value })}
+                  className="w-40 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
+                  placeholder="1"
+                />
+                <span className="text-sm text-gray-500">%</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">用户提现时按此比例收取手续费（如填 1，表示每笔提现收取 1%）。手续费从提现金额中扣除，实际到账 = 提现金额 - 手续费。</p>
+            </div>
+          </div>
+        </div>
+
         {/* 客服设置 */}
         <div>
           <h2 className="text-lg font-medium text-gray-800 mb-4">客服设置</h2>

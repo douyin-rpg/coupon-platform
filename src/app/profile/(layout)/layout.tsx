@@ -32,6 +32,7 @@ const menuItems = [
   ]},
   { section: '财务中心', items: [
     { href: '/profile/finance/withdraw', label: '提现', icon: icons.wallet },
+    { href: '/profile/finance/withdrawals', label: '提现记录', icon: icons.transactions },
     { href: '/profile/finance/transactions', label: '资金明细', icon: icons.transactions },
   ]},
   { section: '用户设置', items: [

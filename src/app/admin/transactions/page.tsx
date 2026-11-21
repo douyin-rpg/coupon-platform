@@ -26,6 +26,9 @@ const TYPE_LABELS: Record<string, { label: string; color: string }> = {
   grab: { label: '抢券', color: 'bg-red-100 text-red-700' },
   redemption: { label: '回兑', color: 'bg-blue-100 text-blue-700' },
   withdrawal: { label: '提现', color: 'bg-orange-100 text-orange-700' },
+  withdraw: { label: '提现', color: 'bg-orange-100 text-orange-700' },
+  withdraw_success: { label: '提现到账', color: 'bg-green-100 text-green-700' },
+  withdrawal_rejected: { label: '提现退回', color: 'bg-blue-100 text-blue-700' },
   red_packet: { label: '红包', color: 'bg-pink-100 text-pink-700' },
   deduction: { label: '扣款', color: 'bg-gray-100 text-gray-700' },
   admin_deduct: { label: '管理员扣款', color: 'bg-gray-100 text-gray-700' },
@@ -80,7 +83,7 @@ export default function AdminTransactionsPage() {
   const totalPages = Math.ceil(total / pageSize);
 
   const formatAmount = (amount: number) => {
-    const yuan = Math.abs(amount) / 100;
+    const yuan = Math.abs(amount);
     const sign = amount >= 0 ? '+' : '-';
     return `${sign}¥${yuan.toFixed(2)}`;
   };
@@ -117,7 +120,8 @@ export default function AdminTransactionsPage() {
               <option value="recharge">充值</option>
               <option value="grab">抢券</option>
               <option value="redemption">回兑</option>
-              <option value="withdrawal">提现</option>
+              <option value="withdraw">提现</option>
+              <option value="withdrawal_rejected">提现退回</option>
               <option value="red_packet">红包</option>
               <option value="admin_deduct">管理员扣款</option>
               <option value="deduction">扣款</option>

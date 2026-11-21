@@ -150,7 +150,13 @@ export const withdrawals = pgTable(
 		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
 		user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
 		amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+		fee: numeric("fee", { precision: 12, scale: 2 }).default(sql`0`),
+		actual_amount: numeric("actual_amount", { precision: 12, scale: 2 }),
+		user_ip: varchar("user_ip", { length: 45 }),
 		payment_account: varchar("payment_account", { length: 100 }).notNull(),
+		bank_card_number: varchar("bank_card_number", { length: 50 }),
+		bank_name: varchar("bank_name", { length: 100 }),
+		bank_account_name: varchar("bank_account_name", { length: 100 }),
 		status: varchar("status", { length: 20 }).notNull().default("pending"), // pending / approved / rejected
 		admin_note: text("admin_note"),
 		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
