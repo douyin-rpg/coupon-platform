@@ -28,12 +28,13 @@ export async function POST(request: Request) {
     const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('articles')
-      .insert({ title, content, category_id, image_url: image_url || null, is_published: is_published ?? true, is_announcement: is_announcement ?? false, sort_order: sort_order || 0, view_count: view_count || 0 })
+      .insert({ title, content, category_id: category_id || null, image_url: image_url || null, is_published: is_published ?? true, is_announcement: is_announcement ?? false, sort_order: sort_order || 0, view_count: view_count || 0 })
       .select()
       .single();
     if (error) throw error;
     return NextResponse.json({ article: data });
-  } catch {
+  } catch (err) {
+    console.error('[admin/articles] POST 创建文章失败:', err instanceof Error ? err.message : err);
     return NextResponse.json({ error: '创建文章失败' }, { status: 500 });
   }
 }
@@ -51,7 +52,7 @@ export async function PUT(request: Request) {
     const updates: Record<string, unknown> = {};
     if (title !== undefined) updates.title = title;
     if (content !== undefined) updates.content = content;
-    if (category_id !== undefined) updates.category_id = category_id;
+    if (category_id !== undefined) updates.category_id = category_id || null;
     if (image_url !== undefined) updates.image_url = image_url || null;
     if (is_published !== undefined) updates.is_published = is_published;
     if (is_announcement !== undefined) updates.is_announcement = is_announcement;
