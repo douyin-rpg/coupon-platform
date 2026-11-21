@@ -176,7 +176,7 @@ export default function AdminTransactionsPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <p className="text-xs text-gray-500">充值笔数</p>
           <p className="text-2xl font-bold text-green-600 mt-1">
-            {transactions.filter(t => t.type === 'recharge').length}
+            {transactions.filter(t => t.type === 'recharge' || t.type === 'admin_deposit').length}
           </p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
@@ -188,7 +188,7 @@ export default function AdminTransactionsPage() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <p className="text-xs text-gray-500">提现笔数</p>
           <p className="text-2xl font-bold text-orange-600 mt-1">
-            {transactions.filter(t => t.type === 'withdrawal').length}
+            {transactions.filter(t => t.type === 'withdraw' || t.type === 'withdrawal' || t.type === 'withdraw_success' || t.type === 'withdrawal_rejected').length}
           </p>
         </div>
       </div>
@@ -242,7 +242,7 @@ export default function AdminTransactionsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-600">¥{(txn.balance_after / 100).toFixed(2)}</span>
+                        <span className="text-sm text-gray-600">¥{Number(txn.balance_after).toFixed(2)}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-xs text-gray-500">{txn.description || '-'}</span>
