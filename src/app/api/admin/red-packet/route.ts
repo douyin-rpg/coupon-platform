@@ -45,7 +45,13 @@ export async function POST(request: NextRequest) {
 
     if (insertError) {
       console.error('Red packet insert failed:', insertError);
-      return NextResponse.json({ error: '创建红包失败' }, { status: 500 });
+      const msg = (insertError.message || '').toLowerCase();
+      if (msg.includes('relation') && msg.includes('does not exist')) {
+        return NextResponse.json({
+          error: '创建红包失败：线上数据库缺少 red_packets 表，请在 Supabase SQL Editor 执行 migration-schema-upgrade.sql 后重试',
+        }, { status: 500 });
+      }
+      return NextResponse.json({ error: `创建红包失败：${insertError.message}` }, { status: 500 });
     }
 
     return NextResponse.json({

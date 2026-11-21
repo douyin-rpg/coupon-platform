@@ -336,6 +336,16 @@ export const useStore = create<Store>((set) => ({
 
 推荐使用 Prisma 或 Drizzle ORM，在 `src/lib/db.ts` 中配置。
 
+## 线上数据库升级（重要）
+
+线上（Vercel 部署）使用的 Supabase 数据库如果出现「创建红包失败」「表不存在」「字段缺失」等问题，说明线上库缺少新版本代码依赖的表结构。请在 **线上 Supabase 项目的 SQL Editor** 中执行一次 `migration-schema-upgrade.sql`（项目根目录）的全部内容：
+
+1. 打开线上 Supabase 控制台 → SQL Editor
+2. 粘贴 `migration-schema-upgrade.sql` 内容 → Run
+3. 返回管理后台刷新页面即可
+
+该脚本幂等（全部 `IF NOT EXISTS`），可重复执行，不影响已有数据。
+
 ## 技术栈
 
 - **框架**: Next.js 16.1.1 (App Router)
