@@ -3,6 +3,7 @@
 import { useAuth } from '@/contexts/auth-context';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import RedPacketBanner from '@/components/red-packet-banner';
 import { AlertIcon, AnnounceIcon, BackIcon, BankIcon, LogoutIcon, OrderIcon, SettingsIcon, ShieldIcon, StarIcon, WalletIcon } from '@/components/icons';
 
 interface Article { id: string; title: string; }
@@ -93,6 +94,9 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Red packet banner */}
+      <RedPacketBanner />
 
       {/* Stats grid */}
       <div className="grid grid-cols-3 gap-3 mb-6">

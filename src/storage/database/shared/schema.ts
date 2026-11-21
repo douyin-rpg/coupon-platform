@@ -168,16 +168,37 @@ export const transactionLogs = pgTable(
 	{
 		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
 		user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
-		type: varchar("type", { length: 30 }).notNull(), // grab / redemption_approved / redemption_rejected / deposit / withdraw / admin_deposit / admin_deduct
+		type: varchar("type", { length: 30 }).notNull(), // grab / redemption_approved / redemption_rejected / deposit / withdraw / admin_deposit / admin_deduct / red_packet
 		amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
 		balance_after: numeric("balance_after", { precision: 12, scale: 2 }).notNull(),
 		description: text("description"),
 		related_id: varchar("related_id", { length: 36 }),
+		transaction_no: varchar("transaction_no", { length: 50 }),
+		reference_type: varchar("reference_type", { length: 30 }),
+		reference_id: varchar("reference_id", { length: 36 }),
 		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 	},
 	(table) => [
 		index("transaction_logs_user_id_idx").on(table.user_id),
 		index("transaction_logs_type_idx").on(table.type),
+	]
+);
+
+// 红包表（后台发放 -> 用户前端领取后入账）
+export const redPackets = pgTable(
+	"red_packets",
+	{
+		id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+		user_id: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+		amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+		note: text("note"),
+		status: varchar("status", { length: 20 }).default("pending").notNull(), // pending / claimed
+		created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+		claimed_at: timestamp("claimed_at", { withTimezone: true }),
+	},
+	(table) => [
+		index("red_packets_user_id_idx").on(table.user_id),
+		index("red_packets_status_idx").on(table.status),
 	]
 );
 

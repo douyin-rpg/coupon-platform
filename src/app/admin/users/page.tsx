@@ -503,6 +503,9 @@ export default function AdminUsersPage() {
                   placeholder="如：新年红包、活动奖励等"
                   className="rounded-xl"
                 />
+                <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg p-2.5 leading-relaxed">
+                  💡 发送后红包将进入用户的「待领取」列表，用户在前端点击领取后才入账余额，并生成资金明细记录。
+                </p>
               </div>
             )}
             {message && message.type === 'error' && (

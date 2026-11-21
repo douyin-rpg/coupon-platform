@@ -31,36 +31,27 @@ export async function POST(request: NextRequest) {
 
     const numAmount = Number(amount);
 
-    // 更新用户余额
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({
-        balance: Number(user.balance) + numAmount,
+    // 创建待领取红包记录（暂不入账，等待用户在前端点击领取）
+    const { data: packet, error: insertError } = await supabase
+      .from('red_packets')
+      .insert({
+        user_id,
+        amount: numAmount,
+        note: note || null,
+        status: 'pending',
       })
-      .eq('id', user_id);
+      .select()
+      .single();
 
-    if (updateError) {
-      return NextResponse.json({ error: '更新余额失败' }, { status: 500 });
-    }
-
-    // 记录交易流水
-    const transactionNo = `RP${Date.now()}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    const { error: txnError } = await supabase.from('transaction_logs').insert({
-      user_id,
-      transaction_no: transactionNo,
-      type: 'red_packet',
-      amount: numAmount,
-      balance_after: Number(user.balance) + numAmount,
-      description: note || '红包',
-      reference_type: 'red_packet',
-    });
-    if (txnError) {
-      console.error('交易记录插入失败:', txnError);
+    if (insertError) {
+      console.error('Red packet insert failed:', insertError);
+      return NextResponse.json({ error: '创建红包失败' }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      message: `红包发送成功，${user.username} 余额已增加 ¥${numAmount.toFixed(2)}`,
+      message: `红包已发送给 ${user.username}，等待用户领取 ¥${numAmount.toFixed(2)}`,
+      red_packet: packet,
     });
   } catch (error) {
     console.error('Red packet error:', error);
