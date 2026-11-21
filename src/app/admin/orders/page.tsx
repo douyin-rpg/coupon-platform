@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { AdminNotification } from '@/components/admin-notification';
 
 interface Order {
   id: string;
@@ -193,7 +192,6 @@ export default function AdminOrdersPage() {
           )}
         </div>
 
-      <AdminNotification />
     </div>
   );
 }

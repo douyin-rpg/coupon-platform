@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AdminNotification } from '@/components/admin-notification';
 
 interface Session { id: string; name: string; start_time: string; end_time: string; is_active: boolean; }
 interface Category { id: string; name: string; icon: string; }
@@ -300,7 +299,6 @@ export default function AdminCouponsPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <AdminNotification />
     </div>
   );
 }

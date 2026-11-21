@@ -77,6 +77,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "提交失败，请重试" }, { status: 500 });
   }
 
+  // 写入后台通知（强通知）
+  await supabase.from("admin_notifications").insert({
+    type: "verification",
+    title: "新实名认证申请",
+    content: `用户 ${id_card_name} 提交实名认证，等待审核`,
+    is_read: false,
+  });
+
   return NextResponse.json({ success: true, message: "实名认证已提交，等待审核" });
 }
 

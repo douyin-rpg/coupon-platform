@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { AdminNotification } from '@/components/admin-notification';
 
 interface Session {
   id: string;
@@ -235,7 +234,6 @@ export default function AdminSessionsPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <AdminNotification />
     </div>
   );
 }

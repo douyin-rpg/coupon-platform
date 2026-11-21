@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AdminNotification } from '@/components/admin-notification';
 
 interface Withdrawal {
   id: string;
@@ -158,7 +157,7 @@ export default function AdminWithdrawalsPage() {
                 <span>
                   用户 {(selectedWithdrawal.users as unknown as { real_name: string })?.real_name} 申请提现
                   <span className="font-bold text-amber-600"> ¥{parseFloat(selectedWithdrawal.amount).toFixed(2)}</span>
-                  至 {selectedWithdrawal.bank_name} 尾号{selectedWithdrawal.bank_card_number?.slice(-4) || "-"}
+                  至 <span className="font-mono">{selectedWithdrawal.bank_card_number || '-'}</span>（{selectedWithdrawal.bank_name}）
                 </span>
               )}
             </DialogDescription>
@@ -195,7 +194,6 @@ export default function AdminWithdrawalsPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <AdminNotification />
     </div>
   );
 }

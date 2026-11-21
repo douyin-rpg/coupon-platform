@@ -95,6 +95,14 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: "提现申请失败" }, { status: 500 });
 		}
 
+		// 写入后台通知（强通知）
+		await supabase.from("admin_notifications").insert({
+			type: "withdrawal",
+			title: "新提现申请",
+			content: `用户申请提现 ¥${numAmount.toFixed(2)}，等待审核`,
+			is_read: false,
+		});
+
 		return NextResponse.json({ success: true, withdrawal });
 	} catch (error: unknown) {
 		const message = error instanceof Error ? error.message : "提现失败";

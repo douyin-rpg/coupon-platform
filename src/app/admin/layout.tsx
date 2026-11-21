@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { AdminNotification } from '@/components/admin-notification';
 import {
   CouponIcon, CategoryIcon, ClockIcon, PicIcon, OrderIcon,
   BackIcon, WalletIcon, PeopleIcon, ShieldIcon, KeyIcon,
@@ -119,6 +120,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main content */}
       <main className="flex-1 overflow-y-auto bg-[#F5F7FA]">
+        <AdminNotification />
         {children}
       </main>
     </div>

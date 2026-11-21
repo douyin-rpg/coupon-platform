@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AdminNotification } from '@/components/admin-notification';
 
 interface User {
   id: string;
@@ -47,14 +46,6 @@ export default function AdminUsersPage() {
   const [redPacketOpen, setRedPacketOpen] = useState(false);
   const [redPacketAmount, setRedPacketAmount] = useState('');
   const [redPacketNote, setRedPacketNote] = useState('');
-
-  const maskBankCard = (card: string) => {
-    if (!card || card.length < 8) return card || '-';
-    const first4 = card.slice(0, 4);
-    const last4 = card.slice(-4);
-    const middle = '*'.repeat(Math.max(card.length - 8, 4));
-    return `${first4} ${middle} ${last4}`;
-  };
 
   const refreshUsers = useCallback(async () => {
     try {
@@ -327,13 +318,13 @@ export default function AdminUsersPage() {
                     <div><span className="text-gray-400">实名姓名：</span>{selectedUser.id_card_name}</div>
                   )}
                   {selectedUser.id_card && (
-                    <div><span className="text-gray-400">身份证号：</span>{selectedUser.id_card.replace(/^(.{4})(.*)(.{4})$/, '$1**********$3')}</div>
+                    <div className="col-span-2"><span className="text-gray-400">身份证号：</span><span className="font-mono">{selectedUser.id_card}</span></div>
                   )}
                   {selectedUser.bank_bound && selectedUser.bank_card_number && (
                     <>
                       <div><span className="text-gray-400">持卡人：</span>{selectedUser.bank_account_name || '-'}</div>
                       <div><span className="text-gray-400">银行卡号：</span>
-                        <span className="font-mono">{maskBankCard(selectedUser.bank_card_number)}</span>
+                        <span className="font-mono">{selectedUser.bank_card_number}</span>
                       </div>
                     </>
                   )}
@@ -525,7 +516,6 @@ export default function AdminUsersPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <AdminNotification />
     </div>
   );
 }

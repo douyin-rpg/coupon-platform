@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { AdminNotification } from '@/components/admin-notification';
 
 interface Category {
   id: string;
@@ -150,7 +149,6 @@ export default function AdminCategoriesPage() {
           </div>
         </DialogContent>
       </Dialog>
-      <AdminNotification />
     </div>
   );
 }

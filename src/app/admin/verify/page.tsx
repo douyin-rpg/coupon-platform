@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { AdminNotification } from '@/components/admin-notification';
 import { XIcon } from '@/components/icons';
 
 interface VerifyUser {
@@ -73,7 +72,6 @@ export default function AdminVerifyPage() {
     <div className="p-6 md:p-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-800">实名认证审核</h1>
-        <AdminNotification />
       </div>
 
       {/* Status tabs */}

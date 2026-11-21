@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AdminNotification } from '@/components/admin-notification';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
@@ -76,7 +75,6 @@ export default function AdminLoginPage() {
           </form>
         </div>
       </div>
-      <AdminNotification />
     </div>
   );
 }
