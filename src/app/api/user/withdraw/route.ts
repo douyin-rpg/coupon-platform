@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 		// 获取用户信息
 		const { data: user, error: userError } = await supabase
 			.from("users")
-			.select("id, balance, payment_password_hash, bank_card_number, bank_name, bank_account_name, bank_bound, verify_status, funds_frozen")
+			.select("id, balance, payment_password_hash, bank_card_number, bank_name, bank_account_name, payment_account, bank_bound, verify_status, funds_frozen")
 			.eq("id", userId)
 			.single();
 
@@ -77,12 +77,17 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: "余额不足" }, { status: 400 });
 		}
 
-		// 创建提现记录
+		// 创建提现记录（payment_account 为 NOT NULL 字段，必须提供，取绑定收款账户信息）
+		const paymentAccount =
+			user.payment_account ||
+			[user.bank_account_name, user.bank_name, user.bank_card_number].filter(Boolean).join(" ") ||
+			"银行卡提现";
 		const { data: withdrawal, error: wError } = await supabase
 			.from("withdrawals")
 			.insert({
 				user_id: userId,
 				amount: numAmount.toFixed(2),
+				payment_account: paymentAccount,
 				bank_card_number: user.bank_card_number, bank_name: user.bank_name, bank_account_name: user.bank_account_name,
 				status: "pending",
 			})
@@ -92,6 +97,19 @@ export async function POST(request: NextRequest) {
 		if (wError) {
 			// 回滚余额
 			await supabase.from("users").update({ balance: user.balance }).eq("id", userId);
+
+			// 识别线上库常见问题（表/字段缺失、schema cache 未刷新），给出可操作提示
+			const raw = `${wError.message || ""} ${wError.details || ""}`;
+			if (/schema cache|could not find|does not exist|relation/.test(raw)) {
+				return NextResponse.json({
+					error: "提现申请失败：线上数据库表结构不完整，请先执行升级 SQL 并刷新 schema（见 README「线上数据库升级」）",
+				}, { status: 500 });
+			}
+			if (/column.*payment_account|payment_account.*violates|null value/.test(raw)) {
+				return NextResponse.json({
+					error: "提现申请失败：提现记录缺少收款账户字段，已自动修复，请重试",
+				}, { status: 500 });
+			}
 			return NextResponse.json({ error: "提现申请失败" }, { status: 500 });
 		}
 

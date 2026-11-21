@@ -124,7 +124,23 @@ ALTER TABLE public.transaction_logs ADD COLUMN IF NOT EXISTS transaction_no varc
 ALTER TABLE public.transaction_logs ADD COLUMN IF NOT EXISTS reference_type varchar;
 ALTER TABLE public.transaction_logs ADD COLUMN IF NOT EXISTS reference_id uuid;
 
--- ---------- 10. withdrawals 补充列 ----------
+-- ---------- 10. withdrawals 提现记录表（含 payment_account 修复） ----------
+CREATE TABLE IF NOT EXISTS public.withdrawals (
+  id varchar DEFAULT gen_random_uuid() NOT NULL,
+  user_id varchar NOT NULL,
+  amount numeric NOT NULL,
+  payment_account varchar,
+  status varchar DEFAULT 'pending'::varchar NOT NULL,
+  admin_note text,
+  created_at timestamptz DEFAULT now() NOT NULL,
+  processed_at timestamptz,
+  CONSTRAINT withdrawals_pkey PRIMARY KEY (id)
+);
+
+CREATE INDEX IF NOT EXISTS withdrawals_user_id_idx ON public.withdrawals USING btree (user_id);
+CREATE INDEX IF NOT EXISTS withdrawals_status_idx ON public.withdrawals USING btree (status);
+
+ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS payment_account varchar;
 ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS bank_card_number varchar;
 ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS bank_name varchar;
 ALTER TABLE public.withdrawals ADD COLUMN IF NOT EXISTS bank_account_name varchar;
@@ -136,4 +152,8 @@ ALTER TABLE public.user_coupons ADD COLUMN IF NOT EXISTS paid_at timestamptz;
 -- ---------- 完成提示 ----------
 SELECT '数据库结构升级完成！' AS result,
        (SELECT to_regclass('public.red_packets')) AS red_packets_ok,
-       (SELECT to_regclass('public.admin_notifications')) AS admin_notifications_ok;
+       (SELECT to_regclass('public.admin_notifications')) AS admin_notifications_ok,
+       (SELECT to_regclass('public.withdrawals')) AS withdrawals_ok,
+       (SELECT column_name FROM information_schema.columns
+        WHERE table_schema='public' AND table_name='withdrawals' AND column_name='payment_account'
+        LIMIT 1) AS payment_account_ok;
