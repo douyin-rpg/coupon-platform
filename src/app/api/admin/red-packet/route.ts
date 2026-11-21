@@ -46,9 +46,14 @@ export async function POST(request: NextRequest) {
     if (insertError) {
       console.error('Red packet insert failed:', insertError);
       const msg = (insertError.message || '').toLowerCase();
-      if (msg.includes('relation') && msg.includes('does not exist')) {
+      // 表缺失或 PostgREST schema cache 未刷新（Supabase 特有的两类报错）
+      if (
+        (msg.includes('relation') && msg.includes('does not exist')) ||
+        msg.includes('schema cache') ||
+        msg.includes('could not find the table')
+      ) {
         return NextResponse.json({
-          error: '创建红包失败：线上数据库缺少 red_packets 表，请在 Supabase SQL Editor 执行 migration-schema-upgrade.sql 后重试',
+          error: '创建红包失败：线上数据库缺少 red_packets 表。请按顺序操作：1) 在 Supabase SQL Editor 执行 migration-schema-upgrade.sql（幂等可重复）；2) 执行后若仍报错，请在 Supabase 控制台 Settings→API→刷新 Schema cache（或在 SQL Editor 运行 NOTIFY pgrst, \'reload schema\';）后重试',
         }, { status: 500 });
       }
       return NextResponse.json({ error: `创建红包失败：${insertError.message}` }, { status: 500 });

@@ -341,8 +341,9 @@ export const useStore = create<Store>((set) => ({
 线上（Vercel 部署）使用的 Supabase 数据库如果出现「创建红包失败」「表不存在」「字段缺失」等问题，说明线上库缺少新版本代码依赖的表结构。请在 **线上 Supabase 项目的 SQL Editor** 中执行一次 `migration-schema-upgrade.sql`（项目根目录）的全部内容：
 
 1. 打开线上 Supabase 控制台 → SQL Editor
-2. 粘贴 `migration-schema-upgrade.sql` 内容 → Run
-3. 返回管理后台刷新页面即可
+2. 粘贴 `migration-schema-upgrade.sql` 内容 → Run（结果应显示 `数据库结构升级完成！` 且 `red_packets_ok` 列有值）
+3. 若仍报错 `Could not find the table 'public.red_packets' in the schema cache`，说明 PostgREST 的 schema 缓存未刷新：进入 Supabase 控制台 **Settings → API → Schema cache → 点击 Refresh schema cache**；或在 SQL Editor 执行 `NOTIFY pgrst, 'reload schema';`
+4. 返回管理后台刷新页面即可
 
 该脚本幂等（全部 `IF NOT EXISTS`），可重复执行，不影响已有数据。
 
