@@ -104,7 +104,7 @@ export default function AdminDashboardPage() {
       {/* 账户余额 */}
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 mb-6 text-white">
         <p className="text-sm opacity-90">账户总余额</p>
-        <p className="text-3xl font-bold mt-2">¥{(stats.totalBalance / 100).toFixed(2)}</p>
+        <p className="text-3xl font-bold mt-2">¥{Number(stats.totalBalance).toFixed(2)}</p>
       </div>
 
       {/* 今日/昨日对比 */}
