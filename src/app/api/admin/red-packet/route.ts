@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
       transaction_no: transactionNo,
       type: 'red_packet',
       amount: numAmount,
-      balance_before: Number(user.balance),
       balance_after: Number(user.balance) + numAmount,
       description: note || '红包',
       reference_type: 'red_packet',

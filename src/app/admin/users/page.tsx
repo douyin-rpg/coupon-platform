@@ -81,7 +81,7 @@ export default function AdminUsersPage() {
         const res = await fetch('/api/admin/red-packet', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: selectedUser.id, amount: parseFloat(newValue), note }),
+          body: JSON.stringify({ user_id: selectedUser.id, amount: parseFloat(newValue), note }),
         });
         const data = await res.json();
         if (res.ok && data.success) {
@@ -97,7 +97,7 @@ export default function AdminUsersPage() {
         const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: actionType, newPassword: actionType === 'reset_login_password' ? newValue : undefined, newPaymentPassword: actionType === 'reset_payment_password' ? newValue : undefined, amount: (actionType === 'add_balance' || actionType === 'deduct_balance') ? newValue : undefined, rechargeType: actionType === 'add_balance' ? rechargeType : undefined, creditScore: actionType === 'update_credit_score' ? parseInt(newValue) : undefined, note }),
+          body: JSON.stringify({ action: actionType, newPassword: actionType === 'reset_login_password' ? newValue : undefined, newPaymentPassword: actionType === 'reset_payment_password' ? newValue : undefined, amount: (actionType === 'add_balance' || actionType === 'deduct_balance') ? newValue : undefined, rechargeType: actionType === 'add_balance' ? rechargeType : undefined, credit_score: actionType === 'update_credit_score' ? parseInt(newValue) : undefined, note }),
         });
         const data = await res.json();
         if (res.ok && data.success) {
