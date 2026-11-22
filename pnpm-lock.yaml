@@ -115,7 +115,7 @@ importers:
         version: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       coze-coding-dev-sdk:
         specifier: ^0.7.23
-        version: 0.7.23(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0)
+        version: 0.7.23(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -182,6 +182,9 @@ importers:
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      ws:
+        specifier: ^8.23.0
+        version: 8.23.0
       zod:
         specifier: ^4.3.5
         version: 4.3.6
@@ -210,6 +213,9 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.3(@types/react@19.2.10)
+      '@types/ws':
+        specifier: ^8.18.2
+        version: 8.18.2
       eslint:
         specifier: ^9
         version: 9.39.2(jiti@2.6.1)
@@ -229,7 +235,7 @@ importers:
         specifier: ^4
         version: 4.1.18
       tsup:
-        specifier: ^8.3.5
+        specifier: ^8.5.1
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.6)(tsx@4.21.0)(typescript@5.9.3)
       tsx:
         specifier: ^4.19.2
@@ -2719,8 +2725,8 @@ packages:
   '@types/validate-npm-package-name@4.0.2':
     resolution: {integrity: sha512-lrpDziQipxCEeK5kWxvljWYhUvOiB2A9izZd9B2AFarYAkqZshb4lPbRs7zKEic6eGtH8V/2qJW+dPp9OtF6bw==}
 
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
+  '@types/ws@8.18.2':
+    resolution: {integrity: sha512-67MQl+fpWKVTT1NYdnmo3U4sc/xPo/zQBncVnI74qmQa0z/b+1g6iYqNmGCPbxO+zz2aklb08a0oHfegiVd0/w==}
 
   '@typescript-eslint/eslint-plugin@8.54.0':
     resolution: {integrity: sha512-hAAP5io/7csFStuOmR782YmTthKBJ9ND3WVL60hcOjvtGFb+HJxH4O5huAcmcZ9v9G8P+JETiZ/G1B8MALnWZQ==}
@@ -6057,8 +6063,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.19.0:
-    resolution: {integrity: sha512-blAT2mjOEIi0ZzruJfIhb3nps74PRWTCz1IjglWEEpQl5XS/UNama6u2/rjFkDDouqr4L67ry+1aGIALViWjDg==}
+  ws@8.23.0:
+    resolution: {integrity: sha512-wCkmX8QMOrKjgO8HW2WyDbTSGeqkocxgDzS9iR79rEAexty6/2qzilx3Ag8Tqf9ykop3irLKle0MtVn5qjVnoQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -7387,12 +7393,12 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@langchain/core@1.1.48(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0)':
+  '@langchain/core@1.1.48(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0)':
     dependencies:
       '@cfworker/json-schema': 4.1.1
       '@standard-schema/spec': 1.1.0
       js-tiktoken: 1.0.21
-      langsmith: 0.7.3(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0)
+      langsmith: 0.7.3(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0)
       mustache: 4.2.0
       p-queue: 6.6.2
       zod: 4.3.6
@@ -7403,11 +7409,11 @@ snapshots:
       - openai
       - ws
 
-  '@langchain/openai@1.4.7(@langchain/core@1.1.48(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0))(ws@8.19.0)':
+  '@langchain/openai@1.4.7(@langchain/core@1.1.48(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0))(ws@8.23.0)':
     dependencies:
-      '@langchain/core': 1.1.48(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0)
+      '@langchain/core': 1.1.48(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0)
       js-tiktoken: 1.0.21
-      openai: 6.39.1(ws@8.19.0)(zod@4.3.6)
+      openai: 6.39.1(ws@8.23.0)(zod@4.3.6)
       zod: 4.3.6
     transitivePeerDependencies:
       - ws
@@ -8678,9 +8684,9 @@ snapshots:
   '@supabase/realtime-js@2.95.3':
     dependencies:
       '@types/phoenix': 1.6.7
-      '@types/ws': 8.18.1
+      '@types/ws': 8.18.2
       tslib: 2.8.1
-      ws: 8.19.0
+      ws: 8.23.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8865,9 +8871,9 @@ snapshots:
 
   '@types/validate-npm-package-name@4.0.2': {}
 
-  '@types/ws@8.18.1':
+  '@types/ws@8.18.2':
     dependencies:
-      '@types/node': 20.19.30
+      '@types/node': 20.19.41
 
   '@typescript-eslint/eslint-plugin@8.54.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)':
     dependencies:
@@ -9507,10 +9513,10 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  coze-coding-dev-sdk@0.7.23(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0):
+  coze-coding-dev-sdk@0.7.23(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0):
     dependencies:
-      '@langchain/core': 1.1.48(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0)
-      '@langchain/openai': 1.4.7(@langchain/core@1.1.48(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0))(ws@8.19.0)
+      '@langchain/core': 1.1.48(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0)
+      '@langchain/openai': 1.4.7(@langchain/core@1.1.48(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0))(ws@8.23.0)
       '@supabase/supabase-js': 2.95.3
       axios: 1.16.1
       pg: 8.17.2
@@ -10862,12 +10868,12 @@ snapshots:
 
   kleur@4.1.5: {}
 
-  langsmith@0.7.3(openai@6.39.1(ws@8.19.0)(zod@4.3.6))(ws@8.19.0):
+  langsmith@0.7.3(openai@6.39.1(ws@8.23.0)(zod@4.3.6))(ws@8.23.0):
     dependencies:
       p-queue: 6.6.2
     optionalDependencies:
-      openai: 6.39.1(ws@8.19.0)(zod@4.3.6)
-      ws: 8.19.0
+      openai: 6.39.1(ws@8.23.0)(zod@4.3.6)
+      ws: 8.23.0
 
   language-subtag-registry@0.3.23: {}
 
@@ -11209,9 +11215,9 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@6.39.1(ws@8.19.0)(zod@4.3.6):
+  openai@6.39.1(ws@8.23.0)(zod@4.3.6):
     optionalDependencies:
-      ws: 8.19.0
+      ws: 8.23.0
       zod: 4.3.6
 
   optionator@0.9.4:
@@ -12503,7 +12509,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.19.0: {}
+  ws@8.23.0: {}
 
   wsl-utils@0.3.1:
     dependencies:

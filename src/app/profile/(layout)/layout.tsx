@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
 
-import { HomeIcon, OrderIcon, BackIcon, WalletIcon, FileTextIcon, UserIcon, ShieldIcon, LockIcon, BankIcon, MapPinIcon, LogoutIcon } from '@/components/icons';
+import { HomeIcon, OrderIcon, BackIcon, WalletIcon, FileTextIcon, UserIcon, ShieldIcon, LockIcon, BankIcon, MapPinIcon, LogoutIcon, HeadphoneIcon } from '@/components/icons';
 
 const icons: Record<string, React.ReactNode> = {
   home: <HomeIcon className="w-4 h-4" />,
@@ -20,6 +20,7 @@ const icons: Record<string, React.ReactNode> = {
   password: <LockIcon className="w-4 h-4" />,
   bank: <BankIcon className="w-4 h-4" />,
   address: <MapPinIcon className="w-4 h-4" />,
+  support: <HeadphoneIcon className="w-4 h-4" />,
 };
 
 const menuItems = [
@@ -40,6 +41,9 @@ const menuItems = [
     { href: '/profile/settings/verify', label: '实名认证', icon: icons.verify },
     { href: '/profile/settings/password', label: '修改密码', icon: icons.password },
     { href: '/profile/settings/bank', label: '收款账户', icon: icons.bank },
+  ]},
+  { section: '帮助与客服', items: [
+    { href: '/support', label: '在线客服', icon: icons.support },
   ]},
 ];
 

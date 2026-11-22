@@ -7,8 +7,9 @@ import {
   CouponIcon, CategoryIcon, ClockIcon, PicIcon, OrderIcon,
   BackIcon, WalletIcon, PeopleIcon, ShieldIcon, KeyIcon,
   EditIcon, AnnounceIcon, SettingsIcon, LinkIcon, StarIcon,
-  CreditCardIcon, HomeIcon
+  CreditCardIcon, HomeIcon, HeadphoneIcon
 } from '@/components/icons';
+import { useEffect, useState } from 'react';
 
 const sidebarGroups = [
   {
@@ -52,6 +53,12 @@ const sidebarGroups = [
     ],
   },
   {
+    label: '客户服务',
+    items: [
+      { href: '/admin/support', label: '在线客服', Icon: HeadphoneIcon },
+    ],
+  },
+  {
     label: '系统设置',
     items: [
       { href: '/admin/settings', label: '系统设置', Icon: SettingsIcon },
@@ -62,6 +69,28 @@ const sidebarGroups = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [unreadSupport, setUnreadSupport] = useState(0);
+
+  // 轮询客服未读会话数（角标）
+  useEffect(() => {
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const res = await fetch('/api/admin/support/unread-count');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setUnreadSupport(data.count || 0);
+      } catch {
+        // ignore
+      }
+    };
+    tick();
+    const timer = setInterval(tick, 10000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, []);
 
   // Login page doesn't need sidebar
   if (pathname === '/admin') {
@@ -97,6 +126,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="space-y-0.5">
                 {group.items.map(item => {
                   const isActive = pathname === item.href;
+                  const showSupportBadge = item.href === '/admin/support' && unreadSupport > 0;
                   return (
                     <Link
                       key={item.href}
@@ -109,6 +139,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     >
                       <item.Icon className={`w-4 h-4 ${isActive ? 'text-white' : ''}`} />
                       {item.label}
+                      {showSupportBadge && (
+                        <span className="ml-auto min-w-[18px] h-[18px] px-1 rounded-full bg-[#FE2C55] text-white text-[10px] font-semibold flex items-center justify-center">
+                          {unreadSupport > 99 ? '99+' : unreadSupport}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}

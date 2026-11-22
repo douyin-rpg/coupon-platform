@@ -60,6 +60,7 @@ import {
   Pic as IconParkPic,
   Key as IconParkKey,
   Link as IconParkLink,
+  Send as IconParkSend,
 } from '@icon-park/react';
 
 // 统一图标主题
@@ -94,6 +95,14 @@ export function UserIcon({ className = "w-5 h-5", filled = false }: IconProps) {
 
 export function HeadphoneIcon({ className = "w-5 h-5", filled = false }: IconProps) {
   return <IconParkHeadset theme={filled ? 'filled' : 'outline'} size="1em" {...iconTheme} className={className} />;
+}
+
+export function SendIcon({ className = "w-5 h-5", filled = false }: IconProps) {
+  return <IconParkSend theme={filled ? 'filled' : 'outline'} size="1em" {...iconTheme} className={className} />;
+}
+
+export function ChatIcon({ className = "w-5 h-5", filled = false }: IconProps) {
+  return <IconParkMessage theme={filled ? 'filled' : 'outline'} size="1em" {...iconTheme} className={className} />;
 }
 
 // ===== 功能图标 =====

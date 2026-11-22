@@ -164,11 +164,41 @@ INSERT INTO public.system_settings (key, value, updated_at)
 VALUES ('withdraw_fee_rate', '1', now())
 ON CONFLICT (key) DO NOTHING;
 
+-- ---------- 13. 在线客服：会话表 + 消息表 ----------
+CREATE TABLE IF NOT EXISTS public.chat_conversations (
+  id varchar(36) DEFAULT gen_random_uuid() NOT NULL,
+  user_id varchar(36) NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  admin_id varchar(36),
+  status varchar(20) DEFAULT 'open'::varchar NOT NULL,
+  last_message text,
+  last_message_at timestamptz,
+  unread_user int DEFAULT 0 NOT NULL,
+  unread_admin int DEFAULT 0 NOT NULL,
+  created_at timestamptz DEFAULT now() NOT NULL,
+  updated_at timestamptz DEFAULT now() NOT NULL,
+  CONSTRAINT chat_conversations_pkey PRIMARY KEY (id)
+);
+CREATE INDEX IF NOT EXISTS chat_conversations_user_idx ON public.chat_conversations USING btree (user_id);
+CREATE INDEX IF NOT EXISTS chat_conversations_status_idx ON public.chat_conversations USING btree (status, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS public.chat_messages (
+  id varchar(36) DEFAULT gen_random_uuid() NOT NULL,
+  conversation_id varchar(36) NOT NULL REFERENCES public.chat_conversations(id) ON DELETE CASCADE,
+  sender varchar(20) NOT NULL,
+  content text NOT NULL,
+  is_read boolean DEFAULT false NOT NULL,
+  created_at timestamptz DEFAULT now() NOT NULL,
+  CONSTRAINT chat_messages_pkey PRIMARY KEY (id)
+);
+CREATE INDEX IF NOT EXISTS chat_messages_conversation_idx ON public.chat_messages USING btree (conversation_id, created_at ASC);
+
 -- ---------- 完成提示 ----------
 SELECT '数据库结构升级完成！' AS result,
        (SELECT to_regclass('public.red_packets')) AS red_packets_ok,
        (SELECT to_regclass('public.admin_notifications')) AS admin_notifications_ok,
        (SELECT to_regclass('public.withdrawals')) AS withdrawals_ok,
+       (SELECT to_regclass('public.chat_conversations')) AS chat_conversations_ok,
+       (SELECT to_regclass('public.chat_messages')) AS chat_messages_ok,
        (SELECT column_name FROM information_schema.columns
         WHERE table_schema='public' AND table_name='withdrawals' AND column_name='payment_account'
         LIMIT 1) AS payment_account_ok,

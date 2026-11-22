@@ -15,7 +15,7 @@ interface Session { id: string; name: string; start_time: string; end_time: stri
 interface Coupon { id: string; name: string; price: number; image_url: string; remaining_quantity: number; total_quantity: number; session_id: string; category_id: string; description: string; }
 interface Article { id: string; title: string; created_at: string; }
 
-import { UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, CheckIcon, StreamIcon, GoldIcon, ShoppingBagIcon, InfoIcon, FlashIcon, CategoryIcon } from '@/components/icons';
+import { UserIcon, SearchIcon, ChevronRightIcon, AnnounceIcon, CouponIcon, CheckIcon, StreamIcon, GoldIcon, ShoppingBagIcon, InfoIcon, FlashIcon, CategoryIcon, HeadphoneIcon } from '@/components/icons';
 
 const categoryIconMap: Record<string, React.FC<{ className?: string }>> = {
   '官方优惠券': CouponIcon,
@@ -165,6 +165,10 @@ export default function HomePage() {
               <span className="text-white font-medium border-b-2 border-white pb-0.5">首页</span>
               <Link href="/cart" className="hover:text-white transition-colors">购物车</Link>
               <Link href="/profile/order" className="hover:text-white transition-colors">我的订单</Link>
+              <Link href="/support" className="hover:text-white transition-colors flex items-center gap-1">
+                <HeadphoneIcon className="w-4 h-4" />
+                在线客服
+              </Link>
               <Link href="/announcements" className="hover:text-white transition-colors">公告中心</Link>
             </div>
             <div className="flex items-center gap-3">
