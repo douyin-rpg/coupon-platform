@@ -12,6 +12,8 @@ import {
   listConversationsByStatus,
   getSupportSettings,
   updateSupportSettings,
+  updateConversationTags,
+  updateConversationRemark,
   describeDevice,
   type SupportSettings,
 } from '@/lib/support';
@@ -141,6 +143,34 @@ export async function PATCH(request: NextRequest) {
     }
 
     const conversation = await getConversationById(conversationId);
+
+    // 设置客户标签
+    if (action === 'tags') {
+      if (!Array.isArray(body.tags)) {
+        return NextResponse.json({ error: '标签格式错误' }, { status: 400 });
+      }
+      const tags = body.tags
+        .map((t: unknown) => (typeof t === 'string' ? t.trim() : ''))
+        .filter((t: string) => t && t.length <= 20)
+        .slice(0, 10);
+      const updated = await updateConversationTags(conversationId, tags);
+      if (!updated) {
+        return NextResponse.json({ error: '设置标签失败' }, { status: 500 });
+      }
+      notifyChatUpdate({ type: 'chat:tags', payload: { conversation: updated } });
+      return NextResponse.json({ conversation: updated });
+    }
+
+    // 设置客户备注
+    if (action === 'remark') {
+      const remark = typeof body.remark === 'string' ? body.remark.trim().slice(0, 200) : '';
+      const updated = await updateConversationRemark(conversationId, remark);
+      if (!updated) {
+        return NextResponse.json({ error: '设置备注失败' }, { status: 500 });
+      }
+      notifyChatUpdate({ type: 'chat:remark', payload: { conversation: updated } });
+      return NextResponse.json({ conversation: updated });
+    }
 
     if (action === 'close') {
       const closed = await closeConversation(conversationId, 'admin');

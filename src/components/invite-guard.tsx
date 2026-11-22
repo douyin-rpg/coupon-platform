@@ -10,7 +10,7 @@ export function InviteGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Skip check for invite page itself and admin pages
-    if (pathname === '/invite' || pathname.startsWith('/admin') || pathname === '/login' || pathname === '/register') {
+    if (pathname === '/invite' || pathname.startsWith('/admin') || pathname === '/kefu' || pathname === '/login' || pathname === '/register') {
       setChecked(true);
       return;
     }

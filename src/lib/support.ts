@@ -16,6 +16,8 @@ export interface ChatConversation {
   closed_at?: string | null;
   visitor_ip?: string | null;
   visitor_ua?: string | null;
+  tags?: string[] | null;
+  remark?: string | null;
 }
 
 export interface ChatMessage {
@@ -346,4 +348,82 @@ export async function updateSupportSettings(
       .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
   }
   return getSupportSettings();
+}
+
+// ─── 会话客户标签 / 备注 ───────────────────
+export async function updateConversationTags(
+  conversationId: string,
+  tags: string[],
+): Promise<ChatConversation | null> {
+  const supabase = getSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from('chat_conversations')
+    .update({ tags })
+    .eq('id', conversationId)
+    .select('*')
+    .maybeSingle();
+  if (error) return null;
+  return data as ChatConversation;
+}
+
+export async function updateConversationRemark(
+  conversationId: string,
+  remark: string,
+): Promise<ChatConversation | null> {
+  const supabase = getSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from('chat_conversations')
+    .update({ remark })
+    .eq('id', conversationId)
+    .select('*')
+    .maybeSingle();
+  if (error) return null;
+  return data as ChatConversation;
+}
+
+// ─── 快捷话术库 ──────────────────────────
+export interface QuickReply {
+  id: string;
+  content: string;
+  category: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export async function listQuickReplies(): Promise<QuickReply[]> {
+  const supabase = getSupabaseAdminClient();
+  const { data } = await supabase
+    .from('quick_replies')
+    .select('*')
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+    .limit(200);
+  return (data as QuickReply[]) || [];
+}
+
+export async function createQuickReply(input: {
+  content: string;
+  category?: string;
+  sort_order?: number;
+}): Promise<QuickReply | null> {
+  const supabase = getSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from('quick_replies')
+    .insert({
+      content: input.content,
+      category: input.category || '通用',
+      sort_order: input.sort_order ?? 0,
+    })
+    .select('*')
+    .single();
+  if (error) return null;
+  return data as QuickReply;
+}
+
+export async function deleteQuickReply(id: string): Promise<boolean> {
+  const supabase = getSupabaseAdminClient();
+  const { error } = await supabase.from('quick_replies').update({ is_active: false }).eq('id', id);
+  return !error;
 }

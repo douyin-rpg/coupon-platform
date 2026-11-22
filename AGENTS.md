@@ -24,6 +24,8 @@
 │   │   ├── register/page.tsx        # 用户注册
 │   │   ├── coupon/[id]/page.tsx     # 商品详情页
 │   │   ├── cart/page.tsx            # 购物车
+│   │   ├── support/page.tsx         # 用户端在线客服
+│   │   ├── kefu/page.tsx            # 独立客服工作台（CRMChat 风格三栏）
 │   │   ├── profile/(layout)/        # 个人中心（共享侧边栏布局）
 │   │   │   ├── page.tsx             # 个人中心概览
 │   │   │   ├── order/               # 我的订单
@@ -48,23 +50,39 @@
 │   │   │   ├── withdrawals/         # 提现审核
 │   │   │   ├── categories/          # 分类管理
 │   │   │   └── banners/             # 轮播图管理
+│   │   ├── support/page.tsx         # 用户端在线客服
+│   │   ├── kefu/page.tsx            # 独立客服工作台（CRMChat 风格三栏）
+│   │   ├── admin/                   # 管理后台
+│   │   │   ├── page.tsx             # 管理员登录
+│   │   │   ├── support/             # 在线客服（兼容旧入口，主入口为 /kefu）
+│   │   │   ├── ...                  # 其余后台页面略
 │   │   └── api/                     # API 路由
-│   ├── contexts/
-│   │   └── auth-context.tsx         # 全局认证上下文
+│   │       ├── user/support/        # 用户端客服 REST（GET 会话+设置 / POST 消息含图片）
+│   │       ├── admin/support/       # 管理端客服 REST（列表/详情/发送/设置/标签/备注/关闭/重开）
+│   │       ├── admin/quick-replies/ # 话术库 CRUD
+│   │       └── ...                  # 其余 API 略
 │   ├── lib/
 │   │   ├── auth.ts                  # JWT 认证工具
-│   │   └── utils.ts                 # 通用工具函数
-│   └── storage/database/
-│       ├── supabase-client.ts       # Supabase 客户端
-│       └── shared/schema.ts         # 数据库表结构 (Drizzle)
+│   │   ├── utils.ts                 # 通用工具函数
+│   │   ├── support.ts               # 客服数据访问（会话/消息/设置/话术/标签/备注/IP/设备）
+│   │   ├── ws-client.ts             # WebSocket 客户端（10s 心跳 / 1s 重连）
+│   │   ├── sound.ts                 # 客服工作台提示音（Web Audio 合成 + 标题闪烁）
+│   │   └── jwt.ts                   # 纯 JWT 模块（custom server 使用）
+│   ├── ws-handlers/
+│   │   └── chat.ts                  # WS 客服处理器（globalThis 共享连接注册表）
+│   ├── server.ts                    # custom server（HTTP+WS 同端口 /ws/chat）
 ├── DESIGN.md                        # 设计规范
 └── AGENTS.md                        # 项目文档
 ```
 
-## 数据库表（11张）
+## 数据库表
 
 - users, registration_codes, grab_sessions, coupons, user_coupons, redemption_requests, withdrawals
 - transaction_logs（交易明细）, categories（分类）, cart_items（购物车）, banners（轮播图）, addresses（收货地址）
+- chat_conversations（客服会话：status/last_message/unread/visitor_ip/visitor_ua/tags/remark/closed_*）
+- chat_messages（客服消息：sender/content/is_read/msg_type/image_url）
+- quick_replies（话术库：content/category/sort_order）
+- system_settings（系统配置：support_online/support_work_start/support_work_end/support_auto_greeting）
 
 ## 核心业务流程
 

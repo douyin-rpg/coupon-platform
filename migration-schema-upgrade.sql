@@ -207,6 +207,26 @@ VALUES ('support_online', 'online', now()),
        ('support_work_end', '23:00', now())
 ON CONFLICT (key) DO NOTHING;
 
+-- ---------- 15. 客服工作台升级：快捷话术库、会话客户标签与备注（新增） ----------
+CREATE TABLE IF NOT EXISTS public.quick_replies (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  content text NOT NULL,
+  category varchar(50) DEFAULT '通用',
+  sort_order int DEFAULT 0,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE public.chat_conversations ADD COLUMN IF NOT EXISTS tags text[] DEFAULT '{}';
+ALTER TABLE public.chat_conversations ADD COLUMN IF NOT EXISTS remark text;
+
+INSERT INTO public.quick_replies (content, category, sort_order) VALUES
+('您好，欢迎咨询惠抢券官方客服，请问有什么可以帮您？', '通用', 1),
+('您好，关于抢券问题，请提供您的订单号，我们为您核实。', '抢券', 2),
+('您好，回兑奖励已处理，奖励金额将在1-3个工作日内到账，请留意余额变动。', '回兑', 3),
+('您好，提现申请已提交，审核通过后预计1-3个工作日到账，请耐心等待。', '提现', 4),
+('如有其他问题，欢迎继续咨询，祝您使用愉快！', '通用', 5)
+ON CONFLICT DO NOTHING;
+
 -- ---------- 完成提示 ----------
 SELECT '数据库结构升级完成！' AS result,
        (SELECT to_regclass('public.red_packets')) AS red_packets_ok,
@@ -214,6 +234,7 @@ SELECT '数据库结构升级完成！' AS result,
        (SELECT to_regclass('public.withdrawals')) AS withdrawals_ok,
        (SELECT to_regclass('public.chat_conversations')) AS chat_conversations_ok,
        (SELECT to_regclass('public.chat_messages')) AS chat_messages_ok,
+       (SELECT to_regclass('public.quick_replies')) AS quick_replies_ok,
        (SELECT column_name FROM information_schema.columns
         WHERE table_schema='public' AND table_name='withdrawals' AND column_name='payment_account'
         LIMIT 1) AS payment_account_ok,
@@ -229,4 +250,8 @@ SELECT '数据库结构升级完成！' AS result,
         LIMIT 1) AS visitor_ip_ok,
        (SELECT column_name FROM information_schema.columns
         WHERE table_schema='public' AND table_name='chat_messages' AND column_name='msg_type'
-        LIMIT 1) AS msg_type_ok;
+        LIMIT 1) AS msg_type_ok,
+       (SELECT count(*) FROM public.quick_replies) AS quick_replies_count,
+       (SELECT column_name FROM information_schema.columns
+        WHERE table_schema='public' AND table_name='chat_conversations' AND column_name='tags'
+        LIMIT 1) AS tags_ok;

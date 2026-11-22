@@ -49,7 +49,7 @@ export function createWsConnection({ path, onMessage, onOpen, onClose, onError }
     ws.onopen = () => {
       alive = true;
       cleanup();
-      heartbeatTimer = setInterval(heartbeat, 30000);
+      heartbeatTimer = setInterval(heartbeat, 10000); // 10s 心跳，更快感知断线
       onOpen?.();
     };
 
@@ -70,7 +70,7 @@ export function createWsConnection({ path, onMessage, onOpen, onClose, onError }
       cleanup();
       onClose?.();
       if (!closed) {
-        reconnectTimer = setTimeout(connect, 3000);
+        reconnectTimer = setTimeout(connect, 1000); // 1s 快速重连，降低消息延迟
       }
     };
 

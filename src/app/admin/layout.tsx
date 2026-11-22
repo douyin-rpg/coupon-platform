@@ -11,7 +11,19 @@ import {
 } from '@/components/icons';
 import { useEffect, useState } from 'react';
 
-const sidebarGroups = [
+interface SidebarItem {
+  href: string;
+  label: string;
+  Icon: (props: { className?: string; filled?: boolean }) => React.ReactElement;
+  external?: boolean;
+}
+
+interface SidebarGroup {
+  label: string;
+  items: SidebarItem[];
+}
+
+const sidebarGroups: SidebarGroup[] = [
   {
     label: '数据概览',
     items: [
@@ -55,7 +67,7 @@ const sidebarGroups = [
   {
     label: '客户服务',
     items: [
-      { href: '/admin/support', label: '在线客服', Icon: HeadphoneIcon },
+      { href: '/kefu', label: '客服工作台', Icon: HeadphoneIcon, external: true },
     ],
   },
   {
@@ -126,7 +138,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="space-y-0.5">
                 {group.items.map(item => {
                   const isActive = pathname === item.href;
-                  const showSupportBadge = item.href === '/admin/support' && unreadSupport > 0;
+                  const showSupportBadge =
+                    (item.href === '/kefu' || item.href === '/admin/support') && unreadSupport > 0;
+                  const isExternal = item.external === true;
+                  if (isExternal) {
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-all duration-150 ${
+                          isActive
+                            ? 'bg-[#1890FF] text-white font-medium shadow-lg shadow-[#1890FF]/20'
+                            : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
+                        }`}
+                      >
+                        <item.Icon className={`w-4 h-4 ${isActive ? 'text-white' : ''}`} />
+                        {item.label}
+                        <span className="ml-auto text-[9px] text-gray-500 border border-white/10 rounded px-1 py-px">
+                          新窗
+                        </span>
+                        {showSupportBadge && (
+                          <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#FE2C55] text-white text-[10px] font-semibold flex items-center justify-center">
+                            {unreadSupport > 99 ? '99+' : unreadSupport}
+                          </span>
+                        )}
+                      </a>
+                    );
+                  }
                   return (
                     <Link
                       key={item.href}

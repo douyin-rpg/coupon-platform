@@ -22,9 +22,21 @@ interface ChatEnvelope {
   payload?: Record<string, unknown> | null;
 }
 
-// ─── 连接注册表 ────────────────────────────────
-const userSockets = new Map<string, Set<WebSocket>>();
-const adminSockets = new Set<WebSocket>();
+// ─── 连接注册表（globalThis 共享单例，确保 custom server 与 Next.js API Routes 使用同一实例） ──
+interface ChatSockets {
+  userSockets: Map<string, Set<WebSocket>>;
+  adminSockets: Set<WebSocket>;
+}
+
+function getChatSockets(): ChatSockets {
+  const g = globalThis as unknown as { __chatSockets?: ChatSockets };
+  if (!g.__chatSockets) {
+    g.__chatSockets = { userSockets: new Map(), adminSockets: new Set() };
+  }
+  return g.__chatSockets;
+}
+
+const { userSockets, adminSockets } = getChatSockets();
 
 function parseCookies(req: IncomingMessage): Record<string, string> {
   const header = req.headers.cookie || '';
