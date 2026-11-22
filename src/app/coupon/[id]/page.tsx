@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { getBeijingMinutes } from "@/lib/utils";
 import { ArrowLeftIcon, CheckCircleIcon, ChevronRightIcon, ClockIcon, CouponIcon, CreditCardIcon, InfoIcon, LockIcon, ShieldIcon, ShoppingCartIcon, XIcon } from '@/components/icons';
 import BottomNav from "@/components/bottom-nav";
 import Footer from "@/components/footer";
@@ -60,8 +61,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
   }, [id]);
 
   const getActiveSession = (): Session | null => {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const currentMinutes = getBeijingMinutes();
     for (const s of sessions) {
       if (!s.is_active) continue;
       const [sh, sm] = s.start_time.split(":").map(Number);
@@ -74,8 +74,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
   };
 
   const getNextSession = (): Session | null => {
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const currentMinutes = getBeijingMinutes();
     let next: Session | null = null;
     let minDiff = Infinity;
     for (const s of sessions) {
@@ -212,8 +211,7 @@ export default function CouponDetailPage({ params }: { params: Promise<{ id: str
               </div>
               <div className="space-y-2">
                 {sessions.map((s) => {
-                  const now = new Date();
-                  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                  const currentMinutes = getBeijingMinutes();
                   const [sh, sm] = s.start_time.split(":").map(Number);
                   const [eh, em] = s.end_time.split(":").map(Number);
                   const isActive = currentMinutes >= sh * 60 + sm && currentMinutes <= eh * 60 + em && s.is_active;

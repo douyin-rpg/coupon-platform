@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
 import { getCurrentUser } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
+import { getBeijingMinutes } from '@/lib/utils';
 
 export async function POST(request: Request) {
   try {
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
     if (sessionsError) throw new Error(`查询场次失败: ${sessionsError.message}`);
 
     const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const currentMinutes = getBeijingMinutes(now);
     const activeSession = sessions?.find((s: { start_time: string; end_time: string }) => {
       const [startH, startM] = s.start_time.split(':').map(Number);
       const [endH, endM] = s.end_time.split(':').map(Number);

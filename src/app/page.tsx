@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/auth-context';
+import { getBeijingTime, getBeijingMinutes } from '@/lib/utils';
 
 import BottomNav from '@/components/bottom-nav';
 import Footer from '@/components/footer';
@@ -70,8 +71,7 @@ export default function HomePage() {
   }, [articles.length]);
 
   const getSessionStatus = useCallback((session: Session): 'active' | 'upcoming' | 'ended' => {
-    const d = new Date(now);
-    const curMin = d.getHours() * 60 + d.getMinutes();
+    const curMin = getBeijingMinutes(new Date(now));
     const [sh, sm] = session.start_time.split(':').map(Number);
     const [eh, em] = session.end_time.split(':').map(Number);
     const s = sh * 60 + sm;
@@ -82,9 +82,9 @@ export default function HomePage() {
   }, [now]);
 
   const getCountdown = useCallback((session: Session): string | null => {
-    const d = new Date(now);
-    const curMin = d.getHours() * 60 + d.getMinutes();
-    const curSec = d.getSeconds();
+    const bt = getBeijingTime(new Date(now));
+    const curMin = bt.hours * 60 + bt.minutes;
+    const curSec = bt.seconds;
     const [sh, sm] = session.start_time.split(':').map(Number);
     const [eh, em] = session.end_time.split(':').map(Number);
     const s = sh * 60 + sm;
