@@ -61,6 +61,11 @@ import {
   Key as IconParkKey,
   Link as IconParkLink,
   Send as IconParkSend,
+  Music as IconParkMusic,
+  Picture as IconParkPicture,
+  Phone as IconParkPhone,
+  Power as IconParkPower,
+  Earth as IconParkEarth,
 } from '@icon-park/react';
 
 // 统一图标主题
@@ -273,6 +278,26 @@ export function MoreIcon({ className = "w-5 h-5" }: IconProps) {
 
 export function HelpIcon({ className = "w-5 h-5" }: IconProps) {
   return <IconParkHelp theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function MusicIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkMusic theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function PictureIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkPicture theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function PhoneIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkPhone theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function PowerIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkPower theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function EarthIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkEarth theme="outline" size="1em" {...iconTheme} className={className} />;
 }
 
 export function PeopleIcon({ className = "w-5 h-5" }: IconProps) {

@@ -192,6 +192,21 @@ CREATE TABLE IF NOT EXISTS public.chat_messages (
 );
 CREATE INDEX IF NOT EXISTS chat_messages_conversation_idx ON public.chat_messages USING btree (conversation_id, created_at ASC);
 
+-- ---------- 14. 在线客服升级：会话访客信息/关闭字段、消息图片类型、客服工作设置（新增） ----------
+ALTER TABLE public.chat_conversations ADD COLUMN IF NOT EXISTS closed_by varchar(20);
+ALTER TABLE public.chat_conversations ADD COLUMN IF NOT EXISTS closed_at timestamptz;
+ALTER TABLE public.chat_conversations ADD COLUMN IF NOT EXISTS visitor_ip varchar(45);
+ALTER TABLE public.chat_conversations ADD COLUMN IF NOT EXISTS visitor_ua text;
+
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS msg_type varchar(10) NOT NULL DEFAULT 'text';
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS image_url text;
+
+INSERT INTO public.system_settings (key, value, updated_at)
+VALUES ('support_online', 'online', now()),
+       ('support_work_start', '09:00', now()),
+       ('support_work_end', '23:00', now())
+ON CONFLICT (key) DO NOTHING;
+
 -- ---------- 完成提示 ----------
 SELECT '数据库结构升级完成！' AS result,
        (SELECT to_regclass('public.red_packets')) AS red_packets_ok,
@@ -206,4 +221,12 @@ SELECT '数据库结构升级完成！' AS result,
         WHERE table_schema='public' AND table_name='withdrawals' AND column_name='fee'
         LIMIT 1) AS fee_ok,
        (SELECT value FROM public.system_settings WHERE key='withdraw_fee_rate'
-        LIMIT 1) AS withdraw_fee_rate;
+        LIMIT 1) AS withdraw_fee_rate,
+       (SELECT value FROM public.system_settings WHERE key='support_online'
+        LIMIT 1) AS support_online_ok,
+       (SELECT column_name FROM information_schema.columns
+        WHERE table_schema='public' AND table_name='chat_conversations' AND column_name='visitor_ip'
+        LIMIT 1) AS visitor_ip_ok,
+       (SELECT column_name FROM information_schema.columns
+        WHERE table_schema='public' AND table_name='chat_messages' AND column_name='msg_type'
+        LIMIT 1) AS msg_type_ok;
