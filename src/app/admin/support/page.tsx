@@ -38,6 +38,7 @@ const DEFAULT_SETTINGS: SupportSettings = {
   work_start: '09:00',
   work_end: '23:00',
   auto_greeting: '',
+  avatar: '',
 };
 
 const STATUS_LABEL: Record<string, { text: string; dot: string; badge: string }> = {

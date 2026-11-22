@@ -18,6 +18,7 @@ const DEFAULT_SETTINGS: SupportSettings = {
   work_start: '09:00',
   work_end: '23:00',
   auto_greeting: '',
+  avatar: '',
 };
 
 function compressImage(file: File, maxSize = 900, quality = 0.72): Promise<string> {
@@ -186,7 +187,7 @@ export default function SupportPage() {
       } catch {
         // ignore
       }
-    }, 5000);
+    }, 2500);
     return () => clearInterval(timer);
   }, [user, connected]);
 
@@ -307,11 +308,19 @@ export default function SupportPage() {
           >
             <ArrowLeftIcon className="w-5 h-5" />
           </button>
-          {/* 抖音音符客服头像 */}
+          {/* 抖音音符客服头像（可配置真实头像） */}
           <div className="relative">
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#7B61FF] flex items-center justify-center shadow-lg shadow-[#00D4FF]/25 ring-2 ring-white/20">
-              <MusicIcon className="w-6 h-6 text-white" filled />
-            </div>
+            {settings.avatar ? (
+              <img
+                src={settings.avatar}
+                alt="客服"
+                className="w-11 h-11 rounded-full object-cover shadow-lg shadow-[#00D4FF]/20 ring-2 ring-white/20"
+              />
+            ) : (
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#7B61FF] flex items-center justify-center shadow-lg shadow-[#00D4FF]/25 ring-2 ring-white/20">
+                <MusicIcon className="w-6 h-6 text-white" filled />
+              </div>
+            )}
             <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-[#0A1A30] ${statusColor}`} />
           </div>
           <div className="flex-1">
@@ -392,6 +401,21 @@ export default function SupportPage() {
             const isImage = msg.msg_type === 'image';
             return (
               <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                {!isMine && (
+                  <div className="flex-shrink-0 mr-2 mt-1">
+                    {settings.avatar ? (
+                      <img
+                        src={settings.avatar}
+                        alt="客服"
+                        className="w-7 h-7 rounded-full object-cover ring-1 ring-[#00D4FF]/30"
+                      />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#7B61FF] flex items-center justify-center">
+                        <MusicIcon className="w-3.5 h-3.5 text-white" filled />
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className={`max-w-[78%] flex ${isMine ? 'flex-row-reverse' : 'flex-row'} items-end gap-1.5`}>
                   {isImage ? (
                     <div

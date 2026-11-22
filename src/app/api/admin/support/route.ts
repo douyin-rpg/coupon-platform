@@ -124,6 +124,9 @@ export async function PATCH(request: NextRequest) {
       if (typeof body.work_start === 'string') patch.work_start = body.work_start;
       if (typeof body.work_end === 'string') patch.work_end = body.work_end;
       if (typeof body.auto_greeting === 'string') patch.auto_greeting = body.auto_greeting;
+      if (typeof body.avatar === 'string' && body.avatar.length <= 512 * 1024) {
+        patch.avatar = body.avatar;
+      }
       if (Object.keys(patch).length === 0) {
         return NextResponse.json({ error: '参数不完整' }, { status: 400 });
       }

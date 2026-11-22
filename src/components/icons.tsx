@@ -208,6 +208,14 @@ export function BellIcon({ className = "w-5 h-5" }: IconProps) {
   return <IconParkBellRing theme="outline" size="1em" {...iconTheme} className={className} />;
 }
 
+export function ChartIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkFinance theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
+export function GearIcon({ className = "w-5 h-5" }: IconProps) {
+  return <IconParkSetting theme="outline" size="1em" {...iconTheme} className={className} />;
+}
+
 export function FileTextIcon({ className = "w-5 h-5" }: IconProps) {
   return <IconParkDocumentFolder theme="outline" size="1em" {...iconTheme} className={className} />;
 }

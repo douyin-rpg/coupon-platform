@@ -36,6 +36,8 @@ export interface SupportSettings {
   work_start: string;
   work_end: string;
   auto_greeting: string;
+  /** 客服头像（dataURL，可上传更换） */
+  avatar: string;
 }
 
 const DEFAULT_SETTINGS: SupportSettings = {
@@ -43,6 +45,7 @@ const DEFAULT_SETTINGS: SupportSettings = {
   work_start: '09:00',
   work_end: '23:00',
   auto_greeting: '您好，欢迎来到惠抢券在线客服～请描述您遇到的问题，如：抢券失败、回兑进度、提现到账、账户绑定等，我们会尽快为您解答。',
+  avatar: '',
 };
 
 /** 从请求中解析访客 IP（优先 x-forwarded-for，其次真实 IP 头） */
@@ -329,6 +332,7 @@ export async function getSupportSettings(): Promise<SupportSettings> {
     work_start: map['support_work_start'] || DEFAULT_SETTINGS.work_start,
     work_end: map['support_work_end'] || DEFAULT_SETTINGS.work_end,
     auto_greeting: map['support_auto_greeting'] || DEFAULT_SETTINGS.auto_greeting,
+    avatar: map['support_avatar'] || '',
   };
 }
 
@@ -341,11 +345,17 @@ export async function updateSupportSettings(
   if (patch.work_start !== undefined) entries.push(['support_work_start', patch.work_start]);
   if (patch.work_end !== undefined) entries.push(['support_work_end', patch.work_end]);
   if (patch.auto_greeting !== undefined) entries.push(['support_auto_greeting', patch.auto_greeting]);
+  if (patch.avatar !== undefined) entries.push(['support_avatar', patch.avatar]);
 
   for (const [key, value] of entries) {
-    await supabase
-      .from('system_settings')
-      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    if (value === '') {
+      // 空值（如清除头像）→ 删除该键
+      await supabase.from('system_settings').delete().eq('key', key);
+    } else {
+      await supabase
+        .from('system_settings')
+        .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+    }
   }
   return getSupportSettings();
 }

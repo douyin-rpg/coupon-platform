@@ -18,6 +18,10 @@ import {
   XIcon,
   ClockIcon,
   MoreIcon,
+  ChatIcon,
+  BellIcon,
+  ChartIcon,
+  GearIcon,
 } from '@/components/icons';
 import {
   playNewMessageSound,
@@ -62,6 +66,7 @@ const DEFAULT_SETTINGS: SupportSettings = {
   work_start: '09:00',
   work_end: '23:00',
   auto_greeting: '',
+  avatar: '',
 };
 
 const STATUS_META: Record<string, { text: string; dot: string; label: string }> = {
@@ -135,13 +140,16 @@ export default function KefuWorkbenchPage() {
 
   // ── 话术库 ──
   const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
-  const [showQuickPanel, setShowQuickPanel] = useState(false);
   const [newReplyContent, setNewReplyContent] = useState('');
+
+  // ── 左侧图标栏功能面板切换 ──
+  const [leftPanel, setLeftPanel] = useState<'conversations' | 'quickreplies'>('conversations');
 
   // refs
   const connRef = useRef<WsConnection | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
   const activeRef = useRef<string | null>(null);
   activeRef.current = activeId;
   const conversationsRef = useRef<ConversationItem[]>([]);
@@ -157,7 +165,7 @@ export default function KefuWorkbenchPage() {
     });
   }, []);
 
-  // 拉取会话列表
+  // 拉取会话列表（轮询高频调用，不覆盖正在编辑的表单值）
   const fetchConversations = useCallback(async () => {
     try {
       const res = await fetch(`/api/admin/support?status=${filter}`);
@@ -173,9 +181,6 @@ export default function KefuWorkbenchPage() {
         setUnreadTotal(unread);
         if (data.settings) {
           setSettings(data.settings as SupportSettings);
-          setWorkStart(data.settings.work_start || '09:00');
-          setWorkEnd(data.settings.work_end || '23:00');
-          setGreeting(data.settings.auto_greeting || '');
         }
       }
     } catch {
@@ -252,6 +257,40 @@ export default function KefuWorkbenchPage() {
         if (data.settings) setSettings(data.settings as SupportSettings);
         setShowSettings(false);
       }
+    } catch {
+      // ignore
+    }
+  };
+
+  // 更换客服头像（压缩为小尺寸 dataURL 存入设置）
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !file.type.startsWith('image/')) return;
+    try {
+      const dataUrl = await compressImage(file, 160, 0.85);
+      // 压缩后仍可能较大，限制 200KB 以内
+      if (dataUrl.length > 200 * 1024) return;
+      setSettings(prev => ({ ...prev, avatar: dataUrl }));
+      await fetch('/api/admin/support', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'settings', avatar: dataUrl }),
+      });
+    } catch {
+      // ignore
+    }
+  };
+
+  // 移除客服头像
+  const clearAvatar = async () => {
+    setSettings(prev => ({ ...prev, avatar: '' }));
+    try {
+      await fetch('/api/admin/support', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'settings', avatar: '' }),
+      });
     } catch {
       // ignore
     }
@@ -493,6 +532,24 @@ export default function KefuWorkbenchPage() {
     const prefs = getSoundPrefs();
     setSoundOn(prefs.enabled);
     soundOnRef.current = prefs.enabled;
+    // 首次加载完成后同步一次表单值（用于设置弹窗），此后由 WS/保存事件更新
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/support?status=all');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.settings) {
+            const s = data.settings as SupportSettings;
+            setSettings(s);
+            setWorkStart(s.work_start || '09:00');
+            setWorkEnd(s.work_end || '23:00');
+            setGreeting(s.auto_greeting || '');
+          }
+        }
+      } catch {
+        // ignore
+      }
+    })();
   }, [fetchConversations, fetchQuickReplies]);
 
   // 提示音开关
@@ -505,14 +562,17 @@ export default function KefuWorkbenchPage() {
     });
   };
 
-  // 轮询兜底（WS 断开时 3s 刷新，比之前 5s 更快）
+  // 轮询兜底（WS 断开时 2s 刷新会话列表 + 当前会话消息，保证前后端可交流）
   useEffect(() => {
     if (connected) return;
     const timer = setInterval(() => {
       fetchConversations();
-    }, 3000);
+      // 关键：同步刷新当前正在查看的会话消息，否则 WS 断开时收不到用户新消息
+      const id = activeRef.current;
+      if (id) loadMessages(id);
+    }, 2000);
     return () => clearInterval(timer);
-  }, [connected, fetchConversations]);
+  }, [connected, fetchConversations, loadMessages]);
 
   // 发送
   const sendContent = useCallback(
@@ -616,9 +676,35 @@ export default function KefuWorkbenchPage() {
       <header className="h-14 flex-shrink-0 flex items-center justify-between px-4 bg-gradient-to-r from-[#060E1A] via-[#0A1A30] to-[#060E1A] border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-lg bg-gradient-to-bl from-[#00D4FF] to-[#7B61FF] flex items-center justify-center shadow-lg shadow-[#7B61FF]/30">
-              <HeadphoneIcon className="w-4 h-4 text-white" filled />
-            </span>
+            {/* 客服头像（可点击更换） */}
+            <button
+              onClick={() => avatarInputRef.current?.click()}
+              className="relative group flex-shrink-0"
+              title="更换客服头像"
+            >
+              {settings.avatar ? (
+                <img
+                  src={settings.avatar}
+                  alt="客服头像"
+                  className="w-8 h-8 rounded-lg object-cover ring-2 ring-white/20 shadow-lg shadow-[#7B61FF]/30"
+                />
+              ) : (
+                <span className="w-8 h-8 rounded-lg bg-gradient-to-bl from-[#00D4FF] to-[#7B61FF] flex items-center justify-center shadow-lg shadow-[#7B61FF]/30">
+                  <HeadphoneIcon className="w-4 h-4 text-white" filled />
+                </span>
+              )}
+              <span className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#060E1A] ${activeStatus.dot}`} />
+              <span className="absolute inset-0 rounded-lg bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                <EditIcon className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </span>
+            </button>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
             <div className="leading-tight">
               <h1 className="text-[13px] font-bold text-white tracking-wide">惠抢券·客服工作台</h1>
               <p className={`text-[10px] ${connected ? 'text-green-400' : 'text-amber-400'}`}>
@@ -693,6 +779,43 @@ export default function KefuWorkbenchPage() {
               </button>
             </div>
             <div className="space-y-4">
+              {/* 客服头像设置 */}
+              <div>
+                <label className="text-xs text-gray-500 block mb-2">客服头像（用户端同步展示）</label>
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    {settings.avatar ? (
+                      <img
+                        src={settings.avatar}
+                        alt="客服头像"
+                        className="w-16 h-16 rounded-2xl object-cover shadow-md shadow-[#7B61FF]/20 ring-2 ring-[#00D4FF]/30"
+                      />
+                    ) : (
+                      <span className="w-16 h-16 rounded-2xl bg-gradient-to-bl from-[#00D4FF] to-[#7B61FF] flex items-center justify-center shadow-md shadow-[#7B61FF]/20">
+                        <HeadphoneIcon className="w-7 h-7 text-white" filled />
+                      </span>
+                    )}
+                    <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white ${activeStatus.dot}`} />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <button
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="text-[11.5px] text-[#1890FF] bg-[#E6F7FF] border border-[#1890FF]/20 rounded-lg px-3 py-1.5 hover:bg-[#B9E6FF] transition-colors"
+                    >
+                      上传新头像
+                    </button>
+                    {settings.avatar && (
+                      <button
+                        onClick={clearAvatar}
+                        className="text-[11.5px] text-red-400 bg-red-50/60 border border-red-100 rounded-lg px-3 py-1.5 hover:bg-red-50 transition-colors"
+                      >
+                        恢复默认图标
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-300 mt-1.5">支持 JPG/PNG，自动压缩为 160px 圆形头像</p>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-gray-500 block mb-1.5">开始时间</label>
@@ -741,11 +864,166 @@ export default function KefuWorkbenchPage() {
         </div>
       )}
 
-      {/* ═══ 三栏工作台 ═══ */}
+      {/* ═══ 工作台（垂直图标栏 + 左功能面板 + 聊天区 + 右客户信息）═══ */}
       <div className="flex-1 flex overflow-hidden">
-        {/* ── 左：会话列表 ── */}
+        {/* ── 最左：垂直图标栏（CRMChat 风格）── */}
+        <aside className="w-[52px] flex-shrink-0 flex flex-col items-center bg-gradient-to-b from-[#060E1A] via-[#0A1A30] to-[#060E1A] border-r border-white/5 py-2.5 z-10">
+          {/* 客服头像（可上传，绿点在线） */}
+          <button
+            onClick={() => avatarInputRef.current?.click()}
+            className="relative group mb-4 cursor-pointer"
+            title="更换客服头像"
+          >
+            {settings.avatar ? (
+              <img
+                src={settings.avatar}
+                alt="客服"
+                className="w-9 h-9 rounded-full object-cover ring-2 ring-white/20 shadow-lg shadow-[#7B61FF]/30"
+              />
+            ) : (
+              <span className="w-9 h-9 rounded-full bg-gradient-to-bl from-[#00D4FF] to-[#7B61FF] flex items-center justify-center shadow-lg shadow-[#7B61FF]/30">
+                <HeadphoneIcon className="w-4.5 h-4.5 text-white" filled />
+              </span>
+            )}
+            <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#0A1A30] ${activeStatus.dot}`} />
+          </button>
+
+          {/* 图标组 */}
+          <div className="flex flex-col items-center gap-1 flex-1">
+            {/* 对话（当前激活） */}
+            <button
+              onClick={() => setLeftPanel('conversations')}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all relative ${
+                leftPanel === 'conversations'
+                  ? 'bg-gradient-to-br from-[#00D4FF] to-[#7B61FF] text-white shadow-lg shadow-[#7B61FF]/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/10'
+              }`}
+              title="会话列表"
+            >
+              <MoreIcon className="w-5 h-5" />
+              {unreadTotal > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-[#FE2C55] text-white text-[9px] font-bold flex items-center justify-center shadow-sm">
+                  {unreadTotal > 99 ? '99+' : unreadTotal}
+                </span>
+              )}
+            </button>
+            {/* 访客监控 */}
+            <button
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+              title="访客监控"
+            >
+              <EarthIcon className="w-5 h-5" />
+            </button>
+            {/* 消息 */}
+            <button
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all relative"
+              title="消息记录"
+            >
+              <ChatIcon className="w-5 h-5" />
+            </button>
+            {/* 数据统计 */}
+            <button
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+              title="数据统计"
+            >
+              <ChartIcon className="w-5 h-5" />
+            </button>
+            {/* 快捷话术（用户要求左侧功能栏） */}
+            <button
+              onClick={() => setLeftPanel(leftPanel === 'quickreplies' ? 'conversations' : 'quickreplies')}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                leftPanel === 'quickreplies'
+                  ? 'bg-gradient-to-br from-[#00D4FF] to-[#7B61FF] text-white shadow-lg shadow-[#7B61FF]/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/10'
+              }`}
+              title="快捷话术库"
+            >
+              <TagIcon className="w-5 h-5" />
+            </button>
+            {/* 系统通知 */}
+            <button
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+              title="系统通知"
+            >
+              <BellIcon className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* 底部：设置 & 收起 */}
+          <button
+            onClick={() => setShowSettings(true)}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+            title="客服工作设置（头像/在线/工作时间）"
+          >
+            <GearIcon className="w-5 h-5" />
+          </button>
+        </aside>
+
+        {/* ── 左功能面板：会话列表 / 快捷话术库 ── */}
         <aside className="w-72 lg:w-80 flex-shrink-0 flex flex-col bg-white border-r border-gray-100">
-          <div className="px-4 pt-4 pb-3 border-b border-gray-100">
+          {leftPanel === 'quickreplies' ? (
+            <>
+              {/* ═══ 快捷话术库面板 ═══ */}
+              <div className="px-4 pt-4 pb-3 border-b border-gray-100 flex items-center justify-between">
+                <h2 className="text-[13px] font-bold text-gray-800 flex items-center gap-1.5">
+                  <TagIcon className="w-4 h-4 text-[#1890FF]" /> 快捷话术库
+                </h2>
+                <span className="text-[10px] text-gray-300">{quickReplies.length} 条</span>
+              </div>
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                {Object.keys(replyGroups).length === 0 && (
+                  <p className="text-[11.5px] text-gray-300 text-center py-8">暂无话术，在下方录入第一条</p>
+                )}
+                {Object.entries(replyGroups).map(([category, list]) => (
+                  <div key={category}>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-1.5">{category}</p>
+                    <div className="space-y-1.5">
+                      {list.map(r => (
+                        <div key={r.id} className="group flex items-start gap-1.5">
+                          <button
+                            onClick={() => {
+                              if (activeId && !activeIsClosed) setInput(r.content);
+                            }}
+                            className="flex-1 text-left text-[12px] text-gray-600 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 hover:border-[#1890FF]/40 hover:text-[#1890FF] hover:bg-[#F0F8FF] transition-colors"
+                          >
+                            {r.content}
+                          </button>
+                          <button
+                            onClick={() => removeQuickReply(r.id)}
+                            className="text-gray-300 hover:text-[#FE2C55] opacity-0 group-hover:opacity-100 transition-opacity mt-1.5"
+                            title="删除话术"
+                          >
+                            <TrashIcon className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/60">
+                <div className="flex items-center gap-2">
+                  <input
+                    value={newReplyContent}
+                    onChange={e => setNewReplyContent(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') addQuickReply();
+                    }}
+                    placeholder="录入新话术，回车保存"
+                    className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[#1890FF]"
+                  />
+                  <button
+                    onClick={addQuickReply}
+                    className="text-xs text-white bg-[#1890FF] rounded-lg px-3 py-2 hover:bg-[#1890FF]/90 inline-flex items-center gap-1 flex-shrink-0"
+                  >
+                    <PlusIcon className="w-3 h-3" /> 保存
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="px-4 pt-4 pb-3 border-b border-gray-100">
             <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 focus-within:border-[#1890FF]/50 focus-within:bg-white transition-colors">
               <SearchIcon className="w-4 h-4 text-gray-300" />
               <input
@@ -776,7 +1054,7 @@ export default function KefuWorkbenchPage() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto pb-2">
             {filtered.length === 0 && (
               <div className="py-12 text-center">
                 <div className="mx-auto w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
@@ -785,65 +1063,86 @@ export default function KefuWorkbenchPage() {
                 <p className="text-xs text-gray-300">暂无{filter === 'open' ? '进行中' : ''}会话</p>
               </div>
             )}
-            {filtered.map(conv => {
-              const userName = conv.users?.real_name || conv.users?.username || '访客';
-              const isActive = conv.id === activeId;
-              const isClosed = conv.status === 'closed';
-              const unread = conv.unread_admin || 0;
-              return (
-                <button
-                  key={conv.id}
-                  onClick={() => selectConversation(conv.id)}
-                  className={`w-full text-left px-4 py-3 border-b border-gray-50 transition-colors ${
-                    isActive ? 'bg-[#1890FF]/5' : 'hover:bg-gray-50'
-                  } ${isClosed ? 'opacity-55' : ''}`}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span
-                        className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[12px] font-bold text-white bg-gradient-to-br ${
-                          isClosed ? 'from-gray-300 to-gray-400' : 'from-[#00D4FF] to-[#7B61FF]'
-                        }`}
-                      >
-                        {userName.slice(0, 1)}
-                      </span>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-[12.5px] font-medium truncate ${isActive ? 'text-[#1890FF]' : 'text-gray-800'}`}>
-                            {userName}
-                          </span>
-                          {isClosed && (
-                            <span className="text-[9px] text-gray-400 bg-gray-100 rounded px-1 py-px flex-shrink-0">已结束</span>
-                          )}
-                          {(conv.tags || []).slice(0, 2).map(tag => (
-                            <span key={tag} className="text-[9px] text-[#1890FF] bg-[#E6F7FF] rounded px-1 py-px flex-shrink-0">
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                        <p className="text-[10.5px] text-gray-400 truncate mt-0.5">
-                          {conv.last_message ? (
-                            (conv.last_message || '').startsWith('[图片]') ? '[图片]' : conv.last_message
-                          ) : (
-                            <span className="text-gray-300">新会话，等待消息…</span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      {unread > 0 && (
-                        <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#FE2C55] text-white text-[10px] font-bold flex items-center justify-center shadow-sm shadow-[#FE2C55]/40">
-                          {unread > 99 ? '99+' : unread}
-                        </span>
-                      )}
-                      {conv.last_message_at && (
-                        <span className="text-[10px] text-gray-300">{formatTime(conv.last_message_at)}</span>
-                      )}
-                    </div>
+            {/* 分组：排队中（有未读）/ 我的对话（已读进行中）/ 访问中（已结束） */}
+            {(() => {
+              const waiting = filtered.filter(c => c.status === 'open' && (c.unread_admin || 0) > 0);
+              const mine = filtered.filter(c => c.status === 'open' && !((c.unread_admin || 0) > 0));
+              const closed = filtered.filter(c => c.status === 'closed');
+              const groups: { title: string; count: number; list: ConversationItem[] }[] = [];
+              if (waiting.length) groups.push({ title: '排队中', count: waiting.length, list: waiting });
+              if (mine.length) groups.push({ title: '我的对话', count: mine.length, list: mine });
+              if (closed.length) groups.push({ title: '访问中', count: closed.length, list: closed });
+              if (filter === 'all' && groups.length === 0) groups.push({ title: '全部会话', count: filtered.length, list: filtered });
+              if (filter === 'open' && groups.length === 0) groups.push({ title: '进行中', count: filtered.length, list: filtered });
+              if (filter === 'closed' && groups.length === 0) groups.push({ title: '访问中', count: filtered.length, list: filtered });
+              return groups.map(group => (
+                <div key={group.title}>
+                  <div className="px-4 pt-3 pb-1 flex items-center justify-between">
+                    <span className="text-[10px] text-gray-400 font-medium tracking-wide">{group.title}</span>
+                    <span className="text-[9px] text-gray-300 bg-gray-50 rounded-full px-1.5 py-px">{group.count}</span>
                   </div>
-                </button>
-              );
-            })}
+                  {group.list.map(conv => {
+                    const userName = conv.users?.real_name || conv.users?.username || '访客';
+                    const isActive = conv.id === activeId;
+                    const isClosed = conv.status === 'closed';
+                    const unread = conv.unread_admin || 0;
+                    return (
+                      <button
+                        key={conv.id}
+                        onClick={() => selectConversation(conv.id)}
+                        className={`w-full text-left px-4 py-3 border-b border-gray-50 transition-colors ${
+                          isActive ? 'bg-[#1890FF]/5' : 'hover:bg-gray-50'
+                        } ${isClosed ? 'opacity-55' : ''}`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span
+                              className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[12px] font-bold text-white bg-gradient-to-br ${
+                                isClosed ? 'from-gray-300 to-gray-400' : 'from-[#00D4FF] to-[#7B61FF]'
+                              }`}
+                            >
+                              {userName.slice(0, 1)}
+                            </span>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className={`text-[12.5px] font-medium truncate ${isActive ? 'text-[#1890FF]' : 'text-gray-800'}`}>
+                                  {userName}
+                                </span>
+                                {isClosed && (
+                                  <span className="text-[9px] text-gray-400 bg-gray-100 rounded px-1 py-px flex-shrink-0">已结束</span>
+                                )}
+                                {(conv.tags || []).slice(0, 2).map(tag => (
+                                  <span key={tag} className="text-[9px] text-[#1890FF] bg-[#E6F7FF] rounded px-1 py-px flex-shrink-0">
+                                    #{tag}
+                                  </span>
+                                ))}
+                              </div>
+                              <p className="text-[10.5px] text-gray-400 truncate mt-0.5">
+                                {conv.last_message ? (
+                                  (conv.last_message || '').startsWith('[图片]') ? '[图片]' : conv.last_message
+                                ) : (
+                                  <span className="text-gray-300">新会话，等待消息…</span>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                            {unread > 0 && (
+                              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#FE2C55] text-white text-[10px] font-bold flex items-center justify-center shadow-sm shadow-[#FE2C55]/40">
+                                {unread > 99 ? '99+' : unread}
+                              </span>
+                            )}
+                            {conv.last_message_at && (
+                              <span className="text-[10px] text-gray-300">{formatTime(conv.last_message_at)}</span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ));
+            })()}
           </div>
 
           {/* 左栏底部：未读汇总 */}
@@ -851,6 +1150,8 @@ export default function KefuWorkbenchPage() {
             <span>共 {filtered.length} 个会话</span>
             {unreadTotal > 0 && <span className="text-[#FE2C55] font-medium">{unreadTotal} 个待处理</span>}
           </div>
+            </>
+          )}
         </aside>
 
         {/* ── 中：聊天区 ── */}
@@ -955,6 +1256,19 @@ export default function KefuWorkbenchPage() {
                         </div>
                       )}
                     </div>
+                    {!isUser && (
+                      settings.avatar ? (
+                        <img
+                          src={settings.avatar}
+                          alt="客服"
+                          className="w-7 h-7 rounded-full flex-shrink-0 ml-2 mt-1 object-cover ring-1 ring-[#00B4FF]/30"
+                        />
+                      ) : (
+                        <span className="w-7 h-7 rounded-full flex-shrink-0 ml-2 mt-1 bg-gradient-to-br from-[#00D4FF] to-[#7B61FF] flex items-center justify-center">
+                          <HeadphoneIcon className="w-3.5 h-3.5 text-white" filled />
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
               );
@@ -976,64 +1290,6 @@ export default function KefuWorkbenchPage() {
               </div>
             ) : (
               <>
-                {/* 快捷话术栏 */}
-                {showQuickPanel && (
-                  <div className="border-t border-gray-100 bg-gray-50/60">
-                    <div className="flex items-center justify-between px-4 py-2">
-                      <span className="text-[11px] font-medium text-gray-500">快捷话术库</span>
-                      <button onClick={() => setShowQuickPanel(false)} className="text-gray-300 hover:text-gray-500">
-                        <XIcon className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                    <div className="max-h-44 overflow-y-auto px-4 pb-2 space-y-1">
-                      {Object.entries(replyGroups).map(([category, list]) => (
-                        <div key={category}>
-                          <p className="text-[10px] text-gray-400 my-1">{category}</p>
-                          {list.map(r => (
-                            <div key={r.id} className="group flex items-center gap-1.5">
-                              <button
-                                onClick={() => {
-                                  if (activeId && !activeIsClosed) {
-                                    setInput(r.content);
-                                    setShowQuickPanel(false);
-                                  }
-                                }}
-                                className="flex-1 text-left text-[12px] text-gray-600 bg-white border border-gray-100 rounded-lg px-3 py-2 hover:border-[#1890FF]/40 hover:text-[#1890FF] transition-colors shadow-sm"
-                              >
-                                {r.content}
-                              </button>
-                              <button
-                                onClick={() => removeQuickReply(r.id)}
-                                className="text-gray-300 hover:text-[#FE2C55] opacity-0 group-hover:opacity-100 transition-opacity"
-                                title="删除话术"
-                              >
-                                <TrashIcon className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                      <div className="flex items-center gap-2 pt-2 pb-1">
-                        <input
-                          value={newReplyContent}
-                          onChange={e => setNewReplyContent(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') addQuickReply();
-                          }}
-                          placeholder="录入新话术，回车保存"
-                          className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-3 py-2 outline-none focus:border-[#1890FF]"
-                        />
-                        <button
-                          onClick={addQuickReply}
-                          className="text-xs text-white bg-[#1890FF] rounded-lg px-3 py-2 hover:bg-[#1890FF]/90 inline-flex items-center gap-1"
-                        >
-                          <PlusIcon className="w-3 h-3" /> 保存
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="flex items-end gap-2 px-4 py-3">
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -1047,16 +1303,16 @@ export default function KefuWorkbenchPage() {
                   <button
                     onClick={() => {
                       if (activeId && !activeIsClosed) {
-                        setShowQuickPanel(prev => !prev);
-                        if (!showQuickPanel) fetchQuickReplies();
+                        setLeftPanel('quickreplies');
+                        fetchQuickReplies();
                       }
                     }}
                     className={`flex-shrink-0 h-9 px-3 rounded-lg flex items-center gap-1 text-[11px] transition-colors ${
-                      showQuickPanel
+                      leftPanel === 'quickreplies'
                         ? 'bg-[#1890FF] text-white'
                         : 'text-gray-400 hover:text-[#1890FF] hover:bg-[#1890FF]/5'
                     }`}
-                    title="快捷话术"
+                    title="快捷话术（左侧面板）"
                   >
                     <TagIcon className="w-4 h-4" /> 话术
                   </button>
